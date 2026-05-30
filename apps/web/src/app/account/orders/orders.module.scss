@@ -1,0 +1,107 @@
+.page {
+  padding-block: 2.5rem;
+  max-width: 800px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 2rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.orderCard {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 0.5rem;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  cursor: pointer;
+
+  &:hover {
+    border-color: rgba(233, 69, 96, 0.3);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.orderMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.orderId {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.orderInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.orderDate {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.orderTotal {
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.orderItems {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.orderItemName {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg-card);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-sm);
+}
+
+.moreItems {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 4rem 0;
+  text-align: center;
+
+  span {
+    font-size: 3rem;
+    opacity: 0.4;
+  }
+
+  p {
+    color: var(--color-text-muted);
+    font-size: 1.125rem;
+  }
+}
+
+.skeletonRow {
+  height: 96px;
+  border-radius: var(--radius-lg);
+  @extend .skeleton;
+}
