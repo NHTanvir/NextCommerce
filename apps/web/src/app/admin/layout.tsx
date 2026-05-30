@@ -1,0 +1,47 @@
+'use client';
+
+import { useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAppSelector } from '@/store/hooks';
+import styles from './admin.module.scss';
+
+const ADMIN_NAV = [
+  { href: '/admin', label: 'Dashboard', icon: '📊' },
+  { href: '/admin/products', label: 'Products', icon: '👟' },
+  { href: '/admin/orders', label: 'Orders', icon: '📦' },
+];
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const user = useAppSelector((s) => s.auth.user);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!user) { router.push('/auth/login'); return; }
+    if (user.role !== 'admin') router.push('/');
+  }, [user, router]);
+
+  if (!user || user.role !== 'admin') return null;
+
+  return (
+    <div className={styles.layout}>
+      <aside className={styles.sidebar}>
+        <div className={styles.brand}>Admin</div>
+        <nav className={styles.nav}>
+          {ADMIN_NAV.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`${styles.navLink} ${pathname === item.href ? styles.active : ''}`}
+            >
+              <span>{item.icon}</span>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </aside>
+      <main className={styles.main}>{children}</main>
+    </div>
+  );
+}
