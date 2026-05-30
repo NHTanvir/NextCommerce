@@ -1,0 +1,142 @@
+[
+  {
+    "title": "Air Velocity Pro",
+    "slug": "air-velocity-pro",
+    "brand": "Nike",
+    "description": "Lightweight running shoe with responsive cushioning and breathable mesh upper.",
+    "category": "running",
+    "images": [{ "url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600" }],
+    "variants": [
+      { "size": 8, "color": "White/Black", "sku": "AVP-W-8", "stockQty": 12, "priceCents": 12999 },
+      { "size": 9, "color": "White/Black", "sku": "AVP-W-9", "stockQty": 8, "priceCents": 12999 },
+      { "size": 10, "color": "White/Black", "sku": "AVP-W-10", "stockQty": 15, "priceCents": 12999 },
+      { "size": 11, "color": "White/Black", "sku": "AVP-W-11", "stockQty": 5, "priceCents": 12999 },
+      { "size": 9, "color": "Black/Red", "sku": "AVP-B-9", "stockQty": 10, "priceCents": 12999 },
+      { "size": 10, "color": "Black/Red", "sku": "AVP-B-10", "stockQty": 7, "priceCents": 12999 }
+    ]
+  },
+  {
+    "title": "Ultra Boost Elite",
+    "slug": "ultra-boost-elite",
+    "brand": "Adidas",
+    "description": "Energy-returning Boost midsole for maximum performance on any surface.",
+    "category": "running",
+    "images": [{ "url": "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600" }],
+    "variants": [
+      { "size": 8, "color": "Core Black", "sku": "UBE-CB-8", "stockQty": 6, "priceCents": 18000 },
+      { "size": 9, "color": "Core Black", "sku": "UBE-CB-9", "stockQty": 9, "priceCents": 18000 },
+      { "size": 10, "color": "Core Black", "sku": "UBE-CB-10", "stockQty": 11, "priceCents": 18000 },
+      { "size": 9, "color": "Cloud White", "sku": "UBE-CW-9", "stockQty": 4, "priceCents": 18000 },
+      { "size": 10, "color": "Cloud White", "sku": "UBE-CW-10", "stockQty": 8, "priceCents": 18000 }
+    ]
+  },
+  {
+    "title": "Fresh Foam 1080v14",
+    "slug": "fresh-foam-1080v14",
+    "brand": "New Balance",
+    "description": "Premium daily trainer with plush Fresh Foam X midsole and soft upper.",
+    "category": "running",
+    "images": [{ "url": "https://images.unsplash.com/photo-1539185441755-769473a23570?w=600" }],
+    "variants": [
+      { "size": 8.5, "color": "Navy", "sku": "FF1080-N-85", "stockQty": 7, "priceCents": 16499 },
+      { "size": 9.5, "color": "Navy", "sku": "FF1080-N-95", "stockQty": 5, "priceCents": 16499 },
+      { "size": 10.5, "color": "Navy", "sku": "FF1080-N-105", "stockQty": 3, "priceCents": 16499 },
+      { "size": 9, "color": "White", "sku": "FF1080-W-9", "stockQty": 10, "priceCents": 16499 }
+    ]
+  },
+  {
+    "title": "Court Legacy Retro",
+    "slug": "court-legacy-retro",
+    "brand": "Nike",
+    "description": "Classic basketball-inspired lifestyle sneaker with premium leather upper.",
+    "category": "lifestyle",
+    "images": [{ "url": "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600" }],
+    "variants": [
+      { "size": 8, "color": "White/Gum", "sku": "CLR-WG-8", "stockQty": 14, "priceCents": 8999 },
+      { "size": 9, "color": "White/Gum", "sku": "CLR-WG-9", "stockQty": 18, "priceCents": 8999 },
+      { "size": 10, "color": "White/Gum", "sku": "CLR-WG-10", "stockQty": 12, "priceCents": 8999 },
+      { "size": 11, "color": "Black/Gum", "sku": "CLR-BG-11", "stockQty": 6, "priceCents": 8999 }
+    ]
+  },
+  {
+    "title": "Stan Smith Luxe",
+    "slug": "stan-smith-luxe",
+    "brand": "Adidas",
+    "description": "Iconic tennis-inspired sneaker elevated with premium materials.",
+    "category": "lifestyle",
+    "images": [{ "url": "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=600" }],
+    "variants": [
+      { "size": 7, "color": "White/Green", "sku": "SSL-WG-7", "stockQty": 20, "priceCents": 9999 },
+      { "size": 8, "color": "White/Green", "sku": "SSL-WG-8", "stockQty": 15, "priceCents": 9999 },
+      { "size": 9, "color": "White/Green", "sku": "SSL-WG-9", "stockQty": 12, "priceCents": 9999 },
+      { "size": 10, "color": "White/Navy", "sku": "SSL-WN-10", "stockQty": 8, "priceCents": 10499 }
+    ]
+  },
+  {
+    "title": "574 Classic Heritage",
+    "slug": "574-classic-heritage",
+    "brand": "New Balance",
+    "description": "Timeless silhouette with ENCAP midsole technology and suede overlays.",
+    "category": "lifestyle",
+    "images": [{ "url": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600" }],
+    "variants": [
+      { "size": 8, "color": "Grey/Navy", "sku": "574-GN-8", "stockQty": 9, "priceCents": 8499 },
+      { "size": 9, "color": "Grey/Navy", "sku": "574-GN-9", "stockQty": 11, "priceCents": 8499 },
+      { "size": 10, "color": "Grey/Navy", "sku": "574-GN-10", "stockQty": 7, "priceCents": 8499 },
+      { "size": 8, "color": "Tan/Gum", "sku": "574-TG-8", "stockQty": 5, "priceCents": 8999 }
+    ]
+  },
+  {
+    "title": "LeBron NXXT Gen",
+    "slug": "lebron-nxxt-gen",
+    "brand": "Nike",
+    "description": "Responsive basketball shoe with full-length Air cushioning and lockdown fit.",
+    "category": "basketball",
+    "images": [{ "url": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Black/Gold", "sku": "LNN-BG-9", "stockQty": 4, "priceCents": 19999 },
+      { "size": 10, "color": "Black/Gold", "sku": "LNN-BG-10", "stockQty": 6, "priceCents": 19999 },
+      { "size": 11, "color": "Black/Gold", "sku": "LNN-BG-11", "stockQty": 3, "priceCents": 19999 },
+      { "size": 10, "color": "White/Purple", "sku": "LNN-WP-10", "stockQty": 5, "priceCents": 19999 }
+    ]
+  },
+  {
+    "title": "Harden Vol. 8",
+    "slug": "harden-vol-8",
+    "brand": "Adidas",
+    "description": "Low-profile basketball shoe with Lightstrike 2.0 cushioning for quick cuts.",
+    "category": "basketball",
+    "images": [{ "url": "https://images.unsplash.com/photo-1556048219-bb6978360b84?w=600" }],
+    "variants": [
+      { "size": 8.5, "color": "Red/Black", "sku": "HV8-RB-85", "stockQty": 7, "priceCents": 14999 },
+      { "size": 9.5, "color": "Red/Black", "sku": "HV8-RB-95", "stockQty": 5, "priceCents": 14999 },
+      { "size": 10.5, "color": "Red/Black", "sku": "HV8-RB-105", "stockQty": 4, "priceCents": 14999 }
+    ]
+  },
+  {
+    "title": "Pegasus Trail 5 GTX",
+    "slug": "pegasus-trail-5-gtx",
+    "brand": "Nike",
+    "description": "Waterproof GORE-TEX trail runner with aggressive outsole for off-road performance.",
+    "category": "trail",
+    "images": [{ "url": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Olive/Orange", "sku": "PT5G-OO-9", "stockQty": 6, "priceCents": 17499 },
+      { "size": 10, "color": "Olive/Orange", "sku": "PT5G-OO-10", "stockQty": 8, "priceCents": 17499 },
+      { "size": 11, "color": "Black/Grey", "sku": "PT5G-BG-11", "stockQty": 4, "priceCents": 17499 }
+    ]
+  },
+  {
+    "title": "Terrex Agravic Speed Ultra",
+    "slug": "terrex-agravic-speed-ultra",
+    "brand": "Adidas",
+    "description": "Race-ready trail shoe with Continental rubber outsole and Lightstrike Pro midsole.",
+    "category": "trail",
+    "images": [{ "url": "https://images.unsplash.com/photo-1584735175315-9d5df23be620?w=600" }],
+    "variants": [
+      { "size": 8, "color": "Blue/Yellow", "sku": "TASU-BY-8", "stockQty": 3, "priceCents": 21999 },
+      { "size": 9, "color": "Blue/Yellow", "sku": "TASU-BY-9", "stockQty": 5, "priceCents": 21999 },
+      { "size": 10, "color": "Blue/Yellow", "sku": "TASU-BY-10", "stockQty": 4, "priceCents": 21999 }
+    ]
+  }
+]
