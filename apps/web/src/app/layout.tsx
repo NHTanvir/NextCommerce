@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { Providers } from './providers';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { CartDrawer } from '@/features/cart/CartDrawer';
 import './globals.scss';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Navbar />
             <main style={{ flex: 1 }}>{children}</main>
             <Footer />
+            <CartDrawer />
           </div>
         </Providers>
       </body>
