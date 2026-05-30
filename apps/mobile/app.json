@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "NextCommerce",
+    "slug": "nextcommerce",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "nextcommerce",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0d1117"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "io.nextcommerce.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0d1117"
+      },
+      "package": "io.nextcommerce.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": ["expo-router"]
+  }
+}
