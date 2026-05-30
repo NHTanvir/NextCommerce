@@ -1,0 +1,146 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main, 'feat/**', 'fix/**']
+  pull_request:
+    branches: [master, main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-type-check:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm --filter @nextcommerce/shared build
+
+      - name: Type check API
+        run: pnpm --filter @nextcommerce/api exec tsc --noEmit
+
+      - name: Type check Web
+        run: pnpm --filter @nextcommerce/web exec tsc --noEmit
+
+      - name: Type check Notifications
+        run: pnpm --filter @nextcommerce/notifications exec tsc --noEmit
+
+      - name: Lint
+        run: pnpm lint
+
+  test-api:
+    name: API Tests
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: testroot
+          MYSQL_DATABASE: nextcommerce_test
+          MYSQL_USER: nc
+          MYSQL_PASSWORD: nc_password
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u root -ptestroot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+        ports:
+          - 3306:3306
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared
+        run: pnpm --filter @nextcommerce/shared build
+
+      - name: Run API unit tests
+        working-directory: apps/api
+        env:
+          DATABASE_URL: mysql://nc:nc_password@localhost:3306/nextcommerce_test
+          JWT_SECRET: ci-test-secret
+          NODE_ENV: test
+        run: pnpm test -- --passWithNoTests
+
+  test-web:
+    name: Web Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared
+        run: pnpm --filter @nextcommerce/shared build
+
+      - name: Run Web tests
+        working-directory: apps/web
+        run: pnpm test -- --passWithNoTests
+
+  build-docker:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [lint-and-type-check]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: nextcommerce/api:${{ github.sha }}
+
+      - name: Build Web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: nextcommerce/web:${{ github.sha }}
