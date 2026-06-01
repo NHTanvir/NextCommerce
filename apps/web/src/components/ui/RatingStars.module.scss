@@ -1,0 +1,38 @@
+.stars {
+  display: inline-flex;
+  gap: 0.1rem;
+}
+
+.star {
+  background: none;
+  border: none;
+  cursor: default;
+  line-height: 1;
+  color: var(--color-border);
+  transition: color 0.1s;
+  padding: 0;
+
+  &.filled {
+    color: #f59e0b;
+  }
+
+  &.half {
+    color: #f59e0b;
+    opacity: 0.6;
+  }
+}
+
+.interactive .star {
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    transform: scale(1.1);
+  }
+}
+
+// Sizes
+.sm .star { font-size: 0.875rem; }
+.md .star { font-size: 1.1rem; }
+.lg .star { font-size: 1.5rem; }
