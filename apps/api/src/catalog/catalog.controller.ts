@@ -2,10 +2,14 @@ import {
   Controller,
   Get,
   Post,
+  Put,
+  Delete,
   Body,
   Param,
   Query,
   UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,6 +20,7 @@ import {
 import { CatalogService } from './catalog.service';
 import { ProductQueryDto } from './dto/product-query.dto';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -51,5 +56,33 @@ export class CatalogController {
   @ApiOperation({ summary: '[Admin] Create a new product' })
   create(@Body() dto: CreateProductDto) {
     return this.catalogService.create(dto);
+  }
+
+  @Put('products/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Update product by ID' })
+  @ApiParam({ name: 'id', description: 'Product UUID' })
+  update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
+    return this.catalogService.update(id, dto);
+  }
+
+  @Delete('products/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: '[Admin] Soft-delete product (sets isActive=false)' })
+  @ApiParam({ name: 'id', description: 'Product UUID' })
+  remove(@Param('id') id: string) {
+    return this.catalogService.softDelete(id);
+  }
+
+  @Get('products/id/:id')
+  @ApiOperation({ summary: 'Get product by UUID (for admin use)' })
+  @ApiParam({ name: 'id', description: 'Product UUID' })
+  findById(@Param('id') id: string) {
+    return this.catalogService.findById(id);
   }
 }

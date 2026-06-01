@@ -6,6 +6,7 @@ import { Category } from './entities/category.entity';
 import { ProductVariant } from './entities/product-variant.entity';
 import { ProductQueryDto } from './dto/product-query.dto';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductListResponse } from '@nextcommerce/shared';
 
 @Injectable()
@@ -92,8 +93,48 @@ export class CatalogService {
     }) as Promise<Product>;
   }
 
+  async update(id: string, dto: UpdateProductDto): Promise<Product> {
+    const product = await this.productRepo.findOne({ where: { id } });
+    if (!product) throw new NotFoundException('Product not found');
+
+    await this.productRepo.update(id, {
+      ...(dto.title !== undefined && { title: dto.title }),
+      ...(dto.description !== undefined && { description: dto.description }),
+      ...(dto.brand !== undefined && { brand: dto.brand }),
+      ...(dto.slug !== undefined && { slug: dto.slug }),
+      ...(dto.basePriceCents !== undefined && { basePriceCents: dto.basePriceCents }),
+      ...(dto.categoryId !== undefined && { categoryId: dto.categoryId }),
+      ...(dto.images !== undefined && { images: dto.images }),
+      ...(dto.isActive !== undefined && { isActive: dto.isActive }),
+    });
+
+    return this.productRepo.findOne({
+      where: { id },
+      relations: ['category', 'variants'],
+    }) as Promise<Product>;
+  }
+
+  async softDelete(id: string): Promise<void> {
+    const product = await this.productRepo.findOne({ where: { id } });
+    if (!product) throw new NotFoundException('Product not found');
+    await this.productRepo.update(id, { isActive: false });
+  }
+
+  async findById(id: string): Promise<Product> {
+    const product = await this.productRepo.findOne({
+      where: { id },
+      relations: ['category', 'variants'],
+    });
+    if (!product) throw new NotFoundException('Product not found');
+    return product;
+  }
+
   async decrementStock(variantId: string, qty: number) {
     await this.variantRepo.decrement({ id: variantId }, 'stockQty', qty);
+  }
+
+  async incrementStock(variantId: string, qty: number) {
+    await this.variantRepo.increment({ id: variantId }, 'stockQty', qty);
   }
 
   private toDto(p: Product) {
