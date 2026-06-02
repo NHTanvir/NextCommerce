@@ -13,6 +13,7 @@ import { RegisterScreen } from '@/screens/RegisterScreen';
 import { ProfileScreen } from '@/screens/ProfileScreen';
 import { CartScreen } from '@/screens/CartScreen';
 import { SearchScreen } from '@/screens/SearchScreen';
+import { WishlistScreen } from '@/screens/WishlistScreen';
 import type { RootStackParamList } from '@/navigation/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -94,6 +95,15 @@ export default function App() {
             name="Orders"
             component={OrdersStack}
             options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="📦" focused={focused} /> }}
+          />
+          <Tab.Screen
+            name="Wishlist"
+            component={WishlistScreen}
+            options={{
+              tabBarIcon: ({ focused }) => <TabIcon emoji="♡" focused={focused} />,
+              ...HEADER_OPTIONS,
+              title: 'Wishlist',
+            }}
           />
           <Tab.Screen
             name="Account"
