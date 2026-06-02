@@ -1,0 +1,36 @@
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-border) 25%,
+    var(--color-surface) 50%,
+    var(--color-border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease infinite;
+  border-radius: 0.375rem;
+  width: 100%;
+}
+
+.textGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.cardBody {
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
