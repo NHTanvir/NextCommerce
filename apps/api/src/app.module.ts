@@ -21,6 +21,7 @@ import { TagsModule } from './tags/tags.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ReturnsModule } from './returns/returns.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { ReturnsModule } from './returns/returns.module';
     WishlistModule,
     AnalyticsModule,
     ReturnsModule,
+    PaymentsModule,
   ],
 })
 export class AppModule {}
