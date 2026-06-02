@@ -4,6 +4,11 @@
   margin-top: auto;
 }
 
+.newsletter {
+  padding-block: 2.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
 .inner {
   display: grid;
   grid-template-columns: 2fr repeat(3, 1fr);

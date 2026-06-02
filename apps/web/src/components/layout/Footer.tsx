@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { NewsletterSignup } from '../features/NewsletterSignup';
 import styles from './Footer.module.scss';
 
 const FOOTER_LINKS = {
@@ -7,11 +8,14 @@ const FOOTER_LINKS = {
     { href: '/products?category=running', label: 'Running' },
     { href: '/products?category=lifestyle', label: 'Lifestyle' },
     { href: '/products?category=basketball', label: 'Basketball' },
+    { href: '/products?category=trail', label: 'Trail' },
   ],
   Account: [
     { href: '/auth/login', label: 'Sign In' },
     { href: '/auth/register', label: 'Create Account' },
     { href: '/account/orders', label: 'My Orders' },
+    { href: '/account/profile', label: 'Profile' },
+    { href: '/wishlist', label: 'Wishlist' },
   ],
   Company: [
     { href: '#', label: 'About Us' },
@@ -24,6 +28,10 @@ const FOOTER_LINKS = {
 export function Footer() {
   return (
     <footer className={styles.footer}>
+      <div className={`container ${styles.newsletter}`}>
+        <NewsletterSignup />
+      </div>
+
       <div className={`container ${styles.inner}`}>
         <div className={styles.brand}>
           <Link href="/" className={styles.logo}>
