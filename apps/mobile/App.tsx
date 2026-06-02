@@ -12,6 +12,7 @@ import { LoginScreen } from '@/screens/LoginScreen';
 import { RegisterScreen } from '@/screens/RegisterScreen';
 import { ProfileScreen } from '@/screens/ProfileScreen';
 import { CartScreen } from '@/screens/CartScreen';
+import { SearchScreen } from '@/screens/SearchScreen';
 import type { RootStackParamList } from '@/navigation/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,6 +30,7 @@ function ShopStack() {
     <Stack.Navigator screenOptions={HEADER_OPTIONS}>
       <Stack.Screen name="ProductList" component={ProductListScreen} options={{ title: 'NextCommerce' }} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product' }} />
+      <Stack.Screen name="Search" component={SearchScreen} options={{ title: 'Search' }} />
     </Stack.Navigator>
   );
 }
