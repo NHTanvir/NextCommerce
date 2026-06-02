@@ -6,3 +6,4 @@ export * from './utils/currency';
 export * from './utils/slug';
 export * from './utils/validation';
 export * from './utils/date';
+export * from './utils/formatters';
