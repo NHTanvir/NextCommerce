@@ -20,6 +20,7 @@ import { ShippingModule } from './shipping/shipping.module';
 import { TagsModule } from './tags/tags.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { ReturnsModule } from './returns/returns.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     TagsModule,
     WishlistModule,
     AnalyticsModule,
+    ReturnsModule,
   ],
 })
 export class AppModule {}
