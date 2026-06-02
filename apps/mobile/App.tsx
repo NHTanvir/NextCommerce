@@ -14,6 +14,8 @@ import { ProfileScreen } from '@/screens/ProfileScreen';
 import { CartScreen } from '@/screens/CartScreen';
 import { SearchScreen } from '@/screens/SearchScreen';
 import { WishlistScreen } from '@/screens/WishlistScreen';
+import NotificationsScreen from '@/screens/NotificationsScreen';
+import SettingsScreen from '@/screens/SettingsScreen';
 import type { RootStackParamList } from '@/navigation/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -51,6 +53,8 @@ function AccountStack() {
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Account' }} />
       <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Sign In' }} />
       <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Create Account' }} />
+      <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
     </Stack.Navigator>
   );
 }
