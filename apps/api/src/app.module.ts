@@ -11,6 +11,14 @@ import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { EventsModule } from './events/events.module';
+import { AuditModule } from './audit/audit.module';
+import { AddressesModule } from './addresses/addresses.module';
+import { CouponsModule } from './coupons/coupons.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { NewsletterModule } from './newsletter/newsletter.module';
+import { ShippingModule } from './shipping/shipping.module';
+import { TagsModule } from './tags/tags.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -50,6 +58,14 @@ import { EventsModule } from './events/events.module';
     OrdersModule,
     ReviewsModule,
     EventsModule,
+    AuditModule,
+    AddressesModule,
+    CouponsModule,
+    InventoryModule,
+    NewsletterModule,
+    ShippingModule,
+    TagsModule,
+    WishlistModule,
   ],
 })
 export class AppModule {}
