@@ -19,6 +19,7 @@ import { NewsletterModule } from './newsletter/newsletter.module';
 import { ShippingModule } from './shipping/shipping.module';
 import { TagsModule } from './tags/tags.module';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
     ShippingModule,
     TagsModule,
     WishlistModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule {}
