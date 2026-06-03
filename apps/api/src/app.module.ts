@@ -24,6 +24,7 @@ import { ReturnsModule } from './returns/returns.module';
 import { PaymentsModule } from './payments/payments.module';
 import { PromotionsModule } from './promotions/promotions.module';
 import { SearchModule } from './search/search.module';
+import { NotificationPreferencesModule } from './notification-preferences/notification-preferences.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { SearchModule } from './search/search.module';
     PaymentsModule,
     PromotionsModule,
     SearchModule,
+    NotificationPreferencesModule,
   ],
 })
 export class AppModule {}
