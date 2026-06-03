@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { InventoryService } from './inventory.service';
+import { InventoryAlertService } from './inventory-alert.service';
 import { AdjustStockDto, SetStockDto } from './dto/inventory.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -21,7 +22,10 @@ import { Roles } from '../common/decorators/roles.decorator';
 @ApiBearerAuth()
 @Controller('inventory')
 export class InventoryController {
-  constructor(private readonly inventoryService: InventoryService) {}
+  constructor(
+    private readonly inventoryService: InventoryService,
+    private readonly alertService: InventoryAlertService,
+  ) {}
 
   @Get('products/:productId')
   @ApiOperation({ summary: '[Admin] Get inventory overview for a product' })
@@ -34,6 +38,19 @@ export class InventoryController {
   @ApiQuery({ name: 'threshold', required: false, type: Number })
   getLowStockAlerts(@Query('threshold') threshold?: string) {
     return this.inventoryService.getLowStockAlerts(threshold ? Number(threshold) : undefined);
+  }
+
+  @Get('alerts/summary')
+  @ApiOperation({ summary: '[Admin] Get stock health summary (out/low/healthy counts)' })
+  getAlertSummary(@Query('threshold') threshold?: string) {
+    return this.alertService.getLowStockSummary(threshold ? Number(threshold) : undefined);
+  }
+
+  @Patch('alerts/publish')
+  @ApiOperation({ summary: '[Admin] Publish low-stock events to message broker' })
+  publishAlerts(@Query('threshold') threshold?: string) {
+    return this.alertService.publishLowStockAlerts(threshold ? Number(threshold) : undefined)
+      .then((count) => ({ published: count }));
   }
 
   @Patch('variants/:id/adjust')
