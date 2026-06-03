@@ -10,6 +10,12 @@ const ADMIN_NAV = [
   { href: '/admin', label: 'Dashboard', icon: '📊' },
   { href: '/admin/products', label: 'Products', icon: '👟' },
   { href: '/admin/orders', label: 'Orders', icon: '📦' },
+  { href: '/admin/users', label: 'Users', icon: '👥' },
+  { href: '/admin/coupons', label: 'Coupons', icon: '🎟️' },
+  { href: '/admin/inventory', label: 'Inventory', icon: '📋' },
+  { href: '/admin/returns', label: 'Returns', icon: '↩️' },
+  { href: '/admin/promotions', label: 'Promotions', icon: '🏷️' },
+  { href: '/admin/analytics', label: 'Analytics', icon: '📈' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
