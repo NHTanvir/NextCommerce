@@ -1,0 +1,72 @@
+.banner {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(90deg, #e94560, #c0392b);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.name {
+  font-weight: 700;
+}
+
+.discount {
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.sep {
+  opacity: 0.5;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.countdown {
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+.min {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.7;
+  padding: 0 0.25rem;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 1;
+  }
+}
