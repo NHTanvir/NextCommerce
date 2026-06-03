@@ -25,6 +25,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { PromotionsModule } from './promotions/promotions.module';
 import { SearchModule } from './search/search.module';
 import { NotificationPreferencesModule } from './notification-preferences/notification-preferences.module';
+import { LoyaltyModule } from './loyalty/loyalty.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { NotificationPreferencesModule } from './notification-preferences/notifi
     PromotionsModule,
     SearchModule,
     NotificationPreferencesModule,
+    LoyaltyModule,
   ],
 })
 export class AppModule {}
