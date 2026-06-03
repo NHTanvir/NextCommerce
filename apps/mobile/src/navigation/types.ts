@@ -3,6 +3,7 @@ export type RootStackParamList = {
   ProductDetail: { slug: string };
   OrderHistory: undefined;
   OrderDetail: { orderId: string };
+  OrderTracking: { orderId: string };
   Login: undefined;
   Register: undefined;
   Profile: undefined;
@@ -22,6 +23,7 @@ export type ShopStackParamList = {
 export type OrdersStackParamList = {
   OrderHistory: undefined;
   OrderDetail: { orderId: string };
+  OrderTracking: { orderId: string };
 };
 
 export type AccountStackParamList = {

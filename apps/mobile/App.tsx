@@ -16,6 +16,7 @@ import { SearchScreen } from '@/screens/SearchScreen';
 import { WishlistScreen } from '@/screens/WishlistScreen';
 import NotificationsScreen from '@/screens/NotificationsScreen';
 import SettingsScreen from '@/screens/SettingsScreen';
+import OrderTrackingScreen from '@/screens/OrderTrackingScreen';
 import type { RootStackParamList } from '@/navigation/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -43,6 +44,7 @@ function OrdersStack() {
     <Stack.Navigator screenOptions={HEADER_OPTIONS}>
       <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} options={{ title: 'My Orders' }} />
       <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
+      <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} options={{ title: 'Track Package' }} />
     </Stack.Navigator>
   );
 }
