@@ -27,9 +27,19 @@ export const ordersApi = apiSlice.injectEndpoints({
       providesTags: (_r, _e, id) => [{ type: 'Order' as const, id }],
     }),
 
-    updateOrderStatus: build.mutation<OrderDto, { id: string; status: OrderStatus }>({
-      query: ({ id, status }) => ({ url: `/orders/${id}/status`, method: 'PATCH', body: { status } }),
+    updateOrderStatus: build.mutation<OrderDto, { id: string; status: OrderStatus; trackingNumber?: string; carrier?: string }>({
+      query: ({ id, ...body }) => ({ url: `/orders/${id}/status`, method: 'PATCH', body }),
       invalidatesTags: (_r, _e, { id }) => [{ type: 'Order' as const, id }, 'Order'],
+    }),
+
+    bulkFulfillOrders: build.mutation<{ success: number; errors: string[] }, { orderIds: string[]; status: OrderStatus }>({
+      query: (body) => ({ url: '/orders/admin/bulk-fulfill', method: 'POST', body }),
+      invalidatesTags: ['Order'],
+    }),
+
+    getAdminOrders: build.query<{ data: OrderDto[]; total: number }, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 20 } = {}) => `/orders/admin/all?page=${page}&limit=${limit}`,
+      providesTags: ['Order'],
     }),
   }),
 });
@@ -39,4 +49,6 @@ export const {
   useGetOrdersQuery,
   useGetOrderQuery,
   useUpdateOrderStatusMutation,
+  useBulkFulfillOrdersMutation,
+  useGetAdminOrdersQuery,
 } = ordersApi;
