@@ -23,6 +23,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { ReturnsModule } from './returns/returns.module';
 import { PaymentsModule } from './payments/payments.module';
 import { PromotionsModule } from './promotions/promotions.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { PromotionsModule } from './promotions/promotions.module';
     ReturnsModule,
     PaymentsModule,
     PromotionsModule,
+    SearchModule,
   ],
 })
 export class AppModule {}
