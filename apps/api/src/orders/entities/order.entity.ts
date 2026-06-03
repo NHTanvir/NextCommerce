@@ -48,6 +48,12 @@ export class Order {
   @Column({ nullable: true })
   paymentRef: string | null;
 
+  @Column({ nullable: true, length: 100 })
+  trackingNumber: string | null;
+
+  @Column({ nullable: true, length: 50 })
+  carrier: string | null;
+
   @OneToMany(() => OrderItem, (i) => i.order, { cascade: true, eager: true })
   items: OrderItem[];
 

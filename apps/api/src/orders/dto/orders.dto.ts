@@ -20,4 +20,21 @@ export class UpdateOrderStatusDto {
   @ApiProperty({ enum: ['pending','paid','fulfilled','shipped','delivered','cancelled','refunded'] })
   @IsEnum(['pending','paid','fulfilled','shipped','delivered','cancelled','refunded'])
   status: OrderStatus;
+
+  @ApiPropertyOptional({ description: 'Carrier tracking number (for shipped status)' })
+  @IsOptional() @IsString() @MaxLength(100)
+  trackingNumber?: string;
+
+  @ApiPropertyOptional({ description: 'Shipping carrier (e.g. UPS, FedEx, USPS)' })
+  @IsOptional() @IsString() @MaxLength(50)
+  carrier?: string;
+}
+
+export class BulkFulfillDto {
+  @ApiProperty({ type: [String] })
+  orderIds: string[];
+
+  @ApiProperty({ enum: ['fulfilled', 'shipped', 'delivered'] })
+  @IsEnum(['fulfilled', 'shipped', 'delivered'])
+  status: OrderStatus;
 }

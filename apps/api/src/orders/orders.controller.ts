@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Patch, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto, UpdateOrderStatusDto } from './dto/orders.dto';
+import { CreateOrderDto, UpdateOrderStatusDto, BulkFulfillDto } from './dto/orders.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -36,12 +36,28 @@ export class OrdersController {
   @Patch(':id/status')
   @UseGuards(RolesGuard)
   @Roles('admin')
-  @ApiOperation({ summary: '[Admin] Update order status' })
+  @ApiOperation({ summary: '[Admin] Update order status with optional tracking' })
   updateStatus(
     @Param('id') id: string,
     @Body() dto: UpdateOrderStatusDto,
     @CurrentUser() user: UserPayload,
   ) {
-    return this.ordersService.updateStatus(id, dto.status, user.sub);
+    return this.ordersService.updateStatus(id, dto.status, user.sub, dto.trackingNumber, dto.carrier);
+  }
+
+  @Post('admin/bulk-fulfill')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Bulk update order statuses' })
+  bulkFulfill(@Body() dto: BulkFulfillDto, @CurrentUser() user: UserPayload) {
+    return this.ordersService.bulkFulfill(dto, user.sub);
+  }
+
+  @Get('admin/all')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] List all orders with pagination' })
+  findAllAdmin(@Query('page') page?: string, @Query('limit') limit?: string) {
+    return this.ordersService.findAll(page ? Number(page) : 1, limit ? Number(limit) : 20);
   }
 }

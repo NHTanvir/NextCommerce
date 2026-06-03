@@ -11,7 +11,7 @@ import { Address } from './entities/address.entity';
 import { CartService } from '../cart/cart.service';
 import { CatalogService } from '../catalog/catalog.service';
 import { EventsService } from '../events/events.service';
-import { CreateOrderDto } from './dto/orders.dto';
+import { CreateOrderDto, UpdateOrderStatusDto, BulkFulfillDto } from './dto/orders.dto';
 import { ORDER_STATUS_TRANSITIONS, OrderStatus } from '@nextcommerce/shared';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -102,7 +102,13 @@ export class OrdersService {
     return order;
   }
 
-  async updateStatus(id: string, newStatus: OrderStatus, _actorId: string): Promise<Order> {
+  async updateStatus(
+    id: string,
+    newStatus: OrderStatus,
+    _actorId: string,
+    trackingNumber?: string,
+    carrier?: string,
+  ): Promise<Order> {
     const order = await this.findOne(id);
     const allowed = ORDER_STATUS_TRANSITIONS[order.status];
 
@@ -112,7 +118,11 @@ export class OrdersService {
       );
     }
 
-    await this.orderRepo.update(id, { status: newStatus });
+    const updates: Partial<Order> = { status: newStatus };
+    if (trackingNumber) updates.trackingNumber = trackingNumber;
+    if (carrier) updates.carrier = carrier;
+
+    await this.orderRepo.update(id, updates);
 
     if (newStatus === 'paid') {
       await this.eventsService.publish('order.paid', {
@@ -121,9 +131,36 @@ export class OrdersService {
     } else if (newStatus === 'shipped') {
       await this.eventsService.publish('order.shipped', {
         orderId: id, userId: order.userId, shippedAt: new Date().toISOString(),
+        trackingNumber: trackingNumber ?? null,
+        carrier: carrier ?? null,
       });
     }
 
     return this.findOne(id);
+  }
+
+  async bulkFulfill(dto: BulkFulfillDto, actorId: string): Promise<{ success: number; errors: string[] }> {
+    let success = 0;
+    const errors: string[] = [];
+
+    for (const orderId of dto.orderIds) {
+      try {
+        await this.updateStatus(orderId, dto.status, actorId);
+        success++;
+      } catch (err: any) {
+        errors.push(`${orderId}: ${err.message}`);
+      }
+    }
+
+    return { success, errors };
+  }
+
+  async findAll(page = 1, limit = 20): Promise<{ data: Order[]; total: number }> {
+    const [data, total] = await this.orderRepo.findAndCount({
+      order: { placedAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data, total };
   }
 }
