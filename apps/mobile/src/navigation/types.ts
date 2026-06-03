@@ -12,6 +12,7 @@ export type RootStackParamList = {
   Wishlist: undefined;
   Notifications: undefined;
   Settings: undefined;
+  Loyalty: undefined;
 };
 
 export type ShopStackParamList = {
@@ -32,6 +33,7 @@ export type AccountStackParamList = {
   Register: undefined;
   Settings: undefined;
   Notifications: undefined;
+  Loyalty: undefined;
 };
 
 export type WishlistStackParamList = {

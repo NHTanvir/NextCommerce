@@ -17,6 +17,7 @@ import { WishlistScreen } from '@/screens/WishlistScreen';
 import NotificationsScreen from '@/screens/NotificationsScreen';
 import SettingsScreen from '@/screens/SettingsScreen';
 import OrderTrackingScreen from '@/screens/OrderTrackingScreen';
+import LoyaltyScreen from '@/screens/LoyaltyScreen';
 import type { RootStackParamList } from '@/navigation/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -57,6 +58,7 @@ function AccountStack() {
       <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Create Account' }} />
       <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
+      <Stack.Screen name="Loyalty" component={LoyaltyScreen} options={{ title: 'My Rewards' }} />
     </Stack.Navigator>
   );
 }
