@@ -10,14 +10,19 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Req,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiBearerAuth,
   ApiParam,
+  ApiConsumes,
 } from '@nestjs/swagger';
+import type { Request } from 'express';
 import { CatalogService } from './catalog.service';
+import { CatalogImportService } from './catalog-import.service';
 import { ProductQueryDto } from './dto/product-query.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -28,7 +33,10 @@ import { Roles } from '../common/decorators/roles.decorator';
 @ApiTags('catalog')
 @Controller('catalog')
 export class CatalogController {
-  constructor(private readonly catalogService: CatalogService) {}
+  constructor(
+    private readonly catalogService: CatalogService,
+    private readonly importService: CatalogImportService,
+  ) {}
 
   @Get('products')
   @ApiOperation({ summary: 'List products with optional filters and pagination' })
@@ -84,5 +92,24 @@ export class CatalogController {
   @ApiParam({ name: 'id', description: 'Product UUID' })
   findById(@Param('id') id: string) {
     return this.catalogService.findById(id);
+  }
+
+  @Post('import')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiConsumes('text/csv')
+  @ApiOperation({ summary: '[Admin] Bulk import products from CSV' })
+  async importCsv(@Req() req: Request) {
+    const chunks: Buffer[] = [];
+    await new Promise<void>((resolve, reject) => {
+      req.on('data', (chunk: Buffer) => chunks.push(chunk));
+      req.on('end', () => resolve());
+      req.on('error', reject);
+    });
+    const csvText = Buffer.concat(chunks).toString('utf-8');
+    if (!csvText.trim()) throw new BadRequestException('CSV body is required');
+    const rows = this.importService.parseCsv(csvText);
+    return this.importService.importRows(rows);
   }
 }
