@@ -27,6 +27,7 @@ import { SearchModule } from './search/search.module';
 import { NotificationPreferencesModule } from './notification-preferences/notification-preferences.module';
 import { LoyaltyModule } from './loyalty/loyalty.module';
 import { GiftCardsModule } from './gift-cards/gift-cards.module';
+import { CollectionsModule } from './collections/collections.module';
 
 @Module({
   imports: [
@@ -82,6 +83,7 @@ import { GiftCardsModule } from './gift-cards/gift-cards.module';
     NotificationPreferencesModule,
     LoyaltyModule,
     GiftCardsModule,
+    CollectionsModule,
   ],
 })
 export class AppModule {}
