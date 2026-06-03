@@ -9,3 +9,4 @@ export * from './utils/slug';
 export * from './utils/validation';
 export * from './utils/date';
 export * from './utils/formatters';
+export * from './utils/pagination';
