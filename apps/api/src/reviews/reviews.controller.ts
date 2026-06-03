@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Query, Param, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ReviewsService, CreateReviewDto } from './reviews.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { UserPayload } from '@nextcommerce/shared';
 
@@ -16,11 +18,35 @@ export class ReviewsController {
     return this.reviewsService.findByProduct(productId);
   }
 
+  @Get('distribution')
+  @ApiOperation({ summary: 'Get rating distribution for a product' })
+  getRatingDistribution(@Query('productId') productId: string) {
+    return this.reviewsService.getRatingDistribution(productId);
+  }
+
+  @Get('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] List all reviews with pagination' })
+  findAll(@Query('page') page?: string, @Query('limit') limit?: string) {
+    return this.reviewsService.findAll(page ? Number(page) : 1, limit ? Number(limit) : 20);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Submit a product review' })
   create(@Body() dto: CreateReviewDto, @CurrentUser() user: UserPayload) {
     return this.reviewsService.create(user.sub, dto);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete own review (admin can delete any)' })
+  remove(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: UserPayload) {
+    const isAdmin = user.role === 'admin';
+    return this.reviewsService.deleteReview(id, user.sub, isAdmin);
   }
 }
