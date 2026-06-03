@@ -1,7 +1,10 @@
-:root {
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
   --color-bg: #0d1117;
   --color-bg-secondary: #161b22;
   --color-bg-card: #1c2128;
+  --color-surface: #161b22;
   --color-border: #30363d;
   --color-text: #e6edf3;
   --color-text-muted: #8b949e;
@@ -22,6 +25,25 @@
   --transition: 150ms ease;
   --container-max: 1280px;
   --container-pad: clamp(1rem, 4vw, 2.5rem);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --color-bg: #f8fafc;
+  --color-bg-secondary: #f1f5f9;
+  --color-bg-card: #ffffff;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-accent: #e94560;
+  --color-accent-hover: #c73652;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-info: #2563eb;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 *,
