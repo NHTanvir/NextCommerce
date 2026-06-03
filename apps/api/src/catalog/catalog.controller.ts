@@ -23,6 +23,7 @@ import {
 import type { Request } from 'express';
 import { CatalogService } from './catalog.service';
 import { CatalogImportService } from './catalog-import.service';
+import { RecommendationsService } from './recommendations.service';
 import { ProductQueryDto } from './dto/product-query.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -36,6 +37,7 @@ export class CatalogController {
   constructor(
     private readonly catalogService: CatalogService,
     private readonly importService: CatalogImportService,
+    private readonly recommendationsService: RecommendationsService,
   ) {}
 
   @Get('products')
@@ -92,6 +94,19 @@ export class CatalogController {
   @ApiParam({ name: 'id', description: 'Product UUID' })
   findById(@Param('id') id: string) {
     return this.catalogService.findById(id);
+  }
+
+  @Get('products/:id/related')
+  @ApiOperation({ summary: 'Get related product recommendations' })
+  @ApiParam({ name: 'id', description: 'Product UUID' })
+  getRelated(@Param('id') id: string, @Query('limit') limit?: string) {
+    return this.recommendationsService.getRelated(id, limit ? parseInt(limit, 10) : 8);
+  }
+
+  @Get('trending')
+  @ApiOperation({ summary: 'Get trending products' })
+  getTrending(@Query('limit') limit?: string) {
+    return this.recommendationsService.getTrending(limit ? parseInt(limit, 10) : 8);
   }
 
   @Post('import')
