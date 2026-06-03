@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcommerce-config
+  namespace: nextcommerce
+data:
+  NODE_ENV: "production"
+  API_PORT: "3001"
+  NOTIFICATIONS_PORT: "3002"
+  LOG_LEVEL: "info"
+  CORS_ORIGIN: "https://nextcommerce.example.com"
+  NEXT_PUBLIC_API_URL: "https://api.nextcommerce.example.com"
+  RABBITMQ_EXCHANGE: "nextcommerce.events"
+  JWT_EXPIRES_IN: "7d"
+  BCRYPT_ROUNDS: "12"
+  RATE_LIMIT_MAX: "100"
+  RATE_LIMIT_WINDOW_MS: "60000"
