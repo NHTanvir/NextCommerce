@@ -1,4 +1,5 @@
 export type RootStackParamList = {
+  Home: undefined;
   ProductList: undefined;
   ProductDetail: { slug: string };
   OrderHistory: undefined;
@@ -13,9 +14,15 @@ export type RootStackParamList = {
   Notifications: undefined;
   Settings: undefined;
   Loyalty: undefined;
+  GiftCards: undefined;
+  Compare: undefined;
+  Referrals: undefined;
+  RequestReturn: { orderId: string };
+  AddressBook: undefined;
 };
 
 export type ShopStackParamList = {
+  Home: undefined;
   ProductList: undefined;
   ProductDetail: { slug: string };
   Search: undefined;
@@ -34,6 +41,9 @@ export type AccountStackParamList = {
   Settings: undefined;
   Notifications: undefined;
   Loyalty: undefined;
+  GiftCards: undefined;
+  Referrals: undefined;
+  RequestReturn: { orderId: string };
 };
 
 export type WishlistStackParamList = {

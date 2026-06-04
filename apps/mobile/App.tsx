@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native';
+import HomeScreen from '@/screens/HomeScreen';
 import { ProductListScreen } from '@/screens/ProductListScreen';
 import { ProductDetailScreen } from '@/screens/ProductDetailScreen';
 import { OrderHistoryScreen } from '@/screens/OrderHistoryScreen';
@@ -18,9 +19,14 @@ import NotificationsScreen from '@/screens/NotificationsScreen';
 import SettingsScreen from '@/screens/SettingsScreen';
 import OrderTrackingScreen from '@/screens/OrderTrackingScreen';
 import LoyaltyScreen from '@/screens/LoyaltyScreen';
-import type { RootStackParamList } from '@/navigation/types';
+import GiftCardsScreen from '@/screens/GiftCardsScreen';
+import ReferralsScreen from '@/screens/ReferralsScreen';
+import RequestReturnScreen from '@/screens/RequestReturnScreen';
+import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const ShopStack = createNativeStackNavigator<ShopStackParamList>();
+const OrdersStack = createNativeStackNavigator<OrdersStackParamList>();
+const AccountStack = createNativeStackNavigator<AccountStackParamList>();
 const Tab = createBottomTabNavigator();
 
 const HEADER_OPTIONS = {
@@ -30,36 +36,40 @@ const HEADER_OPTIONS = {
   contentStyle: { backgroundColor: '#0f0f17' },
 };
 
-function ShopStack() {
+function ShopNavigator() {
   return (
-    <Stack.Navigator screenOptions={HEADER_OPTIONS}>
-      <Stack.Screen name="ProductList" component={ProductListScreen} options={{ title: 'NextCommerce' }} />
-      <Stack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product' }} />
-      <Stack.Screen name="Search" component={SearchScreen} options={{ title: 'Search' }} />
-    </Stack.Navigator>
+    <ShopStack.Navigator screenOptions={HEADER_OPTIONS}>
+      <ShopStack.Screen name="Home" component={HomeScreen} options={{ title: 'NextCommerce', headerShown: false }} />
+      <ShopStack.Screen name="ProductList" component={ProductListScreen} options={{ title: 'All Products' }} />
+      <ShopStack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product' }} />
+      <ShopStack.Screen name="Search" component={SearchScreen} options={{ title: 'Search' }} />
+    </ShopStack.Navigator>
   );
 }
 
-function OrdersStack() {
+function OrdersNavigator() {
   return (
-    <Stack.Navigator screenOptions={HEADER_OPTIONS}>
-      <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} options={{ title: 'My Orders' }} />
-      <Stack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
-      <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} options={{ title: 'Track Package' }} />
-    </Stack.Navigator>
+    <OrdersStack.Navigator screenOptions={HEADER_OPTIONS}>
+      <OrdersStack.Screen name="OrderHistory" component={OrderHistoryScreen} options={{ title: 'My Orders' }} />
+      <OrdersStack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
+      <OrdersStack.Screen name="OrderTracking" component={OrderTrackingScreen} options={{ title: 'Track Package' }} />
+    </OrdersStack.Navigator>
   );
 }
 
-function AccountStack() {
+function AccountNavigator() {
   return (
-    <Stack.Navigator screenOptions={HEADER_OPTIONS}>
-      <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Account' }} />
-      <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Sign In' }} />
-      <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Create Account' }} />
-      <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
-      <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
-      <Stack.Screen name="Loyalty" component={LoyaltyScreen} options={{ title: 'My Rewards' }} />
-    </Stack.Navigator>
+    <AccountStack.Navigator screenOptions={HEADER_OPTIONS}>
+      <AccountStack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Account' }} />
+      <AccountStack.Screen name="Login" component={LoginScreen} options={{ title: 'Sign In' }} />
+      <AccountStack.Screen name="Register" component={RegisterScreen} options={{ title: 'Create Account' }} />
+      <AccountStack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+      <AccountStack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
+      <AccountStack.Screen name="Loyalty" component={LoyaltyScreen} options={{ title: 'My Rewards' }} />
+      <AccountStack.Screen name="GiftCards" component={GiftCardsScreen} options={{ title: 'Gift Cards' }} />
+      <AccountStack.Screen name="Referrals" component={ReferralsScreen} options={{ title: 'Refer & Earn' }} />
+      <AccountStack.Screen name="RequestReturn" component={RequestReturnScreen} options={{ title: 'Request Return' }} />
+    </AccountStack.Navigator>
   );
 }
 
@@ -87,8 +97,8 @@ export default function App() {
         <Tab.Navigator screenOptions={TAB_OPTIONS}>
           <Tab.Screen
             name="Shop"
-            component={ShopStack}
-            options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="👟" focused={focused} /> }}
+            component={ShopNavigator}
+            options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} /> }}
           />
           <Tab.Screen
             name="Cart"
@@ -96,12 +106,13 @@ export default function App() {
             options={{
               tabBarIcon: ({ focused }) => <TabIcon emoji="🛒" focused={focused} />,
               ...HEADER_OPTIONS,
+              headerShown: true,
               title: 'Cart',
             }}
           />
           <Tab.Screen
             name="Orders"
-            component={OrdersStack}
+            component={OrdersNavigator}
             options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="📦" focused={focused} /> }}
           />
           <Tab.Screen
@@ -110,12 +121,13 @@ export default function App() {
             options={{
               tabBarIcon: ({ focused }) => <TabIcon emoji="♡" focused={focused} />,
               ...HEADER_OPTIONS,
+              headerShown: true,
               title: 'Wishlist',
             }}
           />
           <Tab.Screen
             name="Account"
-            component={AccountStack}
+            component={AccountNavigator}
             options={{ tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} /> }}
           />
         </Tab.Navigator>
