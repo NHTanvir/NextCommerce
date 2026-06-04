@@ -113,4 +113,13 @@ export class LoyaltyService {
 
     return tx;
   }
+
+  async listAccounts(page = 1, limit = 30): Promise<{ data: LoyaltyAccount[]; total: number }> {
+    const [data, total] = await this.accountRepo.findAndCount({
+      order: { lifetimePoints: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data, total };
+  }
 }

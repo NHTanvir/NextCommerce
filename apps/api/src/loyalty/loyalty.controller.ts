@@ -53,4 +53,12 @@ export class LoyaltyController {
   awardBonus(@Body() dto: AwardBonusDto) {
     return this.loyaltyService.awardBonus(dto.userId, dto.points, dto.description);
   }
+
+  @Get('admin/accounts')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] List all loyalty accounts sorted by lifetime points' })
+  listAccounts(@Query('page') page?: string, @Query('limit') limit?: string) {
+    return this.loyaltyService.listAccounts(page ? Number(page) : 1, limit ? Number(limit) : 30);
+  }
 }
