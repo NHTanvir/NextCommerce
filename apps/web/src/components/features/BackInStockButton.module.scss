@@ -1,0 +1,82 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notifyBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: rgba(88, 166, 255, 0.1);
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  border-radius: 0.625rem;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.925rem;
+  font-weight: 700;
+  color: var(--color-info);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: rgba(88, 166, 255, 0.16);
+    border-color: rgba(88, 166, 255, 0.5);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.activeState {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background: rgba(63, 185, 80, 0.08);
+  border: 1px solid rgba(63, 185, 80, 0.25);
+  border-radius: 0.625rem;
+  padding: 0.75rem 1rem;
+}
+
+.bellIcon {
+  font-size: 1.1rem;
+}
+
+.activeText {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #3fb950;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  font-size: 0.775rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.15s;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.loginPrompt {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
