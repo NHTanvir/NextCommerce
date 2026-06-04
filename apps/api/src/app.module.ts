@@ -33,6 +33,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { PriceAlertsModule } from './price-alerts/price-alerts.module';
 import { BackInStockModule } from './back-in-stock/back-in-stock.module';
 import { ReferralsModule } from './referrals/referrals.module';
+import { BundlesModule } from './bundles/bundles.module';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { ReferralsModule } from './referrals/referrals.module';
     PriceAlertsModule,
     BackInStockModule,
     ReferralsModule,
+    BundlesModule,
   ],
 })
 export class AppModule {}
