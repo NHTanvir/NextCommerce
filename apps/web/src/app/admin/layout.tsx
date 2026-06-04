@@ -17,6 +17,7 @@ const ADMIN_NAV = [
   { href: '/admin/promotions', label: 'Promotions', icon: '🏷️' },
   { href: '/admin/analytics', label: 'Analytics', icon: '📈' },
   { href: '/admin/reviews', label: 'Reviews', icon: '⭐' },
+  { href: '/admin/collections', label: 'Collections', icon: '📚' },
   { href: '/admin/import', label: 'Import', icon: '📥' },
 ];
 
