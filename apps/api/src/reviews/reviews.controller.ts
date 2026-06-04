@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Query, Param, ParseUUIDPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Patch, Body, Query, Param, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ReviewsService, CreateReviewDto } from './reviews.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -48,5 +48,23 @@ export class ReviewsController {
   remove(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: UserPayload) {
     const isAdmin = user.role === 'admin';
     return this.reviewsService.deleteReview(id, user.sub, isAdmin);
+  }
+
+  @Patch(':id/vote')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Vote a review as helpful or not helpful' })
+  vote(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('isHelpful') isHelpful: boolean,
+    @CurrentUser() user: UserPayload,
+  ) {
+    return this.reviewsService.voteHelpful(id, user.sub, isHelpful);
+  }
+
+  @Get(':id/votes')
+  @ApiOperation({ summary: 'Get vote counts for a review' })
+  getVotes(@Param('id', ParseUUIDPipe) id: string) {
+    return this.reviewsService.getVoteCounts(id);
   }
 }

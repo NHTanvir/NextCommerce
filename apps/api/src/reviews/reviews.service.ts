@@ -2,6 +2,7 @@ import { Injectable, ConflictException, NotFoundException, ForbiddenException } 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Review } from './entities/review.entity';
+import { ReviewVote } from './entities/review-vote.entity';
 import { IsString, IsInt, Min, Max, MinLength } from 'class-validator';
 
 export class CreateReviewDto {
@@ -23,6 +24,7 @@ export interface RatingDistribution {
 export class ReviewsService {
   constructor(
     @InjectRepository(Review) private readonly reviewRepo: Repository<Review>,
+    @InjectRepository(ReviewVote) private readonly voteRepo: Repository<ReviewVote>,
   ) {}
 
   async create(userId: string, dto: CreateReviewDto): Promise<Review> {
@@ -85,5 +87,33 @@ export class ReviewsService {
       take: limit,
     });
     return { data, total };
+  }
+
+  async voteHelpful(reviewId: string, userId: string, isHelpful: boolean): Promise<{ helpfulCount: number; notHelpfulCount: number }> {
+    const review = await this.reviewRepo.findOne({ where: { id: reviewId } });
+    if (!review) throw new NotFoundException('Review not found.');
+
+    const existing = await this.voteRepo.findOne({ where: { reviewId, userId } });
+    if (existing) {
+      await this.voteRepo.update(existing.id, { isHelpful });
+    } else {
+      const vote = this.voteRepo.create({ reviewId, userId, isHelpful });
+      await this.voteRepo.save(vote);
+    }
+
+    return this.getVoteCounts(reviewId);
+  }
+
+  async getVoteCounts(reviewId: string): Promise<{ helpfulCount: number; notHelpfulCount: number }> {
+    const [helpfulCount, notHelpfulCount] = await Promise.all([
+      this.voteRepo.count({ where: { reviewId, isHelpful: true } }),
+      this.voteRepo.count({ where: { reviewId, isHelpful: false } }),
+    ]);
+    return { helpfulCount, notHelpfulCount };
+  }
+
+  async getUserVote(reviewId: string, userId: string): Promise<boolean | null> {
+    const vote = await this.voteRepo.findOne({ where: { reviewId, userId } });
+    return vote ? vote.isHelpful : null;
   }
 }
