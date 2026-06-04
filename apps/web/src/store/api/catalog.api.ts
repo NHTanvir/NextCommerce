@@ -61,6 +61,43 @@ export const catalogApi = apiSlice.injectEndpoints({
       query: (limit = 8) => `/catalog/trending?limit=${limit}`,
       providesTags: [{ type: 'Product', id: 'trending' }],
     }),
+
+    getProductById: build.query<ProductDto, string>({
+      query: (id) => `/catalog/products/id/${id}`,
+      providesTags: (_r, _e, id) => [{ type: 'Product' as const, id }],
+    }),
+
+    updateProduct: build.mutation<ProductDto, { id: string } & Partial<{
+      title: string;
+      description: string;
+      brand: string;
+      slug: string;
+      basePriceCents: number;
+      categoryId: string;
+      isActive: boolean;
+      images: Array<{ url: string; alt: string }>;
+    }>>({
+      query: ({ id, ...body }) => ({
+        url: `/catalog/products/${id}`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: 'Product' as const, id },
+        { type: 'Product', id: 'LIST' },
+      ],
+    }),
+
+    deactivateProduct: build.mutation<void, string>({
+      query: (id) => ({
+        url: `/catalog/products/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_r, _e, id) => [
+        { type: 'Product' as const, id },
+        { type: 'Product', id: 'LIST' },
+      ],
+    }),
   }),
 });
 
@@ -70,4 +107,7 @@ export const {
   useGetCategoriesQuery,
   useGetRelatedProductsQuery,
   useGetTrendingProductsQuery,
+  useGetProductByIdQuery,
+  useUpdateProductMutation,
+  useDeactivateProductMutation,
 } = catalogApi;
