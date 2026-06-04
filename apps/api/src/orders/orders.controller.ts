@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards, Res, StreamableFile } from '@nestjs/common';
+import type { Response } from 'express';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto, UpdateOrderStatusDto, BulkFulfillDto } from './dto/orders.dto';
@@ -59,5 +60,26 @@ export class OrdersController {
   @ApiOperation({ summary: '[Admin] List all orders with pagination' })
   findAllAdmin(@Query('page') page?: string, @Query('limit') limit?: string) {
     return this.ordersService.findAll(page ? Number(page) : 1, limit ? Number(limit) : 20);
+  }
+
+  @Get('admin/export')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Export orders as CSV' })
+  async exportCsv(
+    @Query('status') status: string | undefined,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<StreamableFile> {
+    const csv = await this.ordersService.exportToCsv(status);
+    const buffer = Buffer.from(csv, 'utf-8');
+    const filename = `orders-${new Date().toISOString().split('T')[0]}.csv`;
+
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Length': buffer.length,
+    });
+
+    return new StreamableFile(buffer);
   }
 }

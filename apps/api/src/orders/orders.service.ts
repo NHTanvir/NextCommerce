@@ -163,4 +163,50 @@ export class OrdersService {
     });
     return { data, total };
   }
+
+  async exportToCsv(status?: string): Promise<string> {
+    const where = status ? { status: status as OrderStatus } : {};
+    const orders = await this.orderRepo.find({
+      where,
+      order: { placedAt: 'DESC' },
+      relations: ['address'],
+    });
+
+    const escape = (v: string | null | undefined) => {
+      if (v == null) return '';
+      const s = String(v);
+      return s.includes(',') || s.includes('"') || s.includes('\n')
+        ? `"${s.replace(/"/g, '""')}"`
+        : s;
+    };
+
+    const header = [
+      'Order ID', 'Status', 'Total (USD)', 'Items',
+      'Tracking Number', 'Carrier',
+      'Address Line 1', 'City', 'Country', 'Postal Code',
+      'Placed At',
+    ].join(',');
+
+    const rows = orders.map((o) => {
+      const itemsSummary = (o.items ?? [])
+        .map((i) => `${i.productTitle} x${i.quantity}`)
+        .join('; ');
+      const addr = o.address;
+      return [
+        escape(o.id),
+        escape(o.status),
+        escape(((o.totalCents ?? 0) / 100).toFixed(2)),
+        escape(itemsSummary),
+        escape(o.trackingNumber),
+        escape(o.carrier),
+        escape(addr?.line1),
+        escape(addr?.city),
+        escape(addr?.country),
+        escape(addr?.postalCode),
+        escape(o.placedAt?.toISOString()),
+      ].join(',');
+    });
+
+    return [header, ...rows].join('\n');
+  }
 }
