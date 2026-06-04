@@ -31,6 +31,11 @@ export interface AdminReviewsResponse {
   total: number;
 }
 
+export interface ReviewVoteCounts {
+  helpfulCount: number;
+  notHelpfulCount: number;
+}
+
 export const reviewsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getReviews: build.query<ReviewDto[], string>({
@@ -64,6 +69,22 @@ export const reviewsApi = apiSlice.injectEndpoints({
         { type: 'Review' as const, id: 'ADMIN_LIST' },
       ],
     }),
+
+    getReviewVotes: build.query<ReviewVoteCounts, string>({
+      query: (reviewId) => `/reviews/${reviewId}/votes`,
+      providesTags: (_r, _e, reviewId) => [{ type: 'Review' as const, id: `votes-${reviewId}` }],
+    }),
+
+    voteReview: build.mutation<ReviewVoteCounts, { reviewId: string; isHelpful: boolean }>({
+      query: ({ reviewId, isHelpful }) => ({
+        url: `/reviews/${reviewId}/vote`,
+        method: 'PATCH',
+        body: { isHelpful },
+      }),
+      invalidatesTags: (_r, _e, { reviewId }) => [
+        { type: 'Review' as const, id: `votes-${reviewId}` },
+      ],
+    }),
   }),
 });
 
@@ -73,4 +94,6 @@ export const {
   useGetAdminReviewsQuery,
   useCreateReviewMutation,
   useDeleteReviewMutation,
+  useGetReviewVotesQuery,
+  useVoteReviewMutation,
 } = reviewsApi;
