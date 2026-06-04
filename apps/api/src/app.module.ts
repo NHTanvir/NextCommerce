@@ -34,6 +34,7 @@ import { PriceAlertsModule } from './price-alerts/price-alerts.module';
 import { BackInStockModule } from './back-in-stock/back-in-stock.module';
 import { ReferralsModule } from './referrals/referrals.module';
 import { BundlesModule } from './bundles/bundles.module';
+import { ProductSpecsModule } from './product-specs/product-specs.module';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { BundlesModule } from './bundles/bundles.module';
     BackInStockModule,
     ReferralsModule,
     BundlesModule,
+    ProductSpecsModule,
   ],
 })
 export class AppModule {}
