@@ -28,6 +28,7 @@ import { NotificationPreferencesModule } from './notification-preferences/notifi
 import { LoyaltyModule } from './loyalty/loyalty.module';
 import { GiftCardsModule } from './gift-cards/gift-cards.module';
 import { CollectionsModule } from './collections/collections.module';
+import { QnaModule } from './qna/qna.module';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { CollectionsModule } from './collections/collections.module';
     LoyaltyModule,
     GiftCardsModule,
     CollectionsModule,
+    QnaModule,
   ],
 })
 export class AppModule {}
