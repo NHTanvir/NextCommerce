@@ -48,4 +48,25 @@ export class NewsletterService {
   async getActiveCount(): Promise<number> {
     return this.subRepo.count({ where: { isActive: true } });
   }
+
+  async findAll(page = 1, limit = 50): Promise<{ data: NewsletterSubscription[]; total: number; activeCount: number }> {
+    const [data, total] = await this.subRepo.findAndCount({
+      order: { subscribedAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    const activeCount = await this.subRepo.count({ where: { isActive: true } });
+    return { data, total, activeCount };
+  }
+
+  async exportEmails(): Promise<string> {
+    const subs = await this.subRepo.find({
+      where: { isActive: true },
+      order: { subscribedAt: 'ASC' },
+      select: ['email', 'subscribedAt'],
+    });
+    const header = 'Email,Subscribed At';
+    const rows = subs.map((s) => `${s.email},${s.subscribedAt.toISOString()}`);
+    return [header, ...rows].join('\n');
+  }
 }
