@@ -29,6 +29,7 @@ import { LoyaltyModule } from './loyalty/loyalty.module';
 import { GiftCardsModule } from './gift-cards/gift-cards.module';
 import { CollectionsModule } from './collections/collections.module';
 import { QnaModule } from './qna/qna.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { QnaModule } from './qna/qna.module';
     GiftCardsModule,
     CollectionsModule,
     QnaModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}
