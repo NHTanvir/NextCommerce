@@ -3,6 +3,7 @@ import { cartReducer } from './slices/cart.slice';
 import { authReducer } from './slices/auth.slice';
 import wishlistReducer from './slices/wishlist.slice';
 import compareReducer from './slices/compare.slice';
+import recentlyViewedReducer from './slices/recentlyViewed.slice';
 import { apiSlice } from './api.slice';
 
 export const store = configureStore({
@@ -11,6 +12,7 @@ export const store = configureStore({
     auth: authReducer,
     wishlist: wishlistReducer,
     compare: compareReducer,
+    recentlyViewed: recentlyViewedReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
