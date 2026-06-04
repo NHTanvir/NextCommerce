@@ -32,6 +32,7 @@ import { QnaModule } from './qna/qna.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PriceAlertsModule } from './price-alerts/price-alerts.module';
 import { BackInStockModule } from './back-in-stock/back-in-stock.module';
+import { ReferralsModule } from './referrals/referrals.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { BackInStockModule } from './back-in-stock/back-in-stock.module';
     NotificationsModule,
     PriceAlertsModule,
     BackInStockModule,
+    ReferralsModule,
   ],
 })
 export class AppModule {}
