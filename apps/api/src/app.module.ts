@@ -30,6 +30,7 @@ import { GiftCardsModule } from './gift-cards/gift-cards.module';
 import { CollectionsModule } from './collections/collections.module';
 import { QnaModule } from './qna/qna.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { PriceAlertsModule } from './price-alerts/price-alerts.module';
 
 @Module({
   imports: [
@@ -88,6 +89,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     CollectionsModule,
     QnaModule,
     NotificationsModule,
+    PriceAlertsModule,
   ],
 })
 export class AppModule {}
