@@ -1,0 +1,253 @@
+.section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.count {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.loading,
+.empty {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.questionCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.questionHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.questionIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-info);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.questionBody {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.questionActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.questionDate {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  transition: color 0.1s, background 0.1s;
+
+  &:hover {
+    color: var(--color-accent);
+    background: rgba(233, 69, 96, 0.08);
+  }
+}
+
+/* Answers */
+.answer {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem 0.75rem 3.25rem;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.answerAdmin {
+  background: rgba(88, 166, 255, 0.04);
+  border-color: rgba(88, 166, 255, 0.15);
+}
+
+.answerIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-success);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.answerContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.adminBadge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-info);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.answerBody {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.answerDate {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+/* Reply section */
+.replySection {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.replyBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.replyForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.replyButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Ask form */
+.askForm {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.askTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.textarea {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  resize: vertical;
+  font-family: inherit;
+  width: 100%;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
+}
+
+.successMsg {
+  color: #3fb950;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: rgba(63, 185, 80, 0.08);
+  border: 1px solid rgba(63, 185, 80, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  margin: 0;
+}
+
+.loginPrompt {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin: 0;
+
+  a {
+    color: var(--color-accent);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
