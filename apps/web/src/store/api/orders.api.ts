@@ -41,6 +41,11 @@ export const ordersApi = apiSlice.injectEndpoints({
       query: ({ page = 1, limit = 20 } = {}) => `/orders/admin/all?page=${page}&limit=${limit}`,
       providesTags: ['Order'],
     }),
+
+    getOrdersForUser: build.query<OrderDto[], string>({
+      query: (userId) => `/orders/admin/user/${userId}`,
+      providesTags: (_r, _e, userId) => [{ type: 'Order' as const, id: `user-${userId}` }],
+    }),
   }),
 });
 
@@ -51,4 +56,5 @@ export const {
   useUpdateOrderStatusMutation,
   useBulkFulfillOrdersMutation,
   useGetAdminOrdersQuery,
+  useGetOrdersForUserQuery,
 } = ordersApi;

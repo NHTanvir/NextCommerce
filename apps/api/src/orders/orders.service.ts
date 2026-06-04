@@ -155,6 +155,13 @@ export class OrdersService {
     return { success, errors };
   }
 
+  async findAllByUser(userId: string): Promise<Order[]> {
+    return this.orderRepo.find({
+      where: { userId },
+      order: { placedAt: 'DESC' },
+    });
+  }
+
   async findAll(page = 1, limit = 20): Promise<{ data: Order[]; total: number }> {
     const [data, total] = await this.orderRepo.findAndCount({
       order: { placedAt: 'DESC' },

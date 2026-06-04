@@ -62,6 +62,14 @@ export class OrdersController {
     return this.ordersService.findAll(page ? Number(page) : 1, limit ? Number(limit) : 20);
   }
 
+  @Get('admin/user/:userId')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get all orders for a specific user' })
+  findByUserAdmin(@Param('userId') userId: string) {
+    return this.ordersService.findAllByUser(userId);
+  }
+
   @Get('admin/export')
   @UseGuards(RolesGuard)
   @Roles('admin')
