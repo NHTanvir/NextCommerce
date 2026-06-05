@@ -24,6 +24,7 @@ import ReferralsScreen from '@/screens/ReferralsScreen';
 import RequestReturnScreen from '@/screens/RequestReturnScreen';
 import OrderFeedbackScreen from '@/screens/OrderFeedbackScreen';
 import ProductReviewsScreen from '@/screens/ProductReviewsScreen';
+import SizeGuideScreen from '@/screens/SizeGuideScreen';
 import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
 
 const ShopStack = createNativeStackNavigator<ShopStackParamList>();
@@ -46,6 +47,7 @@ function ShopNavigator() {
       <ShopStack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product' }} />
       <ShopStack.Screen name="Search" component={SearchScreen} options={{ title: 'Search' }} />
       <ShopStack.Screen name="ProductReviews" component={ProductReviewsScreen} options={{ title: 'Reviews' }} />
+      <ShopStack.Screen name="SizeGuide" component={SizeGuideScreen} options={{ title: 'Size Guide' }} />
     </ShopStack.Navigator>
   );
 }

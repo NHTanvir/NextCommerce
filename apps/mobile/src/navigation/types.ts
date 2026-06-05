@@ -26,6 +26,7 @@ export type ShopStackParamList = {
   ProductList: undefined;
   ProductDetail: { slug: string };
   ProductReviews: { productId: string; productTitle?: string };
+  SizeGuide: undefined;
   Search: undefined;
 };
 

@@ -138,6 +138,15 @@ export function ProductDetailScreen() {
           </TouchableOpacity>
 
 
+          {/* Size guide link */}
+          <TouchableOpacity
+            style={styles.sizeGuideLink}
+            onPress={() => nav.navigate('SizeGuide')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.sizeGuideLinkText}>📏 Size Guide</Text>
+          </TouchableOpacity>
+
           {/* Colors */}
           {uniqueColors.length > 0 && (
             <View style={styles.variantSection}>
@@ -298,4 +307,15 @@ const styles = StyleSheet.create({
   ratingStarFilled: { color: '#f59e0b' },
   ratingText: { flex: 1, fontSize: 13, color: COLORS.muted },
   ratingArrow: { fontSize: 20, color: COLORS.muted },
+
+  sizeGuideLink: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.card,
+  },
+  sizeGuideLinkText: { fontSize: 13, color: COLORS.muted, fontWeight: '600' },
 });
