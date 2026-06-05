@@ -26,6 +26,7 @@ import OrderFeedbackScreen from '@/screens/OrderFeedbackScreen';
 import ProductReviewsScreen from '@/screens/ProductReviewsScreen';
 import SizeGuideScreen from '@/screens/SizeGuideScreen';
 import StoreLocatorScreen from '@/screens/StoreLocatorScreen';
+import TrendingScreen from '@/screens/TrendingScreen';
 import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
 
 const ShopStack = createNativeStackNavigator<ShopStackParamList>();
@@ -50,6 +51,7 @@ function ShopNavigator() {
       <ShopStack.Screen name="ProductReviews" component={ProductReviewsScreen} options={{ title: 'Reviews' }} />
       <ShopStack.Screen name="SizeGuide" component={SizeGuideScreen} options={{ title: 'Size Guide' }} />
       <ShopStack.Screen name="StoreLocator" component={StoreLocatorScreen} options={{ title: 'Find a Store' }} />
+      <ShopStack.Screen name="Trending" component={TrendingScreen} options={{ title: 'Trending' }} />
     </ShopStack.Navigator>
   );
 }

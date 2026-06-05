@@ -28,6 +28,7 @@ export type ShopStackParamList = {
   ProductReviews: { productId: string; productTitle?: string };
   SizeGuide: undefined;
   StoreLocator: undefined;
+  Trending: undefined;
   Search: undefined;
 };
 
