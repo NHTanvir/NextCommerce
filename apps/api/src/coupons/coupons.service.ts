@@ -82,4 +82,51 @@ export class CouponsService {
     coupon.isActive = false;
     return this.couponRepo.save(coupon);
   }
+
+  async bulkGenerate(dto: BulkGenerateCouponsDto): Promise<Coupon[]> {
+    const coupons: Coupon[] = [];
+    const prefix = dto.prefix?.toUpperCase() ?? 'BULK';
+    for (let i = 0; i < dto.count; i++) {
+      const suffix = Math.random().toString(36).slice(2, 8).toUpperCase();
+      const code = `${prefix}-${suffix}`;
+      coupons.push(
+        this.couponRepo.create({
+          code,
+          discountType: dto.discountType,
+          discountValue: dto.discountValue,
+          minOrderCents: dto.minOrderCents ?? null,
+          maxUsageCount: dto.maxUsagePerCode ?? 1,
+          expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
+          isActive: true,
+        }),
+      );
+    }
+    return this.couponRepo.save(coupons);
+  }
+
+  async getStats(): Promise<{
+    total: number;
+    active: number;
+    expired: number;
+    totalRedemptions: number;
+    topCoupons: { code: string; usageCount: number }[];
+  }> {
+    const all = await this.couponRepo.find({ order: { usageCount: 'DESC' } });
+    const now = new Date();
+    const active = all.filter((c) => c.isActive && (!c.expiresAt || c.expiresAt > now)).length;
+    const expired = all.filter((c) => c.expiresAt && c.expiresAt <= now).length;
+    const totalRedemptions = all.reduce((s, c) => s + (c.usageCount ?? 0), 0);
+    const topCoupons = all.slice(0, 5).map((c) => ({ code: c.code, usageCount: c.usageCount ?? 0 }));
+    return { total: all.length, active, expired, totalRedemptions, topCoupons };
+  }
+}
+
+export interface BulkGenerateCouponsDto {
+  count: number;
+  prefix?: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  minOrderCents?: number;
+  maxUsagePerCode?: number;
+  expiresAt?: string;
 }
