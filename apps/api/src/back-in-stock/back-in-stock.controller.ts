@@ -5,6 +5,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   HttpCode,
   HttpStatus,
@@ -13,6 +14,8 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { IsUUID } from 'class-validator';
 import { BackInStockService } from './back-in-stock.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { UserPayload } from '@nextcommerce/shared';
 
@@ -60,5 +63,13 @@ export class BackInStockController {
     @Param('variantId') variantId: string,
   ) {
     return this.service.unsubscribe(user.sub, variantId);
+  }
+
+  @Get('admin/all')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] List all back-in-stock subscriptions' })
+  findAll(@Query('page') page?: string, @Query('limit') limit?: string) {
+    return this.service.findAll(page ? Number(page) : 1, limit ? Number(limit) : 30);
   }
 }

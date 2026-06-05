@@ -65,4 +65,14 @@ export class BackInStockService {
   async countPending(variantId: string): Promise<number> {
     return this.repo.count({ where: { variantId, notified: false } });
   }
+
+  async findAll(page = 1, limit = 30): Promise<{ data: BackInStockSubscription[]; total: number; pendingCount: number }> {
+    const [data, total] = await this.repo.findAndCount({
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    const pendingCount = await this.repo.count({ where: { notified: false } });
+    return { data, total, pendingCount };
+  }
 }

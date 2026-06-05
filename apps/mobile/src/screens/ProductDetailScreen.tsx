@@ -13,10 +13,12 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp, NativeStackRouteProp } from '@react-navigation/native-stack';
 import type { ProductDto } from '@nextcommerce/shared';
 import { fetchProduct } from '@/api/catalog';
-import type { RootStackParamList } from '@/navigation/types';
+import type { ShopStackParamList } from '@/navigation/types';
 
-type Route = NativeStackRouteProp<RootStackParamList, 'ProductDetail'>;
-type Nav = NativeStackNavigationProp<RootStackParamList, 'ProductDetail'>;
+const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
+
+type Route = NativeStackRouteProp<ShopStackParamList, 'ProductDetail'>;
+type Nav = NativeStackNavigationProp<ShopStackParamList, 'ProductDetail'>;
 
 const COLORS = {
   bg: '#0d1117',
@@ -37,10 +39,24 @@ export function ProductDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
+  const [avgRating, setAvgRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
 
   useEffect(() => {
     fetchProduct(slug)
-      .then((p) => { setProduct(p); setLoading(false); })
+      .then((p) => {
+        setProduct(p);
+        setLoading(false);
+        fetch(`${API_URL}/reviews?productId=${p.id}`)
+          .then((r) => r.json())
+          .then((reviews: Array<{ rating: number }>) => {
+            if (Array.isArray(reviews) && reviews.length > 0) {
+              setReviewCount(reviews.length);
+              setAvgRating(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length);
+            }
+          })
+          .catch(() => {});
+      })
       .catch(() => setLoading(false));
   }, [slug]);
 
@@ -96,6 +112,31 @@ export function ProductDetailScreen() {
           {product.description && (
             <Text style={styles.description}>{product.description}</Text>
           )}
+
+          {/* Ratings row */}
+          <TouchableOpacity
+            style={styles.ratingsRow}
+            onPress={() => product && nav.navigate('ProductReviews', {
+              productId: product.id,
+              productTitle: product.title,
+            })}
+            activeOpacity={0.7}
+          >
+            <View style={styles.starsRow}>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <Text key={n} style={[styles.ratingStar, n <= Math.round(avgRating) && styles.ratingStarFilled]}>
+                  ★
+                </Text>
+              ))}
+            </View>
+            <Text style={styles.ratingText}>
+              {reviewCount > 0
+                ? `${avgRating.toFixed(1)} · ${reviewCount} review${reviewCount !== 1 ? 's' : ''}`
+                : 'No reviews yet'}
+            </Text>
+            <Text style={styles.ratingArrow}>›</Text>
+          </TouchableOpacity>
+
 
           {/* Colors */}
           {uniqueColors.length > 0 && (
@@ -241,4 +282,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addBtnText: { color: '#fff', fontSize: 16, fontWeight: '800' },
+
+  ratingsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.card,
+    borderRadius: 10,
+    padding: 12,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  starsRow: { flexDirection: 'row', gap: 2 },
+  ratingStar: { fontSize: 14, color: COLORS.border },
+  ratingStarFilled: { color: '#f59e0b' },
+  ratingText: { flex: 1, fontSize: 13, color: COLORS.muted },
+  ratingArrow: { fontSize: 20, color: COLORS.muted },
 });
