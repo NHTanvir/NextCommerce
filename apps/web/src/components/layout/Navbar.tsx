@@ -13,7 +13,8 @@ const NAV_LINKS = [
   { href: '/products', label: 'Shop' },
   { href: '/products?category=running', label: 'Running' },
   { href: '/products?category=lifestyle', label: 'Lifestyle' },
-  { href: '/products?category=basketball', label: 'Basketball' },
+  { href: '/collections', label: 'Collections' },
+  { href: '/bundles', label: 'Deals' },
 ];
 
 export function Navbar() {
@@ -95,11 +96,17 @@ export function Navbar() {
               </button>
               {dropdownOpen && (
                 <div className={styles.dropdown} role="menu">
-                  <Link href="/account/orders" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
-                    My Orders
+                  <Link href="/account" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+                    My Account
                   </Link>
-                  <Link href="/account/profile" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
-                    Profile
+                  <Link href="/account/orders" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+                    Orders
+                  </Link>
+                  <Link href="/wishlist" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+                    Wishlist
+                  </Link>
+                  <Link href="/account/loyalty" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+                    Loyalty Points
                   </Link>
                   {user.role === 'admin' && (
                     <>
