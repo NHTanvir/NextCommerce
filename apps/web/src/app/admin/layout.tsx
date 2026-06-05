@@ -18,6 +18,12 @@ const ADMIN_NAV = [
   { href: '/admin/analytics', label: 'Analytics', icon: '📈' },
   { href: '/admin/reviews', label: 'Reviews', icon: '⭐' },
   { href: '/admin/collections', label: 'Collections', icon: '📚' },
+  { href: '/admin/bundles', label: 'Bundles', icon: '🎁' },
+  { href: '/admin/loyalty', label: 'Loyalty', icon: '⭐' },
+  { href: '/admin/newsletter', label: 'Newsletter', icon: '📧' },
+  { href: '/admin/qna', label: 'Q&A', icon: '💬' },
+  { href: '/admin/stock-alerts', label: 'Stock Alerts', icon: '🔔' },
+  { href: '/admin/audit', label: 'Audit Log', icon: '🔍' },
   { href: '/admin/import', label: 'Import', icon: '📥' },
 ];
 
