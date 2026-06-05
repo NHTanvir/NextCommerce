@@ -28,6 +28,7 @@ import SizeGuideScreen from '@/screens/SizeGuideScreen';
 import StoreLocatorScreen from '@/screens/StoreLocatorScreen';
 import TrendingScreen from '@/screens/TrendingScreen';
 import HelpScreen from '@/screens/HelpScreen';
+import AddressBookScreen from '@/screens/AddressBookScreen';
 import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
 
 const ShopStack = createNativeStackNavigator<ShopStackParamList>();
@@ -83,6 +84,7 @@ function AccountNavigator() {
       <AccountStack.Screen name="RequestReturn" component={RequestReturnScreen} options={{ title: 'Request Return' }} />
       <AccountStack.Screen name="StoreLocator" component={StoreLocatorScreen} options={{ title: 'Find a Store' }} />
       <AccountStack.Screen name="Help" component={HelpScreen} options={{ title: 'Help Center' }} />
+      <AccountStack.Screen name="AddressBook" component={AddressBookScreen} options={{ title: 'My Addresses' }} />
     </AccountStack.Navigator>
   );
 }

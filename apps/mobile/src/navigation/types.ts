@@ -52,6 +52,7 @@ export type AccountStackParamList = {
   RequestReturn: { orderId: string };
   StoreLocator: undefined;
   Help: undefined;
+  AddressBook: undefined;
 };
 
 export type WishlistStackParamList = {

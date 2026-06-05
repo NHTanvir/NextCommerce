@@ -46,6 +46,11 @@ export function ProfileScreen() {
       onPress: () => Alert.alert('Navigate', 'Go to Orders tab'),
     },
     {
+      icon: '📍',
+      label: 'Saved Addresses',
+      onPress: () => navigation.navigate('AddressBook'),
+    },
+    {
       icon: '⭐',
       label: 'Loyalty Rewards',
       onPress: () => navigation.navigate('Loyalty'),
