@@ -45,4 +45,23 @@ export class AnalyticsController {
   getNewCustomers(@Query('days', new DefaultValuePipe(30), ParseIntPipe) days: number) {
     return this.analyticsService.getNewCustomersByDay(Math.min(days, 365));
   }
+
+  @Get('repeat-customers')
+  @ApiOperation({ summary: 'Get repeat customer rate and average orders per customer' })
+  getRepeatCustomerRate() {
+    return this.analyticsService.getRepeatCustomerRate();
+  }
+
+  @Get('revenue-by-category')
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiOperation({ summary: 'Get revenue broken down by product category' })
+  getRevenueByCategory(@Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number) {
+    return this.analyticsService.getRevenueByCategory(Math.min(limit, 50));
+  }
+
+  @Get('hourly-distribution')
+  @ApiOperation({ summary: 'Get order volume and revenue by hour of day' })
+  getHourlySalesDistribution() {
+    return this.analyticsService.getHourlySalesDistribution();
+  }
 }

@@ -134,4 +134,72 @@ export class AnalyticsService {
       newCustomers: parseInt(r.newCustomers, 10),
     }));
   }
+
+  async getRepeatCustomerRate(): Promise<{
+    totalCustomers: number;
+    repeatCustomers: number;
+    repeatRate: number;
+    avgOrdersPerCustomer: number;
+  }> {
+    const rows = await this.orderRepo
+      .createQueryBuilder('o')
+      .select('o.userId', 'userId')
+      .addSelect('COUNT(o.id)', 'orderCount')
+      .where("o.status NOT IN ('cancelled', 'refunded')")
+      .groupBy('o.userId')
+      .getRawMany<{ userId: string; orderCount: string }>();
+
+    const totalCustomers = rows.length;
+    const repeatCustomers = rows.filter((r) => parseInt(r.orderCount, 10) > 1).length;
+    const totalOrders = rows.reduce((sum, r) => sum + parseInt(r.orderCount, 10), 0);
+
+    return {
+      totalCustomers,
+      repeatCustomers,
+      repeatRate: totalCustomers > 0 ? Math.round((repeatCustomers / totalCustomers) * 100) : 0,
+      avgOrdersPerCustomer: totalCustomers > 0
+        ? Math.round((totalOrders / totalCustomers) * 10) / 10
+        : 0,
+    };
+  }
+
+  async getRevenueByCategory(limit = 10): Promise<{ categoryName: string; totalCents: number; orderCount: number }[]> {
+    const rows = await this.orderRepo
+      .createQueryBuilder('o')
+      .innerJoin('o.items', 'item')
+      .innerJoin('catalog_product', 'p', 'p.id = item.productId')
+      .innerJoin('catalog_category', 'cat', 'cat.id = p.categoryId')
+      .select('cat.name', 'categoryName')
+      .addSelect('SUM(item.quantity * item.unitPriceCents)', 'totalCents')
+      .addSelect('COUNT(DISTINCT o.id)', 'orderCount')
+      .where("o.status NOT IN ('cancelled', 'refunded')")
+      .groupBy('cat.name')
+      .orderBy('SUM(item.quantity * item.unitPriceCents)', 'DESC')
+      .limit(limit)
+      .getRawMany<{ categoryName: string; totalCents: string; orderCount: string }>();
+
+    return rows.map((r) => ({
+      categoryName: r.categoryName,
+      totalCents: parseInt(r.totalCents ?? '0', 10),
+      orderCount: parseInt(r.orderCount, 10),
+    }));
+  }
+
+  async getHourlySalesDistribution(): Promise<{ hour: number; orderCount: number; totalCents: number }[]> {
+    const rows = await this.orderRepo
+      .createQueryBuilder('o')
+      .select('HOUR(o.placedAt)', 'hour')
+      .addSelect('COUNT(o.id)', 'orderCount')
+      .addSelect('SUM(o.totalCents)', 'totalCents')
+      .where("o.status NOT IN ('cancelled', 'refunded')")
+      .groupBy('HOUR(o.placedAt)')
+      .orderBy('HOUR(o.placedAt)', 'ASC')
+      .getRawMany<{ hour: string; orderCount: string; totalCents: string }>();
+
+    return rows.map((r) => ({
+      hour: parseInt(r.hour, 10),
+      orderCount: parseInt(r.orderCount, 10),
+      totalCents: parseInt(r.totalCents ?? '0', 10),
+    }));
+  }
 }

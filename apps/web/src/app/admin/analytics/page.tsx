@@ -5,6 +5,9 @@ import {
   useGetDashboardSummaryQuery,
   useGetRevenueByDayQuery,
   useGetTopProductsQuery,
+  useGetRepeatCustomerRateQuery,
+  useGetRevenueByCatQuery,
+  useGetHourlyDistributionQuery,
 } from '@/store/api/analytics.api';
 import styles from './analytics.module.scss';
 
@@ -17,8 +20,13 @@ export default function AdminAnalyticsPage() {
   const { data: summary } = useGetDashboardSummaryQuery();
   const { data: revenue = [] } = useGetRevenueByDayQuery(days);
   const { data: topProducts = [] } = useGetTopProductsQuery(10);
+  const { data: repeatRate } = useGetRepeatCustomerRateQuery();
+  const { data: revByCat = [] } = useGetRevenueByCatQuery(8);
+  const { data: hourly = [] } = useGetHourlyDistributionQuery();
 
   const maxRevenue = Math.max(...revenue.map((r) => r.totalCents), 1);
+  const maxCatRevenue = Math.max(...revByCat.map((r) => r.totalCents), 1);
+  const maxHourlyOrders = Math.max(...hourly.map((h) => h.orderCount), 1);
 
   const SUMMARY_CARDS = summary
     ? [
@@ -109,6 +117,83 @@ export default function AdminAnalyticsPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Customer retention */}
+      {repeatRate && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Customer Retention</h2>
+          <div className={styles.retentionGrid}>
+            <div className={styles.retentionCard}>
+              <span className={styles.retentionVal} style={{ color: '#3fb950' }}>
+                {repeatRate.repeatRate}%
+              </span>
+              <span className={styles.retentionLabel}>Repeat Customer Rate</span>
+            </div>
+            <div className={styles.retentionCard}>
+              <span className={styles.retentionVal} style={{ color: '#58a6ff' }}>
+                {repeatRate.repeatCustomers.toLocaleString()}
+              </span>
+              <span className={styles.retentionLabel}>Repeat Customers</span>
+            </div>
+            <div className={styles.retentionCard}>
+              <span className={styles.retentionVal} style={{ color: '#8957e5' }}>
+                {repeatRate.avgOrdersPerCustomer}x
+              </span>
+              <span className={styles.retentionLabel}>Avg Orders / Customer</span>
+            </div>
+            <div className={styles.retentionCard}>
+              <span className={styles.retentionVal} style={{ color: '#f59e0b' }}>
+                {repeatRate.totalCustomers.toLocaleString()}
+              </span>
+              <span className={styles.retentionLabel}>Total Ordering Customers</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Revenue by category */}
+      {revByCat.length > 0 && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Revenue by Category</h2>
+          <div className={styles.catBars}>
+            {revByCat.map((cat) => (
+              <div key={cat.categoryName} className={styles.catBarRow}>
+                <span className={styles.catName}>{cat.categoryName}</span>
+                <div className={styles.catBarTrack}>
+                  <div
+                    className={styles.catBarFill}
+                    style={{ width: `${(cat.totalCents / maxCatRevenue) * 100}%` }}
+                  />
+                </div>
+                <span className={styles.catRevenue}>{formatCents(cat.totalCents)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Hourly distribution */}
+      {hourly.length > 0 && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Orders by Hour of Day</h2>
+          <div className={styles.hourlyChart}>
+            {Array.from({ length: 24 }, (_, h) => {
+              const row = hourly.find((r) => r.hour === h);
+              const height = row ? Math.max(4, (row.orderCount / maxHourlyOrders) * 120) : 4;
+              return (
+                <div key={h} className={styles.hourBar}>
+                  <div
+                    className={styles.hourBarFill}
+                    style={{ height }}
+                    title={row ? `${h}:00 — ${row.orderCount} orders` : `${h}:00 — no orders`}
+                  />
+                  {h % 4 === 0 && <span className={styles.hourLabel}>{h}h</span>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

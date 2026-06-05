@@ -20,6 +20,25 @@ export interface TopProduct {
   totalRevenueCents: number;
 }
 
+export interface RepeatCustomerRate {
+  totalCustomers: number;
+  repeatCustomers: number;
+  repeatRate: number;
+  avgOrdersPerCustomer: number;
+}
+
+export interface RevenueByCat {
+  categoryName: string;
+  totalCents: number;
+  orderCount: number;
+}
+
+export interface HourlyDistribution {
+  hour: number;
+  orderCount: number;
+  totalCents: number;
+}
+
 export const analyticsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getDashboardSummary: build.query<DashboardSummary, void>({
@@ -33,6 +52,18 @@ export const analyticsApi = apiSlice.injectEndpoints({
     getTopProducts: build.query<TopProduct[], number | void>({
       query: (limit = 10) => `/analytics/top-products?limit=${limit}`,
     }),
+
+    getRepeatCustomerRate: build.query<RepeatCustomerRate, void>({
+      query: () => '/analytics/repeat-customers',
+    }),
+
+    getRevenueByCat: build.query<RevenueByCat[], number | void>({
+      query: (limit = 10) => `/analytics/revenue-by-category?limit=${limit}`,
+    }),
+
+    getHourlyDistribution: build.query<HourlyDistribution[], void>({
+      query: () => '/analytics/hourly-distribution',
+    }),
   }),
 });
 
@@ -40,4 +71,7 @@ export const {
   useGetDashboardSummaryQuery,
   useGetRevenueByDayQuery,
   useGetTopProductsQuery,
+  useGetRepeatCustomerRateQuery,
+  useGetRevenueByCatQuery,
+  useGetHourlyDistributionQuery,
 } = analyticsApi;
