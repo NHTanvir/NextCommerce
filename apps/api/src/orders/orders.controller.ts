@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
+import { Public } from '../common/decorators/public.decorator';
 import { UserPayload } from '@nextcommerce/shared';
 
 @ApiTags('orders')
@@ -32,6 +33,13 @@ export class OrdersController {
   @ApiOperation({ summary: 'Get single order' })
   findOne(@Param('id') id: string, @CurrentUser() user: UserPayload) {
     return this.ordersService.findOne(id);
+  }
+
+  @Get(':id/public')
+  @Public()
+  @ApiOperation({ summary: 'Public order status lookup (limited data)' })
+  findPublic(@Param('id') id: string) {
+    return this.ordersService.findPublic(id);
   }
 
   @Patch(':id/status')

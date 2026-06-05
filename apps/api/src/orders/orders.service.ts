@@ -102,6 +102,24 @@ export class OrdersService {
     return order;
   }
 
+  async findPublic(id: string) {
+    const order = await this.orderRepo.findOne({ where: { id } });
+    if (!order) throw new NotFoundException('Order not found');
+    return {
+      id: order.id,
+      status: order.status,
+      carrier: order.carrier,
+      trackingNumber: order.trackingNumber,
+      estimatedDelivery: order.estimatedDelivery,
+      placedAt: order.placedAt,
+      totalCents: order.totalCents,
+      items: (order.items ?? []).map((i: any) => ({
+        productTitle: i.productTitle ?? i.title ?? '',
+        quantity: i.quantity,
+      })),
+    };
+  }
+
   async updateStatus(
     id: string,
     newStatus: OrderStatus,
