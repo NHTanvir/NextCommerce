@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Patch,
   Delete,
   Body,
   Param,
@@ -13,6 +14,8 @@ import {
   Req,
   BadRequestException,
 } from '@nestjs/common';
+import { IsArray, IsBoolean, IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 import {
   ApiTags,
   ApiOperation,
@@ -30,6 +33,21 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
+
+class PriceUpdateItem {
+  @IsUUID() productId: string;
+  @IsInt() @Min(1) basePriceCents: number;
+}
+
+class BulkPriceUpdateDto {
+  @IsArray() @ValidateNested({ each: true }) @Type(() => PriceUpdateItem)
+  updates: PriceUpdateItem[];
+}
+
+class BulkActivateDto {
+  @IsArray() productIds: string[];
+  @IsBoolean() isActive: boolean;
+}
 
 @ApiTags('catalog')
 @Controller('catalog')
@@ -107,6 +125,24 @@ export class CatalogController {
   @ApiOperation({ summary: 'Get trending products' })
   getTrending(@Query('limit') limit?: string) {
     return this.recommendationsService.getTrending(limit ? parseInt(limit, 10) : 8);
+  }
+
+  @Patch('products/bulk-price')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Bulk update product base prices' })
+  bulkUpdatePrices(@Body() dto: BulkPriceUpdateDto) {
+    return this.catalogService.bulkUpdatePrices(dto.updates);
+  }
+
+  @Patch('products/bulk-activate')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Bulk activate or deactivate products' })
+  bulkActivate(@Body() dto: BulkActivateDto) {
+    return this.catalogService.bulkActivate(dto.productIds, dto.isActive);
   }
 
   @Post('import')

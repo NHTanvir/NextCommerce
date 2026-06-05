@@ -137,6 +137,40 @@ export class CatalogService {
     await this.variantRepo.increment({ id: variantId }, 'stockQty', qty);
   }
 
+  async bulkUpdatePrices(
+    updates: { productId: string; basePriceCents: number }[],
+  ): Promise<{ updated: number; errors: string[] }> {
+    let updated = 0;
+    const errors: string[] = [];
+
+    for (const { productId, basePriceCents } of updates) {
+      try {
+        const product = await this.productRepo.findOne({ where: { id: productId } });
+        if (!product) {
+          errors.push(`${productId}: not found`);
+          continue;
+        }
+        await this.productRepo.update(productId, { basePriceCents });
+        updated++;
+      } catch (err: any) {
+        errors.push(`${productId}: ${err.message}`);
+      }
+    }
+
+    return { updated, errors };
+  }
+
+  async bulkActivate(productIds: string[], isActive: boolean): Promise<{ updated: number }> {
+    if (!productIds.length) return { updated: 0 };
+    const result = await this.productRepo
+      .createQueryBuilder()
+      .update()
+      .set({ isActive })
+      .whereInIds(productIds)
+      .execute();
+    return { updated: result.affected ?? 0 };
+  }
+
   private toDto(p: Product) {
     return {
       id: p.id,
