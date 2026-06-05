@@ -259,6 +259,168 @@
   }
 }
 
+/* Features bar */
+.featuresBar {
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  padding-block: 1.5rem;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.featureIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.featureTitle {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.featureDesc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Collections */
+.collectionsSection {
+  padding-block: 4rem;
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+}
+
+.collectionsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.collectionCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  text-decoration: none;
+  transition: border-color var(--transition), transform var(--transition);
+  border-left: 3px solid var(--col-color, var(--color-accent));
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--col-color, var(--color-accent));
+  }
+}
+
+.collectionEmoji { font-size: 2rem; flex-shrink: 0; }
+
+.collectionBody { flex: 1; }
+
+.collectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.collectionDesc {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.collectionArrow {
+  color: var(--color-text-muted);
+  font-size: 1.125rem;
+}
+
+/* Featured grid */
+.featuredGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+
+  @media (max-width: 1100px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.featuredCard {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color var(--transition), transform var(--transition);
+
+  &:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+}
+
+.featuredCardImg {
+  aspect-ratio: 1 / 1;
+  background: var(--color-bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+}
+
+.featuredCardBody {
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.featuredCardBrand {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.featuredCardTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.featuredCardPrice {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-accent);
+  margin: 0;
+}
+
 /* Brand strip */
 .brandsSection {
   padding-block: 3rem;
@@ -282,6 +444,27 @@
   justify-content: center;
   gap: 3rem;
   flex-wrap: wrap;
+}
+
+.brandChip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 100px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: all var(--transition);
+
+  &:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text);
+    background: rgba(233, 69, 96, 0.06);
+  }
 }
 
 .brandName {
@@ -315,6 +498,13 @@
 .newsletterSub {
   color: var(--color-text-muted);
   margin-bottom: 1.5rem;
+}
+
+.newsletterActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .newsletterForm {
