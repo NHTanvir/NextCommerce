@@ -34,6 +34,7 @@ export type OrdersStackParamList = {
   OrderDetail: { orderId: string };
   OrderTracking: { orderId: string };
   OrderFeedback: { orderId: string; productTitle?: string; variantId?: string };
+  RequestReturn: { orderId: string };
 };
 
 export type AccountStackParamList = {

@@ -57,6 +57,7 @@ function OrdersNavigator() {
       <OrdersStack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
       <OrdersStack.Screen name="OrderTracking" component={OrderTrackingScreen} options={{ title: 'Track Package' }} />
       <OrdersStack.Screen name="OrderFeedback" component={OrderFeedbackScreen} options={{ title: 'Leave a Review' }} />
+      <OrdersStack.Screen name="RequestReturn" component={RequestReturnScreen} options={{ title: 'Request Return' }} />
     </OrdersStack.Navigator>
   );
 }

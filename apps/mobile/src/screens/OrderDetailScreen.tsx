@@ -6,13 +6,14 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+import type { OrdersStackParamList } from '../navigation/types';
 import { fetchOrder } from '../api/orders';
 import { PriceTag } from '../components/PriceTag';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'OrderDetail'>;
+type Props = NativeStackScreenProps<OrdersStackParamList, 'OrderDetail'>;
 
 const STATUS_STEPS = ['pending', 'paid', 'processing', 'shipped', 'delivered'];
 
@@ -156,6 +157,39 @@ export function OrderDetailScreen({ route, navigation }: Props) {
           </View>
         </View>
       )}
+
+      {/* Action buttons */}
+      <View style={styles.actions}>
+        {(order.status === 'shipped' || order.status === 'processing') && (
+          <TouchableOpacity
+            style={[styles.actionBtn, styles.actionBtnPrimary]}
+            onPress={() => navigation.navigate('OrderTracking', { orderId: order.id })}
+          >
+            <Text style={styles.actionBtnTextPrimary}>📦 Track Package</Text>
+          </TouchableOpacity>
+        )}
+        {order.status === 'delivered' && (
+          <>
+            <TouchableOpacity
+              style={[styles.actionBtn, styles.actionBtnPrimary]}
+              onPress={() =>
+                navigation.navigate('OrderFeedback', {
+                  orderId: order.id,
+                  productTitle: order.items?.[0]?.productTitle,
+                })
+              }
+            >
+              <Text style={styles.actionBtnTextPrimary}>⭐ Leave a Review</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionBtn, styles.actionBtnSecondary]}
+              onPress={() => navigation.navigate('RequestReturn', { orderId: order.id })}
+            >
+              <Text style={styles.actionBtnTextSecondary}>↩ Request Return</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -252,4 +286,19 @@ const styles = StyleSheet.create({
     borderColor: '#2d2d44',
   },
   addressLine: { color: '#d1d5db', fontSize: 14, lineHeight: 22 },
+
+  actions: { gap: 10, marginTop: 8 },
+  actionBtn: {
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
+  },
+  actionBtnPrimary: { backgroundColor: '#e94560' },
+  actionBtnSecondary: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#2d2d44',
+  },
+  actionBtnTextPrimary: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  actionBtnTextSecondary: { color: '#d1d5db', fontWeight: '600', fontSize: 15 },
 });
