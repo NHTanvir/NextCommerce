@@ -27,6 +27,7 @@ export type ShopStackParamList = {
   ProductDetail: { slug: string };
   ProductReviews: { productId: string; productTitle?: string };
   SizeGuide: undefined;
+  StoreLocator: undefined;
   Search: undefined;
 };
 
@@ -48,6 +49,7 @@ export type AccountStackParamList = {
   GiftCards: undefined;
   Referrals: undefined;
   RequestReturn: { orderId: string };
+  StoreLocator: undefined;
 };
 
 export type WishlistStackParamList = {

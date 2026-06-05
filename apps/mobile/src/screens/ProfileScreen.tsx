@@ -71,6 +71,11 @@ export function ProfileScreen() {
       onPress: () => navigation.navigate('Settings'),
     },
     {
+      icon: '📍',
+      label: 'Find a Store',
+      onPress: () => navigation.navigate('StoreLocator'),
+    },
+    {
       icon: '💬',
       label: 'Help & Support',
       onPress: () => Alert.alert('Support', 'Email us at support@nextcommerce.io'),

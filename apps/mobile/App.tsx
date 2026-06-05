@@ -25,6 +25,7 @@ import RequestReturnScreen from '@/screens/RequestReturnScreen';
 import OrderFeedbackScreen from '@/screens/OrderFeedbackScreen';
 import ProductReviewsScreen from '@/screens/ProductReviewsScreen';
 import SizeGuideScreen from '@/screens/SizeGuideScreen';
+import StoreLocatorScreen from '@/screens/StoreLocatorScreen';
 import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
 
 const ShopStack = createNativeStackNavigator<ShopStackParamList>();
@@ -48,6 +49,7 @@ function ShopNavigator() {
       <ShopStack.Screen name="Search" component={SearchScreen} options={{ title: 'Search' }} />
       <ShopStack.Screen name="ProductReviews" component={ProductReviewsScreen} options={{ title: 'Reviews' }} />
       <ShopStack.Screen name="SizeGuide" component={SizeGuideScreen} options={{ title: 'Size Guide' }} />
+      <ShopStack.Screen name="StoreLocator" component={StoreLocatorScreen} options={{ title: 'Find a Store' }} />
     </ShopStack.Navigator>
   );
 }
@@ -76,6 +78,7 @@ function AccountNavigator() {
       <AccountStack.Screen name="GiftCards" component={GiftCardsScreen} options={{ title: 'Gift Cards' }} />
       <AccountStack.Screen name="Referrals" component={ReferralsScreen} options={{ title: 'Refer & Earn' }} />
       <AccountStack.Screen name="RequestReturn" component={RequestReturnScreen} options={{ title: 'Request Return' }} />
+      <AccountStack.Screen name="StoreLocator" component={StoreLocatorScreen} options={{ title: 'Find a Store' }} />
     </AccountStack.Navigator>
   );
 }
