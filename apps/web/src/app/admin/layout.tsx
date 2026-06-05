@@ -23,6 +23,7 @@ const ADMIN_NAV = [
   { href: '/admin/newsletter', label: 'Newsletter', icon: '📧' },
   { href: '/admin/qna', label: 'Q&A', icon: '💬' },
   { href: '/admin/stock-alerts', label: 'Stock Alerts', icon: '🔔' },
+  { href: '/admin/reports', label: 'Reports', icon: '📊' },
   { href: '/admin/audit', label: 'Audit Log', icon: '🔍' },
   { href: '/admin/import', label: 'Import', icon: '📥' },
 ];
