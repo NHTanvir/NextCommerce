@@ -78,7 +78,7 @@ export function ProfileScreen() {
     {
       icon: '💬',
       label: 'Help & Support',
-      onPress: () => Alert.alert('Support', 'Email us at support@nextcommerce.io'),
+      onPress: () => navigation.navigate('Help'),
     },
     {
       icon: '🚪',
