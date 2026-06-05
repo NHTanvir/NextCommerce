@@ -25,6 +25,8 @@ const ADMIN_NAV = [
   { href: '/admin/stock-alerts', label: 'Stock Alerts', icon: '🔔' },
   { href: '/admin/reports', label: 'Reports', icon: '📊' },
   { href: '/admin/audit', label: 'Audit Log', icon: '🔍' },
+  { href: '/admin/gift-cards', label: 'Gift Cards', icon: '🎁' },
+  { href: '/admin/referrals', label: 'Referrals', icon: '🔗' },
   { href: '/admin/import', label: 'Import', icon: '📥' },
 ];
 

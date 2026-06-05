@@ -25,6 +25,13 @@ export interface ApplyResult {
   remainingAfter: number;
 }
 
+export interface AdminGiftCardList {
+  data: GiftCardDto[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
 export const giftCardsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     checkGiftCardBalance: build.query<GiftCardBalance, string>({
@@ -42,6 +49,21 @@ export const giftCardsApi = apiSlice.injectEndpoints({
     getMyGiftCards: build.query<GiftCardDto[], void>({
       query: () => '/gift-cards/my',
     }),
+
+    adminGetGiftCards: build.query<AdminGiftCardList, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 20 }) => `/gift-cards/admin?page=${page}&limit=${limit}`,
+      providesTags: ['GiftCards'],
+    }),
+
+    adminDeleteGiftCard: build.mutation<void, string>({
+      query: (id) => ({ url: `/gift-cards/admin/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['GiftCards'],
+    }),
+
+    adminIssueGiftCard: build.mutation<GiftCardDto, { amountCents: number; recipientEmail?: string; recipientName?: string; message?: string; expiresAt?: string }>({
+      query: (body) => ({ url: '/gift-cards/purchase', method: 'POST', body }),
+      invalidatesTags: ['GiftCards'],
+    }),
   }),
 });
 
@@ -50,4 +72,7 @@ export const {
   usePurchaseGiftCardMutation,
   useApplyGiftCardMutation,
   useGetMyGiftCardsQuery,
+  useAdminGetGiftCardsQuery,
+  useAdminDeleteGiftCardMutation,
+  useAdminIssueGiftCardMutation,
 } = giftCardsApi;

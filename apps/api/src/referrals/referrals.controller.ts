@@ -4,11 +4,14 @@ import {
   Post,
   Body,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { IsString, Length } from 'class-validator';
 import { ReferralsService } from './referrals.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { UserPayload } from '@nextcommerce/shared';
 
@@ -47,5 +50,21 @@ export class ReferralsController {
   @ApiOperation({ summary: 'Apply a referral code during registration' })
   applyCode(@CurrentUser() user: UserPayload, @Body() dto: ApplyCodeDto) {
     return this.service.applyReferralCode(user.sub, dto.code);
+  }
+
+  @Get('admin/overview')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get referral program overview' })
+  adminOverview() {
+    return this.service.getAdminOverview();
+  }
+
+  @Get('admin/list')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] List all referrals with pagination' })
+  adminList(@Query('page') page?: string, @Query('limit') limit?: string) {
+    return this.service.adminListReferrals(page ? Number(page) : 1, limit ? Number(limit) : 20);
   }
 }

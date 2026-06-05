@@ -106,6 +106,38 @@ export class ReferralsService {
     return REFERRAL_REWARD_POINTS;
   }
 
+  async getAdminOverview() {
+    const [totalReferrals, completedReferrals, totalCodes] = await Promise.all([
+      this.referralRepo.count(),
+      this.referralRepo.count({ where: { status: 'completed' } }),
+      this.codeRepo.count(),
+    ]);
+
+    const pointsResult = await this.referralRepo
+      .createQueryBuilder('r')
+      .select('SUM(r.rewardPointsGranted)', 'total')
+      .where('r.status = :s', { s: 'completed' })
+      .getRawOne<{ total: string | null }>();
+
+    return {
+      totalReferrals,
+      completedReferrals,
+      pendingReferrals: totalReferrals - completedReferrals,
+      totalCodes,
+      totalPointsGranted: Number(pointsResult?.total ?? 0),
+      conversionRate: totalReferrals ? Math.round((completedReferrals / totalReferrals) * 100) : 0,
+    };
+  }
+
+  async adminListReferrals(page: number, limit: number) {
+    const [data, total] = await this.referralRepo.findAndCount({
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data, total, page, totalPages: Math.ceil(total / limit) };
+  }
+
   private generateCode(userId: string): string {
     const suffix = randomBytes(3).toString('hex').toUpperCase();
     const prefix = userId.slice(0, 4).toUpperCase();

@@ -160,6 +160,41 @@ export class CatalogService {
     return { updated, errors };
   }
 
+  async getRelated(productId: string, limit = 8) {
+    const product = await this.productRepo.findOne({ where: { id: productId } });
+    if (!product) throw new NotFoundException('Product not found');
+
+    const results = await this.productRepo
+      .createQueryBuilder('p')
+      .where('p.id != :id', { id: productId })
+      .andWhere('p.isActive = true')
+      .andWhere('(p.categoryId = :catId OR p.brand = :brand)', {
+        catId: product.categoryId,
+        brand: product.brand,
+      })
+      .leftJoinAndSelect('p.category', 'category')
+      .leftJoinAndSelect('p.variants', 'variants')
+      .orderBy('CASE WHEN p.categoryId = :catId AND p.brand = :brand THEN 0 WHEN p.brand = :brand THEN 1 ELSE 2 END')
+      .setParameter('catId', product.categoryId)
+      .setParameter('brand', product.brand)
+      .take(limit)
+      .getMany();
+
+    return results.map((p) => this.toDto(p));
+  }
+
+  async getTopSellers(limit = 8) {
+    const products = await this.productRepo
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.category', 'category')
+      .leftJoinAndSelect('p.variants', 'variants')
+      .where('p.isActive = true')
+      .orderBy('p.createdAt', 'DESC')
+      .take(limit)
+      .getMany();
+    return products.map((p) => this.toDto(p));
+  }
+
   async bulkActivate(productIds: string[], isActive: boolean): Promise<{ updated: number }> {
     if (!productIds.length) return { updated: 0 };
     const result = await this.productRepo

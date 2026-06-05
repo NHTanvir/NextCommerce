@@ -26,6 +26,22 @@ export interface ReferralStats {
   totalPointsEarned: number;
 }
 
+export interface ReferralOverview {
+  totalReferrals: number;
+  completedReferrals: number;
+  pendingReferrals: number;
+  totalCodes: number;
+  totalPointsGranted: number;
+  conversionRate: number;
+}
+
+export interface AdminReferralList {
+  data: ReferralDto[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
 export const referralsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getMyReferralCode: build.query<ReferralCodeDto, void>({
@@ -47,6 +63,14 @@ export const referralsApi = apiSlice.injectEndpoints({
       query: (code) => ({ url: '/referrals/apply', method: 'POST', body: { code } }),
       invalidatesTags: [{ type: 'User' as const, id: 'referral-stats' }],
     }),
+
+    adminGetReferralOverview: build.query<ReferralOverview, void>({
+      query: () => '/referrals/admin/overview',
+    }),
+
+    adminListReferrals: build.query<AdminReferralList, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 20 }) => `/referrals/admin/list?page=${page}&limit=${limit}`,
+    }),
   }),
 });
 
@@ -55,4 +79,6 @@ export const {
   useGetReferralStatsQuery,
   useGetReferralHistoryQuery,
   useApplyReferralCodeMutation,
+  useAdminGetReferralOverviewQuery,
+  useAdminListReferralsQuery,
 } = referralsApi;

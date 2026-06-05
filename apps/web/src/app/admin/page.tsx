@@ -26,6 +26,7 @@ const QUICK_LINKS = [
   { href: '/admin/reports', icon: '📊', label: 'Reports' },
   { href: '/admin/reviews', icon: '⭐', label: 'Reviews' },
   { href: '/admin/users', icon: '👥', label: 'Users' },
+  { href: '/admin/gift-cards', icon: '🎁', label: 'Gift Cards' },
   { href: '/admin/audit', icon: '🔍', label: 'Audit Log' },
 ];
 
