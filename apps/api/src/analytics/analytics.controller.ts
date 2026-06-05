@@ -32,4 +32,17 @@ export class AnalyticsController {
   getTopProducts(@Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number) {
     return this.analyticsService.getTopProducts(Math.min(limit, 50));
   }
+
+  @Get('order-status')
+  @ApiOperation({ summary: 'Get order counts and revenue grouped by status' })
+  getOrderStatusBreakdown() {
+    return this.analyticsService.getOrderStatusBreakdown();
+  }
+
+  @Get('new-customers')
+  @ApiQuery({ name: 'days', required: false, type: Number })
+  @ApiOperation({ summary: 'Get new customer registrations per day for last N days' })
+  getNewCustomers(@Query('days', new DefaultValuePipe(30), ParseIntPipe) days: number) {
+    return this.analyticsService.getNewCustomersByDay(Math.min(days, 365));
+  }
 }

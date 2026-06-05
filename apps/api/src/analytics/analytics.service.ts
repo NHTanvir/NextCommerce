@@ -97,4 +97,41 @@ export class AnalyticsService {
       totalRevenueCents: parseInt(r.totalRevenueCents, 10),
     }));
   }
+
+  async getOrderStatusBreakdown(): Promise<{ status: string; count: number; totalCents: number }[]> {
+    const rows = await this.orderRepo
+      .createQueryBuilder('o')
+      .select('o.status', 'status')
+      .addSelect('COUNT(o.id)', 'count')
+      .addSelect('SUM(o.totalCents)', 'totalCents')
+      .groupBy('o.status')
+      .orderBy('COUNT(o.id)', 'DESC')
+      .getRawMany<{ status: string; count: string; totalCents: string }>();
+
+    return rows.map((r) => ({
+      status: r.status,
+      count: parseInt(r.count, 10),
+      totalCents: parseInt(r.totalCents ?? '0', 10),
+    }));
+  }
+
+  async getNewCustomersByDay(days = 30): Promise<{ date: string; newCustomers: number }[]> {
+    const from = new Date();
+    from.setDate(from.getDate() - days);
+
+    const rows = await this.userRepo
+      .createQueryBuilder('u')
+      .select('DATE(u.createdAt)', 'date')
+      .addSelect('COUNT(u.id)', 'newCustomers')
+      .where('u.createdAt >= :from', { from })
+      .andWhere("u.role = 'customer'")
+      .groupBy('DATE(u.createdAt)')
+      .orderBy('DATE(u.createdAt)', 'ASC')
+      .getRawMany<{ date: string; newCustomers: string }>();
+
+    return rows.map((r) => ({
+      date: r.date,
+      newCustomers: parseInt(r.newCustomers, 10),
+    }));
+  }
 }
