@@ -22,6 +22,7 @@ import LoyaltyScreen from '@/screens/LoyaltyScreen';
 import GiftCardsScreen from '@/screens/GiftCardsScreen';
 import ReferralsScreen from '@/screens/ReferralsScreen';
 import RequestReturnScreen from '@/screens/RequestReturnScreen';
+import OrderFeedbackScreen from '@/screens/OrderFeedbackScreen';
 import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
 
 const ShopStack = createNativeStackNavigator<ShopStackParamList>();
@@ -53,6 +54,7 @@ function OrdersNavigator() {
       <OrdersStack.Screen name="OrderHistory" component={OrderHistoryScreen} options={{ title: 'My Orders' }} />
       <OrdersStack.Screen name="OrderDetail" component={OrderDetailScreen} options={{ title: 'Order Details' }} />
       <OrdersStack.Screen name="OrderTracking" component={OrderTrackingScreen} options={{ title: 'Track Package' }} />
+      <OrdersStack.Screen name="OrderFeedback" component={OrderFeedbackScreen} options={{ title: 'Leave a Review' }} />
     </OrdersStack.Navigator>
   );
 }

@@ -32,6 +32,7 @@ export type OrdersStackParamList = {
   OrderHistory: undefined;
   OrderDetail: { orderId: string };
   OrderTracking: { orderId: string };
+  OrderFeedback: { orderId: string; productTitle?: string; variantId?: string };
 };
 
 export type AccountStackParamList = {
