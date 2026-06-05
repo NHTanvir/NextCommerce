@@ -19,6 +19,7 @@ const ACCOUNT_LINKS = [
   { href: '/account/notifications', icon: '🔔', label: 'Notifications', desc: 'View all notifications' },
   { href: '/account/preferences', icon: '⚙️', label: 'Preferences', desc: 'Email and push notification settings' },
   { href: '/account/stats', icon: '📊', label: 'My Stats', desc: 'Spending summary and insights' },
+  { href: '/account/price-alerts', icon: '📉', label: 'Price Alerts', desc: 'Track price drops on products' },
   { href: '/account/activity', icon: '📋', label: 'Activity Log', desc: 'Recent account actions' },
 ];
 
