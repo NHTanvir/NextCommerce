@@ -24,4 +24,22 @@ export class SearchController {
   autocomplete(@Query('q') q: string = '') {
     return this.searchService.autocomplete(q);
   }
+
+  @Get('trending')
+  @ApiOperation({ summary: 'Get trending search terms based on top brands and categories' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  trending(@Query('limit') limit?: string) {
+    return this.searchService.getTrendingSearches(limit ? Math.min(parseInt(limit, 10), 20) : 8);
+  }
+
+  @Get('brand')
+  @ApiOperation({ summary: 'Search products by brand name' })
+  @ApiQuery({ name: 'q', required: true, description: 'Brand name' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  searchByBrand(
+    @Query('q') q: string = '',
+    @Query('limit') limit?: string,
+  ) {
+    return this.searchService.searchByBrand(q, limit ? parseInt(limit, 10) : 20);
+  }
 }
