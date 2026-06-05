@@ -160,6 +160,23 @@ export class CatalogService {
     return { updated, errors };
   }
 
+  async getBrands(): Promise<Array<{ brand: string; productCount: number }>> {
+    const rows = await this.productRepo
+      .createQueryBuilder('p')
+      .select('p.brand', 'brand')
+      .addSelect('COUNT(p.id)', 'productCount')
+      .where('p.isActive = true')
+      .andWhere('p.brand IS NOT NULL')
+      .groupBy('p.brand')
+      .orderBy('productCount', 'DESC')
+      .getRawMany<{ brand: string; productCount: string }>();
+
+    return rows.map((r) => ({
+      brand: r.brand,
+      productCount: Number(r.productCount),
+    }));
+  }
+
   async getRelated(productId: string, limit = 8) {
     const product = await this.productRepo.findOne({ where: { id: productId } });
     if (!product) throw new NotFoundException('Product not found');

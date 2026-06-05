@@ -98,6 +98,11 @@ export const catalogApi = apiSlice.injectEndpoints({
         { type: 'Product', id: 'LIST' },
       ],
     }),
+
+    getBrands: build.query<Array<{ brand: string; productCount: number }>, void>({
+      query: () => '/catalog/brands',
+      providesTags: [{ type: 'Category' as const, id: 'brands' }],
+    }),
   }),
 });
 
@@ -110,4 +115,5 @@ export const {
   useGetProductByIdQuery,
   useUpdateProductMutation,
   useDeactivateProductMutation,
+  useGetBrandsQuery,
 } = catalogApi;

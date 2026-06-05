@@ -77,6 +77,12 @@ export class CatalogController {
     return this.catalogService.findCategories();
   }
 
+  @Get('brands')
+  @ApiOperation({ summary: 'Get all brands with product counts' })
+  getBrands() {
+    return this.catalogService.getBrands();
+  }
+
   @Post('products')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
