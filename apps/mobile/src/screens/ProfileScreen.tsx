@@ -9,9 +9,9 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+import type { AccountStackParamList } from '../navigation/types';
 
-type Nav = NativeStackNavigationProp<RootStackParamList, 'Profile'>;
+type Nav = NativeStackNavigationProp<AccountStackParamList, 'Profile'>;
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
@@ -43,22 +43,32 @@ export function ProfileScreen() {
     {
       icon: '📦',
       label: 'My Orders',
-      onPress: () => navigation.navigate('OrderHistory'),
+      onPress: () => Alert.alert('Navigate', 'Go to Orders tab'),
     },
     {
-      icon: '♡',
-      label: 'Wishlist',
-      onPress: () => Alert.alert('Coming soon', 'Wishlist feature coming soon!'),
+      icon: '⭐',
+      label: 'Loyalty Rewards',
+      onPress: () => navigation.navigate('Loyalty'),
+    },
+    {
+      icon: '🎁',
+      label: 'Gift Cards',
+      onPress: () => navigation.navigate('GiftCards'),
+    },
+    {
+      icon: '👥',
+      label: 'Refer a Friend',
+      onPress: () => navigation.navigate('Referrals'),
+    },
+    {
+      icon: '🔔',
+      label: 'Notifications',
+      onPress: () => navigation.navigate('Notifications'),
     },
     {
       icon: '⚙️',
       label: 'Account Settings',
-      onPress: () => Alert.alert('Coming soon', 'Settings coming soon!'),
-    },
-    {
-      icon: '🔒',
-      label: 'Privacy & Security',
-      onPress: () => Alert.alert('Coming soon', 'Privacy settings coming soon!'),
+      onPress: () => navigation.navigate('Settings'),
     },
     {
       icon: '💬',
