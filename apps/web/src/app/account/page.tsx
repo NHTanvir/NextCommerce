@@ -16,7 +16,8 @@ const ACCOUNT_LINKS = [
   { href: '/account/referrals', icon: '👥', label: 'Referrals', desc: 'Invite friends, earn points' },
   { href: '/account/returns', icon: '↩️', label: 'Returns', desc: 'View and request returns' },
   { href: '/account/reviews', icon: '⭐', label: 'My Reviews', desc: 'Reviews you have submitted' },
-  { href: '/account/notifications', icon: '🔔', label: 'Notifications', desc: 'Manage notification settings' },
+  { href: '/account/notifications', icon: '🔔', label: 'Notifications', desc: 'View all notifications' },
+  { href: '/account/preferences', icon: '⚙️', label: 'Preferences', desc: 'Email and push notification settings' },
   { href: '/account/stats', icon: '📊', label: 'My Stats', desc: 'Spending summary and insights' },
   { href: '/account/activity', icon: '📋', label: 'Activity Log', desc: 'Recent account actions' },
 ];
