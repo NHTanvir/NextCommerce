@@ -18,6 +18,7 @@ const ACCOUNT_LINKS = [
   { href: '/account/reviews', icon: '⭐', label: 'My Reviews', desc: 'Reviews you have submitted' },
   { href: '/account/notifications', icon: '🔔', label: 'Notifications', desc: 'Manage notification settings' },
   { href: '/account/stats', icon: '📊', label: 'My Stats', desc: 'Spending summary and insights' },
+  { href: '/account/activity', icon: '📋', label: 'Activity Log', desc: 'Recent account actions' },
 ];
 
 export default function AccountPage() {
