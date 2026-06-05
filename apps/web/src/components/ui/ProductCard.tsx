@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { toggleWishlist, selectWishlistItems } from '@/store/slices/wishlist.slice';
 import type { ProductDto } from '@nextcommerce/shared';
 import styles from './ProductCard.module.scss';
 
@@ -19,8 +21,28 @@ function getMinPrice(product: ProductDto) {
 }
 
 export function ProductCard({ product }: Props) {
+  const dispatch = useAppDispatch();
+  const wishlistItems = useAppSelector(selectWishlistItems);
+  const isWishlisted = wishlistItems.some((i) => i.productId === product.id);
+
   const price = getMinPrice(product);
   const imageUrl = product.images?.[0]?.url;
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch(
+      toggleWishlist({
+        productId: product.id,
+        slug: product.slug,
+        title: product.title,
+        brand: product.brand ?? '',
+        basePriceCents: price,
+        imageUrl: imageUrl,
+        addedAt: new Date().toISOString(),
+      }),
+    );
+  };
 
   return (
     <Link href={`/products/${product.slug}`} className={styles.card}>
@@ -39,6 +61,14 @@ export function ProductCard({ product }: Props) {
         {product.variants?.some((v) => v.stockQty === 0) && (
           <span className={`badge badge--warning ${styles.badge}`}>Low Stock</span>
         )}
+        <button
+          className={`${styles.wishlistBtn} ${isWishlisted ? styles.wishlisted : ''}`}
+          onClick={handleWishlistToggle}
+          aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+          title={isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
+        >
+          {isWishlisted ? '♥' : '♡'}
+        </button>
       </div>
 
       <div className={styles.body}>
