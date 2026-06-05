@@ -27,6 +27,7 @@ import ProductReviewsScreen from '@/screens/ProductReviewsScreen';
 import SizeGuideScreen from '@/screens/SizeGuideScreen';
 import StoreLocatorScreen from '@/screens/StoreLocatorScreen';
 import TrendingScreen from '@/screens/TrendingScreen';
+import BrandsScreen from '@/screens/BrandsScreen';
 import HelpScreen from '@/screens/HelpScreen';
 import AddressBookScreen from '@/screens/AddressBookScreen';
 import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
@@ -54,6 +55,7 @@ function ShopNavigator() {
       <ShopStack.Screen name="SizeGuide" component={SizeGuideScreen} options={{ title: 'Size Guide' }} />
       <ShopStack.Screen name="StoreLocator" component={StoreLocatorScreen} options={{ title: 'Find a Store' }} />
       <ShopStack.Screen name="Trending" component={TrendingScreen} options={{ title: 'Trending' }} />
+      <ShopStack.Screen name="Brands" component={BrandsScreen} options={{ title: 'Shop by Brand' }} />
     </ShopStack.Navigator>
   );
 }
