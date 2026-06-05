@@ -189,6 +189,35 @@ export class OrdersService {
     return { data, total };
   }
 
+  async getOrderSummaryForUser(userId: string): Promise<{
+    totalOrders: number;
+    totalSpentCents: number;
+    avgOrderValueCents: number;
+    deliveredCount: number;
+    pendingCount: number;
+    cancelledCount: number;
+    lastOrderAt: string | null;
+  }> {
+    const orders = await this.orderRepo.find({ where: { userId } });
+    const totalOrders = orders.length;
+    const totalSpentCents = orders.reduce((s, o) => s + (o.totalCents ?? 0), 0);
+    const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
+    const pendingCount = orders.filter((o) => ['pending', 'paid', 'processing'].includes(o.status)).length;
+    const cancelledCount = orders.filter((o) => o.status === 'cancelled').length;
+    const sorted = [...orders].sort((a, b) =>
+      new Date(b.placedAt).getTime() - new Date(a.placedAt).getTime(),
+    );
+    return {
+      totalOrders,
+      totalSpentCents,
+      avgOrderValueCents: totalOrders > 0 ? Math.round(totalSpentCents / totalOrders) : 0,
+      deliveredCount,
+      pendingCount,
+      cancelledCount,
+      lastOrderAt: sorted[0]?.placedAt?.toISOString() ?? null,
+    };
+  }
+
   async exportToCsv(status?: string): Promise<string> {
     const where = status ? { status: status as OrderStatus } : {};
     const orders = await this.orderRepo.find({

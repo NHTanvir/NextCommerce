@@ -29,6 +29,12 @@ export class OrdersController {
     return this.ordersService.findByUser(user.sub);
   }
 
+  @Get('me/summary')
+  @ApiOperation({ summary: 'Get my order stats summary' })
+  getMyOrderSummary(@CurrentUser() user: UserPayload) {
+    return this.ordersService.getOrderSummaryForUser(user.sub);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get single order' })
   findOne(@Param('id') id: string, @CurrentUser() user: UserPayload) {

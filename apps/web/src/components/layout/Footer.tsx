@@ -17,11 +17,16 @@ const FOOTER_LINKS = {
     { href: '/account/profile', label: 'Profile' },
     { href: '/wishlist', label: 'Wishlist' },
   ],
+  Support: [
+    { href: '/faq', label: 'FAQ' },
+    { href: '/track-order', label: 'Track Order' },
+    { href: '/account/returns', label: 'Returns & Exchanges' },
+  ],
   Company: [
-    { href: '#', label: 'About Us' },
-    { href: '#', label: 'Careers' },
-    { href: '#', label: 'Press' },
-    { href: '#', label: 'Contact' },
+    { href: '/about', label: 'About Us' },
+    { href: '/careers', label: 'Careers' },
+    { href: '/privacy', label: 'Privacy Policy' },
+    { href: '/terms', label: 'Terms of Service' },
   ],
 };
 
@@ -64,8 +69,8 @@ export function Footer() {
         <div className="container">
           <span className={styles.copy}>© {new Date().getFullYear()} NextCommerce. All rights reserved.</span>
           <div className={styles.legal}>
-            <Link href="#">Privacy Policy</Link>
-            <Link href="#">Terms of Service</Link>
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms of Service</Link>
           </div>
         </div>
       </div>
