@@ -24,6 +24,14 @@ export class ReviewsController {
     return this.reviewsService.getRatingDistribution(productId);
   }
 
+  @Get('mine')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get my reviews' })
+  findMine(@CurrentUser() user: UserPayload) {
+    return this.reviewsService.findByUser(user.sub);
+  }
+
   @Get('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

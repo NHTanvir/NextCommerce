@@ -48,6 +48,11 @@ export const reviewsApi = apiSlice.injectEndpoints({
       providesTags: (_r, _e, productId) => [{ type: 'Review' as const, id: `dist-${productId}` }],
     }),
 
+    getMyReviews: build.query<ReviewDto[], void>({
+      query: () => '/reviews/mine',
+      providesTags: [{ type: 'Review' as const, id: 'MY_REVIEWS' }],
+    }),
+
     getAdminReviews: build.query<AdminReviewsResponse, { page?: number; limit?: number }>({
       query: ({ page = 1, limit = 20 } = {}) => `/reviews/admin?page=${page}&limit=${limit}`,
       providesTags: [{ type: 'Review' as const, id: 'ADMIN_LIST' }],
@@ -67,6 +72,7 @@ export const reviewsApi = apiSlice.injectEndpoints({
         { type: 'Review' as const, id: productId },
         { type: 'Review' as const, id: `dist-${productId}` },
         { type: 'Review' as const, id: 'ADMIN_LIST' },
+        { type: 'Review' as const, id: 'MY_REVIEWS' },
       ],
     }),
 
@@ -89,6 +95,7 @@ export const reviewsApi = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetMyReviewsQuery,
   useGetReviewsQuery,
   useGetRatingDistributionQuery,
   useGetAdminReviewsQuery,

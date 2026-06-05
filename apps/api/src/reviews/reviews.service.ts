@@ -79,6 +79,14 @@ export class ReviewsService {
     await this.reviewRepo.remove(review);
   }
 
+  async findByUser(userId: string): Promise<Review[]> {
+    return this.reviewRepo.find({
+      where: { userId },
+      relations: ['product'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async findAll(page = 1, limit = 20): Promise<{ data: Review[]; total: number }> {
     const [data, total] = await this.reviewRepo.findAndCount({
       relations: ['user'],
