@@ -279,3 +279,29 @@
   text-align: center;
   color: var(--color-text-muted);
 }
+
+.outOfStockActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.productActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.detailsSection {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+}
+
+.reviewsSection {
+  grid-column: 1 / -1;
+}
+
+.qnaSection {
+  grid-column: 1 / -1;
+}

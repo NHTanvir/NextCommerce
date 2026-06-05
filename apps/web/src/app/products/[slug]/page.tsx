@@ -2,11 +2,18 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useGetProductQuery } from '@/store/api/catalog.api';
 import { useAddToCartMutation } from '@/store/api/cart.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addItem, setCartOpen } from '@/store/slices/cart.slice';
+import { RelatedProducts } from '@/components/features/RelatedProducts';
+import { ProductReviews } from '@/components/features/ProductReviews';
+import { ProductSpecifications } from '@/components/features/ProductSpecifications';
+import { ProductQnA } from '@/components/features/ProductQnA';
+import { BackInStockButton } from '@/components/features/BackInStockButton';
+import { PriceAlertButton } from '@/components/features/PriceAlertButton';
+import { SizeGuide } from '@/components/features/SizeGuide';
 import styles from './product.module.scss';
 
 export default function ProductPage() {
@@ -167,14 +174,56 @@ export default function ProductPage() {
           </div>
         </div>
 
-        <button
-          className={`btn btn--primary btn--lg ${styles.addBtn}`}
-          onClick={handleAddToCart}
-          disabled={!selectedVariantId || !inStock || adding}
-        >
-          {adding ? 'Adding…' : !selectedVariantId ? 'Select a size' : !inStock ? 'Out of Stock' : 'Add to Cart'}
-        </button>
+        {inStock ? (
+          <button
+            className={`btn btn--primary btn--lg ${styles.addBtn}`}
+            onClick={handleAddToCart}
+            disabled={!selectedVariantId || adding}
+          >
+            {adding ? 'Adding…' : !selectedVariantId ? 'Select a size' : 'Add to Cart'}
+          </button>
+        ) : (
+          <div className={styles.outOfStockActions}>
+            <button className={`btn btn--lg ${styles.addBtn}`} disabled>
+              Out of Stock
+            </button>
+            {selectedVariantId && (
+              <BackInStockButton
+                productId={product.id}
+                variantId={selectedVariantId}
+                productTitle={product.title}
+              />
+            )}
+          </div>
+        )}
+
+        <div className={styles.productActions}>
+          <PriceAlertButton
+            productId={product.id}
+            currentPriceCents={price}
+            productTitle={product.title}
+          />
+          <SizeGuide />
+        </div>
       </div>
+
+      {/* Product details tabs */}
+      <div className={styles.detailsSection}>
+        <ProductSpecifications productId={product.id} />
+      </div>
+
+      {/* Reviews */}
+      <div className={styles.reviewsSection}>
+        <ProductReviews productId={product.id} />
+      </div>
+
+      {/* Q&A */}
+      <div className={styles.qnaSection}>
+        <ProductQnA productId={product.id} />
+      </div>
+
+      {/* Related products */}
+      <RelatedProducts productId={product.id} />
     </div>
   );
 }
