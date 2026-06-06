@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCartTotal, clearCart } from '@/store/slices/cart.slice';
 import { useCreateOrderMutation } from '@/store/api/orders.api';
+import { useGetShippingRatesQuery } from '@/store/api/shipping.api';
+import type { ShippingRate } from '@/store/api/shipping.api';
 import styles from './checkout.module.scss';
 
 interface AddressForm {
@@ -16,22 +18,29 @@ interface AddressForm {
   postalCode: string;
 }
 
+type Step = 'address' | 'shipping' | 'review';
+
 export default function CheckoutPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const items = useAppSelector((s) => s.cart.items);
   const total = useAppSelector(selectCartTotal);
   const anonymousToken = useAppSelector((s) => s.cart.anonymousToken);
-  const user = useAppSelector((s) => s.auth.user);
 
   const [createOrder, { isLoading }] = useCreateOrderMutation();
   const [address, setAddress] = useState<AddressForm>({
     line1: '', line2: '', city: '', country: 'US', postalCode: '',
   });
+  const [step, setStep] = useState<Step>('address');
+  const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
   const [error, setError] = useState('');
-  const [step, setStep] = useState<'address' | 'review'>('address');
 
-  const shipping = total >= 7500 ? 0 : 799;
+  const { data: shippingEstimate, isFetching: ratesLoading } = useGetShippingRatesQuery(
+    { total, country: address.country },
+    { skip: step === 'address' },
+  );
+
+  const shippingCost = selectedRate?.priceCents ?? 0;
 
   if (items.length === 0) {
     return (
@@ -40,6 +49,16 @@ export default function CheckoutPage() {
         <Link href="/products" className="btn btn--primary">Shop Now</Link>
       </div>
     );
+  }
+
+  function handleAddressContinue() {
+    setStep('shipping');
+    setSelectedRate(null);
+  }
+
+  function handleShippingContinue() {
+    if (!selectedRate) return;
+    setStep('review');
   }
 
   async function handlePlaceOrder() {
@@ -60,9 +79,32 @@ export default function CheckoutPage() {
     }
   }
 
+  const STEPS: { key: Step; label: string }[] = [
+    { key: 'address', label: 'Address' },
+    { key: 'shipping', label: 'Shipping' },
+    { key: 'review', label: 'Review' },
+  ];
+
   return (
     <div className={`container ${styles.page}`}>
       <h1 className={styles.pageTitle}>Checkout</h1>
+
+      <div className={styles.stepper}>
+        {STEPS.map((s, i) => {
+          const stepIndex = STEPS.findIndex((x) => x.key === step);
+          const isDone = i < stepIndex;
+          const isActive = s.key === step;
+          return (
+            <div key={s.key} className={styles.stepItem}>
+              <div className={`${styles.stepDot} ${isActive ? styles.stepDotActive : ''} ${isDone ? styles.stepDotDone : ''}`}>
+                {isDone ? '✓' : i + 1}
+              </div>
+              <span className={`${styles.stepLabel} ${isActive ? styles.stepLabelActive : ''}`}>{s.label}</span>
+              {i < STEPS.length - 1 && <div className={`${styles.stepLine} ${isDone ? styles.stepLineDone : ''}`} />}
+            </div>
+          );
+        })}
+      </div>
 
       <div className={styles.layout}>
         <div className={styles.main}>
@@ -135,11 +177,65 @@ export default function CheckoutPage() {
                   className="btn btn--primary btn--lg"
                   style={{ width: '100%' }}
                   disabled={!address.line1 || !address.city || !address.postalCode}
-                  onClick={() => setStep('review')}
+                  onClick={handleAddressContinue}
                 >
-                  Continue to Review →
+                  Continue to Shipping →
                 </button>
               </div>
+            </div>
+          )}
+
+          {step === 'shipping' && (
+            <div className={styles.section}>
+              <div className={styles.reviewHeader}>
+                <h2 className={styles.sectionTitle}>Shipping Method</h2>
+                <button className="btn btn--ghost btn--sm" onClick={() => setStep('address')}>
+                  ← Edit Address
+                </button>
+              </div>
+
+              {ratesLoading ? (
+                <div className={styles.ratesLoading}>Loading shipping rates…</div>
+              ) : (
+                <div className={styles.ratesList}>
+                  {shippingEstimate?.rates.map((rate) => (
+                    <button
+                      key={rate.id}
+                      className={`${styles.rateOption} ${selectedRate?.id === rate.id ? styles.rateOptionSelected : ''}`}
+                      onClick={() => setSelectedRate(rate)}
+                    >
+                      <div className={styles.rateRadio}>
+                        <div className={`${styles.rateRadioInner} ${selectedRate?.id === rate.id ? styles.rateRadioInnerFilled : ''}`} />
+                      </div>
+                      <div className={styles.rateInfo}>
+                        <div className={styles.rateName}>
+                          {rate.name}
+                          {rate.isFree && <span className={styles.rateFreeTag}>FREE</span>}
+                        </div>
+                        <div className={styles.rateMeta}>
+                          {rate.carrier} · {rate.deliveryDays}
+                        </div>
+                      </div>
+                      <div className={styles.ratePrice}>
+                        {rate.isFree ? (
+                          <span className={styles.ratePriceFree}>Free</span>
+                        ) : (
+                          `$${(rate.priceCents / 100).toFixed(2)}`
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <button
+                className="btn btn--primary btn--lg"
+                style={{ width: '100%' }}
+                disabled={!selectedRate}
+                onClick={handleShippingContinue}
+              >
+                Continue to Review →
+              </button>
             </div>
           )}
 
@@ -147,16 +243,28 @@ export default function CheckoutPage() {
             <div className={styles.section}>
               <div className={styles.reviewHeader}>
                 <h2 className={styles.sectionTitle}>Review Order</h2>
-                <button className="btn btn--ghost btn--sm" onClick={() => setStep('address')}>
-                  ← Edit Address
+                <button className="btn btn--ghost btn--sm" onClick={() => setStep('shipping')}>
+                  ← Edit Shipping
                 </button>
               </div>
 
-              <div className={styles.addressCard}>
-                <p className={styles.addressLine}>{address.line1}</p>
-                {address.line2 && <p className={styles.addressLine}>{address.line2}</p>}
-                <p className={styles.addressLine}>{address.city}, {address.postalCode}</p>
-                <p className={styles.addressLine}>{address.country}</p>
+              <div className={styles.reviewCards}>
+                <div className={styles.reviewCard}>
+                  <p className={styles.reviewCardLabel}>Delivery Address</p>
+                  <p className={styles.addressLine}>{address.line1}</p>
+                  {address.line2 && <p className={styles.addressLine}>{address.line2}</p>}
+                  <p className={styles.addressLine}>{address.city}, {address.postalCode}</p>
+                  <p className={styles.addressLine}>{address.country}</p>
+                </div>
+                {selectedRate && (
+                  <div className={styles.reviewCard}>
+                    <p className={styles.reviewCardLabel}>Shipping Method</p>
+                    <p className={styles.reviewShippingName}>{selectedRate.name}</p>
+                    <p className={styles.reviewShippingMeta}>
+                      {selectedRate.carrier} · {selectedRate.deliveryDays}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {error && <div className={styles.errorBox}>{error}</div>}
@@ -175,13 +283,12 @@ export default function CheckoutPage() {
                 onClick={handlePlaceOrder}
                 disabled={isLoading}
               >
-                {isLoading ? 'Placing Order…' : `Place Order · $${((total + shipping) / 100).toFixed(2)}`}
+                {isLoading ? 'Placing Order…' : `Place Order · $${((total + shippingCost) / 100).toFixed(2)}`}
               </button>
             </div>
           )}
         </div>
 
-        {/* Order Summary */}
         <aside className={styles.sidebar}>
           <div className={styles.summaryCard}>
             <h3 className={styles.summaryTitle}>Order Summary</h3>
@@ -203,11 +310,19 @@ export default function CheckoutPage() {
               </div>
               <div className={styles.summaryRow}>
                 <span>Shipping</span>
-                <span>{shipping === 0 ? 'Free' : '$7.99'}</span>
+                <span>
+                  {step === 'address'
+                    ? '—'
+                    : selectedRate
+                    ? selectedRate.isFree
+                      ? 'Free'
+                      : `$${(selectedRate.priceCents / 100).toFixed(2)}`
+                    : 'Select a method'}
+                </span>
               </div>
               <div className={styles.summaryTotal}>
                 <span>Total</span>
-                <span>${((total + shipping) / 100).toFixed(2)}</span>
+                <span>${((total + shippingCost) / 100).toFixed(2)}</span>
               </div>
             </div>
           </div>
