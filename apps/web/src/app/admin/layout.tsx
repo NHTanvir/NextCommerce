@@ -11,6 +11,7 @@ const ADMIN_NAV = [
   { href: '/admin/products', label: 'Products', icon: '👟' },
   { href: '/admin/orders', label: 'Orders', icon: '📦' },
   { href: '/admin/users', label: 'Users', icon: '👥' },
+  { href: '/admin/customers', label: 'Customers', icon: '📊' },
   { href: '/admin/coupons', label: 'Coupons', icon: '🎟️' },
   { href: '/admin/inventory', label: 'Inventory', icon: '📋' },
   { href: '/admin/returns', label: 'Returns', icon: '↩️' },

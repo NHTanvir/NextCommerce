@@ -64,4 +64,31 @@ export class AnalyticsController {
   getHourlySalesDistribution() {
     return this.analyticsService.getHourlySalesDistribution();
   }
+
+  @Get('top-customers')
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiOperation({ summary: 'Get top customers by total spend' })
+  getTopCustomers(@Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number) {
+    return this.analyticsService.getTopCustomers(Math.min(limit, 50));
+  }
+
+  @Get('customer-segments')
+  @ApiOperation({ summary: 'Get customer segmentation counts (VIP, loyal, regular, at-risk, lapsed)' })
+  getCustomerSegments() {
+    return this.analyticsService.getCustomerSegments();
+  }
+
+  @Get('cohort')
+  @ApiQuery({ name: 'months', required: false, type: Number })
+  @ApiOperation({ summary: 'Get monthly cohort acquisition data' })
+  getCohortRetention(@Query('months', new DefaultValuePipe(6), ParseIntPipe) months: number) {
+    return this.analyticsService.getMonthlyCohortRetention(Math.min(months, 24));
+  }
+
+  @Get('aov-trend')
+  @ApiQuery({ name: 'days', required: false, type: Number })
+  @ApiOperation({ summary: 'Get average order value trend over time' })
+  getAovTrend(@Query('days', new DefaultValuePipe(30), ParseIntPipe) days: number) {
+    return this.analyticsService.getAverageOrderValueTrend(Math.min(days, 365));
+  }
 }

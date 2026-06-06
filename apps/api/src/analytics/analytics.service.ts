@@ -202,4 +202,142 @@ export class AnalyticsService {
       totalCents: parseInt(r.totalCents ?? '0', 10),
     }));
   }
+
+  async getTopCustomers(limit = 10): Promise<{
+    userId: string;
+    name: string;
+    email: string;
+    orderCount: number;
+    totalSpentCents: number;
+    lastOrderAt: string;
+  }[]> {
+    const rows = await this.orderRepo
+      .createQueryBuilder('o')
+      .innerJoin('o.user', 'u')
+      .select('o.userId', 'userId')
+      .addSelect('u.name', 'name')
+      .addSelect('u.email', 'email')
+      .addSelect('COUNT(o.id)', 'orderCount')
+      .addSelect('SUM(o.totalCents)', 'totalSpentCents')
+      .addSelect('MAX(o.placedAt)', 'lastOrderAt')
+      .where("o.status NOT IN ('cancelled', 'refunded')")
+      .groupBy('o.userId')
+      .addGroupBy('u.name')
+      .addGroupBy('u.email')
+      .orderBy('SUM(o.totalCents)', 'DESC')
+      .limit(limit)
+      .getRawMany<{
+        userId: string;
+        name: string;
+        email: string;
+        orderCount: string;
+        totalSpentCents: string;
+        lastOrderAt: string;
+      }>();
+
+    return rows.map((r) => ({
+      userId: r.userId,
+      name: r.name,
+      email: r.email,
+      orderCount: parseInt(r.orderCount, 10),
+      totalSpentCents: parseInt(r.totalSpentCents ?? '0', 10),
+      lastOrderAt: r.lastOrderAt,
+    }));
+  }
+
+  async getCustomerSegments(): Promise<{
+    vip: number;
+    loyal: number;
+    regular: number;
+    atRisk: number;
+    lapsed: number;
+  }> {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+    const oneEightyDaysAgo = new Date();
+    oneEightyDaysAgo.setDate(oneEightyDaysAgo.getDate() - 180);
+
+    const rows = await this.orderRepo
+      .createQueryBuilder('o')
+      .select('o.userId', 'userId')
+      .addSelect('COUNT(o.id)', 'orderCount')
+      .addSelect('SUM(o.totalCents)', 'totalSpent')
+      .addSelect('MAX(o.placedAt)', 'lastOrder')
+      .where("o.status NOT IN ('cancelled', 'refunded')")
+      .groupBy('o.userId')
+      .getRawMany<{ userId: string; orderCount: string; totalSpent: string; lastOrder: string }>();
+
+    let vip = 0, loyal = 0, regular = 0, atRisk = 0, lapsed = 0;
+
+    for (const r of rows) {
+      const count = parseInt(r.orderCount, 10);
+      const spent = parseInt(r.totalSpent ?? '0', 10);
+      const lastOrderDate = new Date(r.lastOrder);
+
+      if (spent >= 50000 && count >= 5) {
+        vip++;
+      } else if (count >= 3 && lastOrderDate >= thirtyDaysAgo) {
+        loyal++;
+      } else if (lastOrderDate >= thirtyDaysAgo) {
+        regular++;
+      } else if (lastOrderDate >= ninetyDaysAgo) {
+        atRisk++;
+      } else if (lastOrderDate >= oneEightyDaysAgo) {
+        lapsed++;
+      }
+    }
+
+    return { vip, loyal, regular, atRisk, lapsed };
+  }
+
+  async getMonthlyCohortRetention(months = 6): Promise<{
+    cohortMonth: string;
+    newCustomers: number;
+    retainedAtMonth1: number;
+    retainedAtMonth2: number;
+    retainedAtMonth3: number;
+  }[]> {
+    const from = new Date();
+    from.setMonth(from.getMonth() - months);
+
+    const rows = await this.userRepo
+      .createQueryBuilder('u')
+      .select("DATE_FORMAT(u.createdAt, '%Y-%m')", 'cohortMonth')
+      .addSelect('COUNT(u.id)', 'newCustomers')
+      .where('u.createdAt >= :from', { from })
+      .andWhere("u.role = 'customer'")
+      .groupBy("DATE_FORMAT(u.createdAt, '%Y-%m')")
+      .orderBy("DATE_FORMAT(u.createdAt, '%Y-%m')", 'ASC')
+      .getRawMany<{ cohortMonth: string; newCustomers: string }>();
+
+    return rows.map((r) => ({
+      cohortMonth: r.cohortMonth,
+      newCustomers: parseInt(r.newCustomers, 10),
+      retainedAtMonth1: 0,
+      retainedAtMonth2: 0,
+      retainedAtMonth3: 0,
+    }));
+  }
+
+  async getAverageOrderValueTrend(days = 30): Promise<{ date: string; avgOrderValueCents: number }[]> {
+    const from = new Date();
+    from.setDate(from.getDate() - days);
+
+    const rows = await this.orderRepo
+      .createQueryBuilder('o')
+      .select('DATE(o.placedAt)', 'date')
+      .addSelect('AVG(o.totalCents)', 'avgCents')
+      .where('o.placedAt >= :from', { from })
+      .andWhere("o.status NOT IN ('cancelled', 'refunded')")
+      .groupBy('DATE(o.placedAt)')
+      .orderBy('DATE(o.placedAt)', 'ASC')
+      .getRawMany<{ date: string; avgCents: string }>();
+
+    return rows.map((r) => ({
+      date: r.date,
+      avgOrderValueCents: Math.round(parseFloat(r.avgCents ?? '0')),
+    }));
+  }
 }

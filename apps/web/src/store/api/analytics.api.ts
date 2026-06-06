@@ -39,6 +39,36 @@ export interface HourlyDistribution {
   totalCents: number;
 }
 
+export interface TopCustomer {
+  userId: string;
+  name: string;
+  email: string;
+  orderCount: number;
+  totalSpentCents: number;
+  lastOrderAt: string;
+}
+
+export interface CustomerSegments {
+  vip: number;
+  loyal: number;
+  regular: number;
+  atRisk: number;
+  lapsed: number;
+}
+
+export interface CohortData {
+  cohortMonth: string;
+  newCustomers: number;
+  retainedAtMonth1: number;
+  retainedAtMonth2: number;
+  retainedAtMonth3: number;
+}
+
+export interface AovTrendPoint {
+  date: string;
+  avgOrderValueCents: number;
+}
+
 export const analyticsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getDashboardSummary: build.query<DashboardSummary, void>({
@@ -64,6 +94,22 @@ export const analyticsApi = apiSlice.injectEndpoints({
     getHourlyDistribution: build.query<HourlyDistribution[], void>({
       query: () => '/analytics/hourly-distribution',
     }),
+
+    getTopCustomers: build.query<TopCustomer[], number | void>({
+      query: (limit = 10) => `/analytics/top-customers?limit=${limit}`,
+    }),
+
+    getCustomerSegments: build.query<CustomerSegments, void>({
+      query: () => '/analytics/customer-segments',
+    }),
+
+    getCohortData: build.query<CohortData[], number | void>({
+      query: (months = 6) => `/analytics/cohort?months=${months}`,
+    }),
+
+    getAovTrend: build.query<AovTrendPoint[], number | void>({
+      query: (days = 30) => `/analytics/aov-trend?days=${days}`,
+    }),
   }),
 });
 
@@ -74,4 +120,8 @@ export const {
   useGetRepeatCustomerRateQuery,
   useGetRevenueByCatQuery,
   useGetHourlyDistributionQuery,
+  useGetTopCustomersQuery,
+  useGetCustomerSegmentsQuery,
+  useGetCohortDataQuery,
+  useGetAovTrendQuery,
 } = analyticsApi;
