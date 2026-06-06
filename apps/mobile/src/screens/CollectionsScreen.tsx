@@ -11,10 +11,9 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ShopStackParamList } from '@/navigation/types';
+import { fetchCollections as apiFetchCollections } from '@/api/catalog';
 
 type Nav = NativeStackNavigationProp<ShopStackParamList>;
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 const COLORS = {
   bg: '#0d1117',
@@ -98,9 +97,8 @@ export default function CollectionsScreen() {
     if (refresh) setRefreshing(true);
     else setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/collections`);
-      const data: CollectionDto[] = await res.json();
-      setCollections(Array.isArray(data) ? data.filter((c) => c.isActive) : []);
+      const data = await apiFetchCollections();
+      setCollections(data.filter((c) => c.isActive));
     } catch {
       setCollections([]);
     } finally {
