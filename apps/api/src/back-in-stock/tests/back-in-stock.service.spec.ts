@@ -4,14 +4,28 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { BackInStockService } from '../back-in-stock.service';
 import { BackInStockSubscription } from '../entities/back-in-stock.entity';
 
+const mockQb: any = {
+  select: jest.fn().mockReturnThis(),
+  addSelect: jest.fn().mockReturnThis(),
+  where: jest.fn().mockReturnThis(),
+  groupBy: jest.fn().mockReturnThis(),
+  addGroupBy: jest.fn().mockReturnThis(),
+  orderBy: jest.fn().mockReturnThis(),
+  limit: jest.fn().mockReturnThis(),
+  findAndCount: jest.fn(),
+  getRawMany: jest.fn(),
+};
+
 const mockRepo = {
   create: jest.fn(),
   save: jest.fn(),
   find: jest.fn(),
   findOne: jest.fn(),
+  findAndCount: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
   count: jest.fn(),
+  createQueryBuilder: jest.fn(() => mockQb),
 };
 
 function makeSub(overrides: Partial<BackInStockSubscription> = {}): BackInStockSubscription {
@@ -146,6 +160,27 @@ describe('BackInStockService', () => {
       const result = await service.hasSubscription('user-1', 'v-1');
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe('getMostRequestedVariants', () => {
+    it('returns ranked variants with pending count', async () => {
+      mockQb.getRawMany.mockResolvedValue([
+        { variantId: 'v-1', productId: 'p-1', pendingCount: '12' },
+        { variantId: 'v-2', productId: 'p-2', pendingCount: '7' },
+      ]);
+
+      const result = await service.getMostRequestedVariants(10);
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual({ variantId: 'v-1', productId: 'p-1', pendingCount: 12 });
+      expect(result[1].pendingCount).toBe(7);
+    });
+
+    it('returns empty array when no pending subscriptions', async () => {
+      mockQb.getRawMany.mockResolvedValue([]);
+      const result = await service.getMostRequestedVariants(5);
+      expect(result).toEqual([]);
     });
   });
 });
