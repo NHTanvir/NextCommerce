@@ -12,6 +12,7 @@ import {
   useGetCustomerSegmentsQuery,
   useGetAovTrendQuery,
 } from '@/store/api/analytics.api';
+import { useGetMostWishlistedQuery } from '@/store/api/wishlist.api';
 import styles from './analytics.module.scss';
 
 function formatCents(cents: number) {
@@ -29,6 +30,7 @@ export default function AdminAnalyticsPage() {
   const { data: topCustomers = [] } = useGetTopCustomersQuery(10);
   const { data: segments } = useGetCustomerSegmentsQuery();
   const { data: aovTrend = [] } = useGetAovTrendQuery(days);
+  const { data: mostWishlisted = [] } = useGetMostWishlistedQuery(10);
 
   const maxRevenue = Math.max(...revenue.map((r) => r.totalCents), 1);
   const maxCatRevenue = Math.max(...revByCat.map((r) => r.totalCents), 1);
@@ -288,6 +290,30 @@ export default function AdminAnalyticsPage() {
                       ? new Date(c.lastOrderAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                       : '—'}
                   </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {/* Most wishlisted */}
+      {mostWishlisted.length > 0 && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Most Wishlisted Products</h2>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Product ID</th>
+                <th>Wishlist Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mostWishlisted.map((w, i) => (
+                <tr key={w.productId}>
+                  <td className={styles.rank}>{i + 1}</td>
+                  <td className={styles.productName}>{w.productId}</td>
+                  <td>♥ {w.count}</td>
                 </tr>
               ))}
             </tbody>
