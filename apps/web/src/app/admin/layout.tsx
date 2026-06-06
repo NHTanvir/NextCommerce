@@ -27,6 +27,7 @@ const ADMIN_NAV = [
   { href: '/admin/audit', label: 'Audit Log', icon: '🔍' },
   { href: '/admin/gift-cards', label: 'Gift Cards', icon: '🎁' },
   { href: '/admin/referrals', label: 'Referrals', icon: '🔗' },
+  { href: '/admin/tags', label: 'Tags', icon: '🏷️' },
   { href: '/admin/import', label: 'Import', icon: '📥' },
 ];
 

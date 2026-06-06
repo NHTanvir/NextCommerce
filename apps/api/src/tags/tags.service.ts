@@ -19,6 +19,27 @@ export class TagsService {
     return tags.map((t) => t.name);
   }
 
+  async getTagsWithCounts(): Promise<Array<{ name: string; productCount: number }>> {
+    const rows = await this.tagRepo
+      .createQueryBuilder('t')
+      .select('t.name', 'name')
+      .addSelect('COUNT(t.productId)', 'productCount')
+      .groupBy('t.name')
+      .orderBy('productCount', 'DESC')
+      .getRawMany<{ name: string; productCount: string }>();
+    return rows.map((r) => ({ name: r.name, productCount: Number(r.productCount) }));
+  }
+
+  async getProductsForTag(tag: string): Promise<Array<{ productId: string }>> {
+    const rows = await this.tagRepo.find({ where: { name: tag } });
+    return rows.map((r) => ({ productId: r.productId }));
+  }
+
+  async removeAllTagsForName(name: string): Promise<{ deleted: number }> {
+    const result = await this.tagRepo.delete({ name });
+    return { deleted: result.affected ?? 0 };
+  }
+
   async findProductsByTag(tag: string): Promise<string[]> {
     const rows = await this.tagRepo.find({ where: { name: tag } });
     return rows.map((r) => r.productId);
