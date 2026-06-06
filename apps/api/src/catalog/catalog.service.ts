@@ -365,6 +365,51 @@ export class CatalogService {
     }));
   }
 
+  async getCatalogHealth(): Promise<{
+    total: number;
+    active: number;
+    noImages: number;
+    noDescription: number;
+    noVariants: number;
+    outOfStock: number;
+    missingCategory: number;
+  }> {
+    const [total, active] = await Promise.all([
+      this.productRepo.count(),
+      this.productRepo.count({ where: { isActive: true } }),
+    ]);
+
+    const [noImages, noDescription, noVariants, outOfStock, missingCategory] = await Promise.all([
+      this.productRepo
+        .createQueryBuilder('p')
+        .leftJoin('p.images', 'img')
+        .where('img.id IS NULL')
+        .getCount(),
+      this.productRepo
+        .createQueryBuilder('p')
+        .where('p.description IS NULL OR p.description = :empty', { empty: '' })
+        .getCount(),
+      this.productRepo
+        .createQueryBuilder('p')
+        .leftJoin('p.variants', 'v')
+        .where('v.id IS NULL')
+        .getCount(),
+      this.productRepo
+        .createQueryBuilder('p')
+        .leftJoin('p.variants', 'v')
+        .where('p.isActive = true')
+        .groupBy('p.id')
+        .having('COALESCE(SUM(v.stockQty), 0) = 0')
+        .getCount(),
+      this.productRepo
+        .createQueryBuilder('p')
+        .where('p.categoryId IS NULL')
+        .getCount(),
+    ]);
+
+    return { total, active, noImages, noDescription, noVariants, outOfStock, missingCategory };
+  }
+
   private toDto(p: Product) {
     const discountPct = p.salePriceCents && p.salePriceCents < p.basePriceCents
       ? Math.round(((p.basePriceCents - p.salePriceCents) / p.basePriceCents) * 100)

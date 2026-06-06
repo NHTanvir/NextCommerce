@@ -192,6 +192,15 @@ export class CatalogController {
     return this.catalogService.searchSuggestions(q, limit ? parseInt(limit, 10) : 8);
   }
 
+  @Get('health')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Get catalog health stats (missing images, descriptions, variants)' })
+  getCatalogHealth() {
+    return this.catalogService.getCatalogHealth();
+  }
+
   @Patch('products/bulk-price')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
