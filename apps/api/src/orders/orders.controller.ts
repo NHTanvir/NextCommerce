@@ -84,6 +84,14 @@ export class OrdersController {
     return this.ordersService.findAllByUser(userId);
   }
 
+  @Get('admin/status-breakdown')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get order count and revenue by status' })
+  getStatusBreakdown() {
+    return this.ordersService.getStatusBreakdown();
+  }
+
   @Get('admin/export')
   @UseGuards(RolesGuard)
   @Roles('admin')

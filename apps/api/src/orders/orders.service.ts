@@ -263,4 +263,20 @@ export class OrdersService {
 
     return [header, ...rows].join('\n');
   }
+
+  async getStatusBreakdown(): Promise<Array<{ status: string; count: number; totalCents: number }>> {
+    const rows = await this.orderRepo
+      .createQueryBuilder('o')
+      .select('o.status', 'status')
+      .addSelect('COUNT(o.id)', 'count')
+      .addSelect('COALESCE(SUM(o.totalCents), 0)', 'totalCents')
+      .groupBy('o.status')
+      .orderBy('COUNT(o.id)', 'DESC')
+      .getRawMany<{ status: string; count: string; totalCents: string }>();
+    return rows.map((r) => ({
+      status: r.status,
+      count: Number(r.count),
+      totalCents: Number(r.totalCents),
+    }));
+  }
 }
