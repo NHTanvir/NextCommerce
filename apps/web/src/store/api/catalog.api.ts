@@ -135,6 +135,18 @@ export const catalogApi = apiSlice.injectEndpoints({
     >({
       query: ({ q, limit = 8 }) => `/catalog/search/suggestions?q=${encodeURIComponent(q)}&limit=${limit}`,
     }),
+
+    getCatalogHealth: build.query<{
+      total: number;
+      active: number;
+      noImages: number;
+      noDescription: number;
+      noVariants: number;
+      outOfStock: number;
+      missingCategory: number;
+    }, void>({
+      query: () => '/catalog/health',
+    }),
   }),
 });
 
@@ -152,4 +164,5 @@ export const {
   useGetNewArrivalsQuery,
   useGetFeaturedProductsQuery,
   useGetSearchSuggestionsQuery,
+  useGetCatalogHealthQuery,
 } = catalogApi;
