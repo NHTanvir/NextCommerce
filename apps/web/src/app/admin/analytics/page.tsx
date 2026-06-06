@@ -8,6 +8,9 @@ import {
   useGetRepeatCustomerRateQuery,
   useGetRevenueByCatQuery,
   useGetHourlyDistributionQuery,
+  useGetTopCustomersQuery,
+  useGetCustomerSegmentsQuery,
+  useGetAovTrendQuery,
 } from '@/store/api/analytics.api';
 import styles from './analytics.module.scss';
 
@@ -23,6 +26,9 @@ export default function AdminAnalyticsPage() {
   const { data: repeatRate } = useGetRepeatCustomerRateQuery();
   const { data: revByCat = [] } = useGetRevenueByCatQuery(8);
   const { data: hourly = [] } = useGetHourlyDistributionQuery();
+  const { data: topCustomers = [] } = useGetTopCustomersQuery(10);
+  const { data: segments } = useGetCustomerSegmentsQuery();
+  const { data: aovTrend = [] } = useGetAovTrendQuery(days);
 
   const maxRevenue = Math.max(...revenue.map((r) => r.totalCents), 1);
   const maxCatRevenue = Math.max(...revByCat.map((r) => r.totalCents), 1);
@@ -192,6 +198,100 @@ export default function AdminAnalyticsPage() {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* AOV trend */}
+      {aovTrend.length > 0 && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Average Order Value Trend</h2>
+          <div className={styles.chartWrap}>
+            {(() => {
+              const maxAov = Math.max(...aovTrend.map((p) => p.avgOrderValueCents), 1);
+              return aovTrend.map((p) => (
+                <div key={p.date} className={styles.bar}>
+                  <div
+                    className={styles.barFillAov}
+                    style={{ height: `${Math.max(4, (p.avgOrderValueCents / maxAov) * 180)}px` }}
+                    title={`${p.date}: ${formatCents(p.avgOrderValueCents)}`}
+                  />
+                  <span className={styles.barLabel}>
+                    {new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* Customer segments */}
+      {segments && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Customer Segments</h2>
+          <div className={styles.segmentGrid}>
+            {[
+              { key: 'vip', label: 'VIP', desc: '5+ orders, $500+ spend', color: '#f59e0b', icon: '👑' },
+              { key: 'loyal', label: 'Loyal', desc: '3+ orders, active 30d', color: '#3fb950', icon: '⭐' },
+              { key: 'regular', label: 'Regular', desc: 'Active in last 30 days', color: '#58a6ff', icon: '👤' },
+              { key: 'atRisk', label: 'At Risk', desc: 'Inactive 30–90 days', color: '#f59e0b', icon: '⚠️' },
+              { key: 'lapsed', label: 'Lapsed', desc: 'Inactive 90–180 days', color: '#e94560', icon: '❌' },
+            ].map(({ key, label, desc, color, icon }) => (
+              <div key={key} className={styles.segmentCard}>
+                <span className={styles.segmentIcon}>{icon}</span>
+                <span className={styles.segmentCount} style={{ color }}>
+                  {(segments as any)[key] ?? 0}
+                </span>
+                <span className={styles.segmentLabel}>{label}</span>
+                <span className={styles.segmentDesc}>{desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Top customers */}
+      {topCustomers.length > 0 && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Top Customers</h2>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Customer</th>
+                <th>Orders</th>
+                <th>Total Spent</th>
+                <th>Last Order</th>
+              </tr>
+            </thead>
+            <tbody>
+              {topCustomers.map((c, i) => (
+                <tr key={c.userId}>
+                  <td className={styles.rank}>
+                    {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
+                  </td>
+                  <td>
+                    <div className={styles.customerCell}>
+                      <div className={styles.customerAvatar}>
+                        {(c.name || c.email || '?').charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className={styles.customerName}>{c.name || 'Anonymous'}</p>
+                        <p className={styles.customerEmail}>{c.email}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{c.orderCount}</td>
+                  <td className={styles.revenue}>{formatCents(c.totalSpentCents)}</td>
+                  <td className={styles.date}>
+                    {c.lastOrderAt
+                      ? new Date(c.lastOrderAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                      : '—'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
