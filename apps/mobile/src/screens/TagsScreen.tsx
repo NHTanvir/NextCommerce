@@ -11,10 +11,9 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ShopStackParamList } from '@/navigation/types';
+import { fetchTags as apiFetchTags } from '@/api/catalog';
 
 type Nav = NativeStackNavigationProp<ShopStackParamList>;
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 const COLORS = {
   bg: '#0d1117',
@@ -52,9 +51,8 @@ export default function TagsScreen() {
   const [view, setView] = useState<'cloud' | 'list'>('cloud');
 
   useEffect(() => {
-    fetch(`${API_URL}/api/tags`)
-      .then((r) => r.json())
-      .then((data) => setTags(Array.isArray(data) ? data : []))
+    apiFetchTags()
+      .then((data) => setTags(data))
       .catch(() => setTags([]))
       .finally(() => setLoading(false));
   }, []);
