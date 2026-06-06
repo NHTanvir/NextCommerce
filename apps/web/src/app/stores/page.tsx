@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { Metadata } from 'next';
 import styles from './stores.module.scss';
 
 interface Store {
