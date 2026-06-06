@@ -36,6 +36,14 @@ export const wishlistApi = apiSlice.injectEndpoints({
       query: (productId) => ({ url: `/wishlist/${productId}/toggle`, method: 'POST' }),
       invalidatesTags: ['Wishlist'],
     }),
+
+    getMostWishlisted: build.query<Array<{ productId: string; count: number }>, number | void>({
+      query: (limit = 10) => `/wishlist/admin/most-wishlisted?limit=${limit}`,
+    }),
+
+    getProductWishlistCount: build.query<number, string>({
+      query: (productId) => `/wishlist/count/${productId}`,
+    }),
   }),
 });
 
@@ -44,4 +52,6 @@ export const {
   useAddToWishlistApiMutation,
   useRemoveFromWishlistApiMutation,
   useToggleWishlistApiMutation,
+  useGetMostWishlistedQuery,
+  useGetProductWishlistCountQuery,
 } = wishlistApi;
