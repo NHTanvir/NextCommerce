@@ -31,6 +31,7 @@ import BrandsScreen from '@/screens/BrandsScreen';
 import DealsScreen from '@/screens/DealsScreen';
 import CollectionsScreen from '@/screens/CollectionsScreen';
 import TagsScreen from '@/screens/TagsScreen';
+import RecentlyViewedScreen from '@/screens/RecentlyViewedScreen';
 import HelpScreen from '@/screens/HelpScreen';
 import AddressBookScreen from '@/screens/AddressBookScreen';
 import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
@@ -93,6 +94,7 @@ function AccountNavigator() {
       <AccountStack.Screen name="StoreLocator" component={StoreLocatorScreen} options={{ title: 'Find a Store' }} />
       <AccountStack.Screen name="Help" component={HelpScreen} options={{ title: 'Help Center' }} />
       <AccountStack.Screen name="AddressBook" component={AddressBookScreen} options={{ title: 'My Addresses' }} />
+      <AccountStack.Screen name="RecentlyViewed" component={RecentlyViewedScreen} options={{ title: 'Recently Viewed' }} />
     </AccountStack.Navigator>
   );
 }

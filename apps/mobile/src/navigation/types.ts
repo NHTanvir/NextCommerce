@@ -57,6 +57,7 @@ export type AccountStackParamList = {
   StoreLocator: undefined;
   Help: undefined;
   AddressBook: undefined;
+  RecentlyViewed: undefined;
 };
 
 export type WishlistStackParamList = {

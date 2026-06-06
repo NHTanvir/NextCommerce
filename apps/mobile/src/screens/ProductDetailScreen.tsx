@@ -13,6 +13,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp, NativeStackRouteProp } from '@react-navigation/native-stack';
 import type { ProductDto } from '@nextcommerce/shared';
 import { fetchProduct } from '@/api/catalog';
+import { trackRecentlyViewed } from '@/screens/RecentlyViewedScreen';
 import type { ShopStackParamList } from '@/navigation/types';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
@@ -47,6 +48,15 @@ export function ProductDetailScreen() {
       .then((p) => {
         setProduct(p);
         setLoading(false);
+        trackRecentlyViewed({
+          id: p.id,
+          slug: p.slug,
+          title: p.title,
+          brand: p.brand ?? '',
+          basePriceCents: p.variants?.[0]?.priceCents ?? 0,
+          imageUrl: p.images?.[0]?.url,
+          categoryName: (p as any).categoryName,
+        });
         fetch(`${API_URL}/reviews?productId=${p.id}`)
           .then((r) => r.json())
           .then((reviews: Array<{ rating: number }>) => {
