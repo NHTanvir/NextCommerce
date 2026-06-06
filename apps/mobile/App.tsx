@@ -35,6 +35,7 @@ import RecentlyViewedScreen from '@/screens/RecentlyViewedScreen';
 import NewArrivalsScreen from '@/screens/NewArrivalsScreen';
 import HelpScreen from '@/screens/HelpScreen';
 import AddressBookScreen from '@/screens/AddressBookScreen';
+import PriceAlertsScreen from '@/screens/PriceAlertsScreen';
 import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
 
 const ShopStack = createNativeStackNavigator<ShopStackParamList>();
@@ -97,6 +98,7 @@ function AccountNavigator() {
       <AccountStack.Screen name="Help" component={HelpScreen} options={{ title: 'Help Center' }} />
       <AccountStack.Screen name="AddressBook" component={AddressBookScreen} options={{ title: 'My Addresses' }} />
       <AccountStack.Screen name="RecentlyViewed" component={RecentlyViewedScreen} options={{ title: 'Recently Viewed' }} />
+      <AccountStack.Screen name="PriceAlerts" component={PriceAlertsScreen} options={{ title: 'Price Alerts' }} />
     </AccountStack.Navigator>
   );
 }

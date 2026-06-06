@@ -59,6 +59,7 @@ export type AccountStackParamList = {
   Help: undefined;
   AddressBook: undefined;
   RecentlyViewed: undefined;
+  PriceAlerts: undefined;
 };
 
 export type WishlistStackParamList = {

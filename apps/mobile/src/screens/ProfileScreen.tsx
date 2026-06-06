@@ -81,6 +81,11 @@ export function ProfileScreen() {
       onPress: () => navigation.navigate('StoreLocator'),
     },
     {
+      icon: '📉',
+      label: 'Price Alerts',
+      onPress: () => navigation.navigate('PriceAlerts'),
+    },
+    {
       icon: '👁️',
       label: 'Recently Viewed',
       onPress: () => navigation.navigate('RecentlyViewed'),
