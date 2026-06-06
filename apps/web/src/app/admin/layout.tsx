@@ -30,6 +30,7 @@ const ADMIN_NAV = [
   { href: '/admin/referrals', label: 'Referrals', icon: '🔗' },
   { href: '/admin/tags', label: 'Tags', icon: '🏷️' },
   { href: '/admin/import', label: 'Import', icon: '📥' },
+  { href: '/admin/catalog-health', label: 'Catalog Health', icon: '🩺' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
