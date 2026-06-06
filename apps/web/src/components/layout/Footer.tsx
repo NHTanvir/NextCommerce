@@ -18,6 +18,7 @@ const FOOTER_LINKS = {
     { href: '/account/loyalty', label: 'Loyalty Rewards' },
     { href: '/wishlist', label: 'Wishlist' },
     { href: '/compare', label: 'Compare Products' },
+    { href: '/recently-viewed', label: 'Recently Viewed' },
   ],
   Support: [
     { href: '/faq', label: 'FAQ' },

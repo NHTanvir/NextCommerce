@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useGetProductQuery } from '@/store/api/catalog.api';
 import { useAddToCartMutation } from '@/store/api/cart.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addItem, setCartOpen } from '@/store/slices/cart.slice';
+import { trackView } from '@/store/slices/recentlyViewed.slice';
 import { RelatedProducts } from '@/components/features/RelatedProducts';
 import { ProductReviews } from '@/components/features/ProductReviews';
 import { ProductSpecifications } from '@/components/features/ProductSpecifications';
@@ -50,6 +51,20 @@ export default function ProductPage() {
       </div>
     );
   }
+
+  useEffect(() => {
+    if (product) {
+      dispatch(trackView({
+        id: product.id,
+        slug: product.slug,
+        title: product.title,
+        brand: product.brand ?? '',
+        basePriceCents: product.variants?.[0]?.priceCents ?? 0,
+        imageUrl: product.images?.[0]?.url,
+        categoryName: product.categoryName,
+      }));
+    }
+  }, [product?.id]);
 
   const selectedVariant = product.variants?.find((v) => v.id === selectedVariantId) ?? null;
   const price = selectedVariant?.priceCents ?? product.variants?.[0]?.priceCents ?? 0;
