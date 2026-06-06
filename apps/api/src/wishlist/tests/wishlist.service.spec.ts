@@ -4,6 +4,15 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { WishlistService } from '../wishlist.service';
 import { WishlistItem } from '../entities/wishlist-item.entity';
 
+const mockQb: any = {
+  select: jest.fn().mockReturnThis(),
+  addSelect: jest.fn().mockReturnThis(),
+  groupBy: jest.fn().mockReturnThis(),
+  orderBy: jest.fn().mockReturnThis(),
+  limit: jest.fn().mockReturnThis(),
+  getRawMany: jest.fn(),
+};
+
 const mockRepo = () => ({
   find: jest.fn(),
   findOne: jest.fn(),
@@ -11,6 +20,7 @@ const mockRepo = () => ({
   create: jest.fn(),
   save: jest.fn(),
   remove: jest.fn(),
+  createQueryBuilder: jest.fn(() => mockQb),
 });
 
 const userId = 'user-1';
@@ -103,6 +113,32 @@ describe('WishlistService', () => {
       repo.save.mockResolvedValue(item);
       const result = await service.toggle(userId, productId);
       expect(result).toEqual({ wishlisted: true });
+    });
+  });
+
+  describe('getMostWishlisted', () => {
+    it('returns parsed most-wishlisted products', async () => {
+      mockQb.getRawMany.mockResolvedValue([
+        { productId: 'p1', count: '15' },
+        { productId: 'p2', count: '8' },
+      ]);
+      const result = await service.getMostWishlisted(5);
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual({ productId: 'p1', count: 15 });
+    });
+
+    it('returns empty array when nothing wishlisted', async () => {
+      mockQb.getRawMany.mockResolvedValue([]);
+      expect(await service.getMostWishlisted(10)).toEqual([]);
+    });
+  });
+
+  describe('getCountForProduct', () => {
+    it('returns count for given product', async () => {
+      repo.count.mockResolvedValue(42);
+      const result = await service.getCountForProduct('p1');
+      expect(result).toBe(42);
+      expect(repo.count).toHaveBeenCalledWith({ where: { productId: 'p1' } });
     });
   });
 });
