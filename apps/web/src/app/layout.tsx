@@ -4,6 +4,7 @@ import { Providers } from './providers';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/features/cart/CartDrawer';
+import { CompareBar } from '@/components/ui/CompareBar';
 import './globals.scss';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main style={{ flex: 1 }}>{children}</main>
             <Footer />
             <CartDrawer />
+            <CompareBar />
           </div>
         </Providers>
       </body>

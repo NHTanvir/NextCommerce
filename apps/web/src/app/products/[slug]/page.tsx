@@ -8,6 +8,7 @@ import { useAddToCartMutation } from '@/store/api/cart.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addItem, setCartOpen } from '@/store/slices/cart.slice';
 import { trackView } from '@/store/slices/recentlyViewed.slice';
+import { addToCompare, removeFromCompare, selectIsComparing, selectCompareCount } from '@/store/slices/compare.slice';
 import { RelatedProducts } from '@/components/features/RelatedProducts';
 import { ProductReviews } from '@/components/features/ProductReviews';
 import { ProductSpecifications } from '@/components/features/ProductSpecifications';
@@ -24,6 +25,8 @@ export default function ProductPage() {
 
   const { data: product, isLoading } = useGetProductQuery(slug);
   const [addToCartApi] = useAddToCartMutation();
+  const isComparing = useAppSelector(product ? selectIsComparing(product.id) : () => false);
+  const compareCount = useAppSelector(selectCompareCount);
 
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
@@ -219,6 +222,28 @@ export default function ProductPage() {
             productTitle={product.title}
           />
           <SizeGuide />
+          <button
+            className={`btn btn--ghost btn--sm ${styles.compareAction}`}
+            onClick={() => {
+              if (isComparing) {
+                dispatch(removeFromCompare(product.id));
+              } else if (compareCount < 4) {
+                dispatch(addToCompare({
+                  id: product.id,
+                  slug: product.slug,
+                  title: product.title,
+                  brand: product.brand ?? '',
+                  basePriceCents: price,
+                  imageUrl: product.images?.[0]?.url,
+                  categoryName: (product as any).categoryName,
+                }));
+              }
+            }}
+            disabled={!isComparing && compareCount >= 4}
+            title={!isComparing && compareCount >= 4 ? 'Compare list full (max 4)' : undefined}
+          >
+            {isComparing ? '⚖ Remove from Compare' : '⚖ Add to Compare'}
+          </button>
         </div>
       </div>
 

@@ -88,6 +88,40 @@
   }
 }
 
+.compareBtn {
+  position: absolute;
+  top: 0.5rem;
+  right: 2.5rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.2s, transform 0.2s, color 0.2s, background 0.2s;
+
+  .card:hover & { opacity: 1; transform: scale(1); }
+
+  &:hover:not(:disabled) { background: rgba(88, 166, 255, 0.2); color: #58a6ff; }
+  &:disabled { opacity: 0.3; cursor: default; }
+
+  &.comparing {
+    opacity: 1;
+    color: #58a6ff;
+    background: rgba(88, 166, 255, 0.15);
+    border-color: rgba(88, 166, 255, 0.3);
+    transform: scale(1);
+  }
+}
+
 .quickAdd {
   position: absolute;
   bottom: 0;

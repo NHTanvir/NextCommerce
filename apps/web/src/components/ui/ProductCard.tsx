@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { toggleWishlist, selectWishlistItems } from '@/store/slices/wishlist.slice';
+import { addToCompare, removeFromCompare, selectIsComparing, selectCompareCount } from '@/store/slices/compare.slice';
 import type { ProductDto } from '@nextcommerce/shared';
 import styles from './ProductCard.module.scss';
 
@@ -24,6 +25,8 @@ export function ProductCard({ product }: Props) {
   const dispatch = useAppDispatch();
   const wishlistItems = useAppSelector(selectWishlistItems);
   const isWishlisted = wishlistItems.some((i) => i.productId === product.id);
+  const isComparing = useAppSelector(selectIsComparing(product.id));
+  const compareCount = useAppSelector(selectCompareCount);
 
   const price = getMinPrice(product);
   const imageUrl = product.images?.[0]?.url;
@@ -42,6 +45,24 @@ export function ProductCard({ product }: Props) {
         addedAt: new Date().toISOString(),
       }),
     );
+  };
+
+  const handleCompareToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isComparing) {
+      dispatch(removeFromCompare(product.id));
+    } else if (compareCount < 4) {
+      dispatch(addToCompare({
+        id: product.id,
+        slug: product.slug,
+        title: product.title,
+        brand: product.brand ?? '',
+        basePriceCents: price,
+        imageUrl: imageUrl,
+        categoryName: (product as any).categoryName,
+      }));
+    }
   };
 
   return (
@@ -68,6 +89,15 @@ export function ProductCard({ product }: Props) {
           title={isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}
         >
           {isWishlisted ? '♥' : '♡'}
+        </button>
+        <button
+          className={`${styles.compareBtn} ${isComparing ? styles.comparing : ''}`}
+          onClick={handleCompareToggle}
+          aria-label={isComparing ? 'Remove from compare' : 'Add to compare'}
+          title={isComparing ? 'Remove from compare' : compareCount >= 4 ? 'Compare list full' : 'Compare'}
+          disabled={!isComparing && compareCount >= 4}
+        >
+          ⚖
         </button>
       </div>
 
