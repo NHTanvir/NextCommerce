@@ -12,10 +12,9 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ShopStackParamList } from '@/navigation/types';
+import { fetchNewArrivals as apiFetchNewArrivals, fetchCategories as apiFetchCategories } from '@/api/catalog';
 
 type Nav = NativeStackNavigationProp<ShopStackParamList>;
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 const COLORS = {
   bg: '#0d1117',
@@ -86,20 +85,19 @@ export default function NewArrivalsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const fetchProducts = useCallback(async (p: number, refresh = false) => {
+  const fetchProducts = useCallback(async (_p: number, refresh = false) => {
     if (refresh) setRefreshing(true);
-    else if (p === 1) setLoading(true);
-    else setLoadingMore(true);
+    else setLoading(true);
     try {
-      const catParam = selectedCat ? `&categoryId=${selectedCat}` : '';
-      const res = await fetch(`${API_URL}/catalog/products?limit=16&page=${p}&sort=newest${catParam}`);
-      const data = await res.json();
-      const items: Product[] = data.data ?? [];
-      setProducts((prev) => (p === 1 || refresh ? items : [...prev, ...items]));
-      setTotalPages(data.totalPages ?? 1);
-      setPage(p);
+      let items = await apiFetchNewArrivals(30, 40);
+      if (selectedCat) {
+        items = items.filter((p: any) => p.categoryId === selectedCat || p.category?.id === selectedCat);
+      }
+      setProducts(refresh ? items : items);
+      setTotalPages(1);
+      setPage(1);
     } catch {
-      if (p === 1 || refresh) setProducts([]);
+      setProducts([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -108,8 +106,7 @@ export default function NewArrivalsScreen() {
   }, [selectedCat]);
 
   useEffect(() => {
-    fetch(`${API_URL}/catalog/categories`)
-      .then((r) => r.json())
+    apiFetchCategories()
       .then((data) => setCategories(Array.isArray(data) ? data : []))
       .catch(() => {});
   }, []);
