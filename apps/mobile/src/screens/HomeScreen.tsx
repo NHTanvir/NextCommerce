@@ -258,6 +258,19 @@ export default function HomeScreen() {
         </View>
       )}
 
+      {/* Deals banner */}
+      <TouchableOpacity
+        style={styles.dealsBanner}
+        onPress={() => (navigation as any).navigate('Deals')}
+        activeOpacity={0.85}
+      >
+        <View>
+          <Text style={styles.dealsBannerLabel}>🔥 Today's Deals</Text>
+          <Text style={styles.dealsBannerSub}>Limited-time savings on top picks</Text>
+        </View>
+        <Text style={styles.dealsBannerArrow}>→</Text>
+      </TouchableOpacity>
+
       {/* CTA */}
       <TouchableOpacity style={styles.ctaBanner} onPress={goToList} activeOpacity={0.85}>
         <Text style={styles.ctaTitle}>Shop All Products</Text>
@@ -459,6 +472,33 @@ const styles = StyleSheet.create({
     color: COLORS.muted,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  dealsBanner: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    backgroundColor: '#1e1020',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLORS.accent + '40',
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  dealsBannerLabel: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: COLORS.text,
+    marginBottom: 2,
+  },
+  dealsBannerSub: {
+    fontSize: 12,
+    color: COLORS.muted,
+  },
+  dealsBannerArrow: {
+    fontSize: 20,
+    color: COLORS.accent,
+    fontWeight: '700',
   },
   ctaBanner: {
     margin: 16,
