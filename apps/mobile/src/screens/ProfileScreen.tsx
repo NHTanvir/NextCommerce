@@ -86,6 +86,11 @@ export function ProfileScreen() {
       onPress: () => navigation.navigate('PriceAlerts'),
     },
     {
+      icon: '🔔',
+      label: 'Back in Stock',
+      onPress: () => navigation.navigate('BackInStock'),
+    },
+    {
       icon: '👁️',
       label: 'Recently Viewed',
       onPress: () => navigation.navigate('RecentlyViewed'),
