@@ -13,7 +13,7 @@ interface QuickResult {
   slug: string;
   title: string;
   brand: string;
-  basePriceCents: number;
+  priceCents: number;
 }
 
 export function SearchBar() {
@@ -36,11 +36,11 @@ export function SearchBar() {
     try {
       setLoading(true);
       const res = await fetch(
-        `${API_URL}/api/catalog/products?search=${encodeURIComponent(q)}&limit=5`,
+        `${API_URL}/api/catalog/search/suggestions?q=${encodeURIComponent(q)}&limit=8`,
       );
       if (res.ok) {
         const data = await res.json();
-        setResults(data.data ?? []);
+        setResults(Array.isArray(data) ? data : []);
       }
     } finally {
       setLoading(false);
@@ -114,7 +114,7 @@ export function SearchBar() {
                 <span className={styles.resultTitle}>{r.title}</span>
               </div>
               <span className={styles.resultPrice}>
-                ${(r.basePriceCents / 100).toFixed(2)}
+                ${(r.priceCents / 100).toFixed(2)}
               </span>
             </button>
           ))}

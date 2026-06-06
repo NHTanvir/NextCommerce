@@ -115,6 +115,26 @@ export const catalogApi = apiSlice.injectEndpoints({
       }),
       providesTags: [{ type: 'Product', id: 'deals' }],
     }),
+
+    getNewArrivals: build.query<ProductDto[], { days?: number; limit?: number } | void>({
+      query: (params = {}) => ({
+        url: '/catalog/new-arrivals',
+        params,
+      }),
+      providesTags: [{ type: 'Product', id: 'new-arrivals' }],
+    }),
+
+    getFeaturedProducts: build.query<ProductDto[], number | void>({
+      query: (limit = 12) => `/catalog/featured?limit=${limit}`,
+      providesTags: [{ type: 'Product', id: 'featured' }],
+    }),
+
+    getSearchSuggestions: build.query<
+      Array<{ id: string; slug: string; title: string; brand: string; priceCents: number }>,
+      { q: string; limit?: number }
+    >({
+      query: ({ q, limit = 8 }) => `/catalog/search/suggestions?q=${encodeURIComponent(q)}&limit=${limit}`,
+    }),
   }),
 });
 
@@ -129,4 +149,7 @@ export const {
   useDeactivateProductMutation,
   useGetBrandsQuery,
   useGetDealsQuery,
+  useGetNewArrivalsQuery,
+  useGetFeaturedProductsQuery,
+  useGetSearchSuggestionsQuery,
 } = catalogApi;

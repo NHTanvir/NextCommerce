@@ -300,6 +300,71 @@ export class CatalogService {
     return { updated: result.affected ?? 0 };
   }
 
+  async getNewArrivals(days = 30, limit = 20) {
+    const since = new Date();
+    since.setDate(since.getDate() - days);
+
+    const products = await this.productRepo
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.category', 'category')
+      .leftJoinAndSelect('p.variants', 'variants')
+      .where('p.isActive = true')
+      .andWhere('p.createdAt >= :since', { since })
+      .orderBy('p.createdAt', 'DESC')
+      .take(limit)
+      .getMany();
+
+    return products.map((p) => this.toDto(p));
+  }
+
+  async getFeatured(limit = 12) {
+    const products = await this.productRepo
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.category', 'category')
+      .leftJoinAndSelect('p.variants', 'variants')
+      .where('p.isActive = true')
+      .andWhere('p.salePriceCents IS NOT NULL')
+      .andWhere('p.salePriceCents < p.basePriceCents')
+      .orderBy('RAND()')
+      .take(limit)
+      .getMany();
+
+    if (products.length < limit) {
+      const remaining = limit - products.length;
+      const fallback = await this.productRepo
+        .createQueryBuilder('p')
+        .leftJoinAndSelect('p.category', 'category')
+        .leftJoinAndSelect('p.variants', 'variants')
+        .where('p.isActive = true')
+        .orderBy('RAND()')
+        .take(remaining)
+        .getMany();
+      const existingIds = new Set(products.map((p) => p.id));
+      products.push(...fallback.filter((p) => !existingIds.has(p.id)));
+    }
+
+    return products.map((p) => this.toDto(p));
+  }
+
+  async searchSuggestions(q: string, limit = 8) {
+    if (!q || q.length < 2) return [];
+    const products = await this.productRepo
+      .createQueryBuilder('p')
+      .where('p.isActive = true')
+      .andWhere('(p.title LIKE :q OR p.brand LIKE :q)', { q: `%${q}%` })
+      .select(['p.id', 'p.slug', 'p.title', 'p.brand', 'p.basePriceCents'])
+      .take(limit)
+      .getMany();
+
+    return products.map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      brand: p.brand,
+      priceCents: p.basePriceCents,
+    }));
+  }
+
   private toDto(p: Product) {
     const discountPct = p.salePriceCents && p.salePriceCents < p.basePriceCents
       ? Math.round(((p.basePriceCents - p.salePriceCents) / p.basePriceCents) * 100)

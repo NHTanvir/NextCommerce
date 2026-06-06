@@ -166,6 +166,33 @@ export class CatalogController {
     );
   }
 
+  @Get('new-arrivals')
+  @ApiOperation({ summary: 'Get recently added products' })
+  getNewArrivals(
+    @Query('days') days?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.catalogService.getNewArrivals(
+      days ? parseInt(days, 10) : 30,
+      limit ? parseInt(limit, 10) : 20,
+    );
+  }
+
+  @Get('featured')
+  @ApiOperation({ summary: 'Get featured products (sale items + fallback)' })
+  getFeatured(@Query('limit') limit?: string) {
+    return this.catalogService.getFeatured(limit ? parseInt(limit, 10) : 12);
+  }
+
+  @Get('search/suggestions')
+  @ApiOperation({ summary: 'Get typeahead search suggestions' })
+  getSearchSuggestions(
+    @Query('q') q: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.catalogService.searchSuggestions(q, limit ? parseInt(limit, 10) : 8);
+  }
+
   @Patch('products/bulk-price')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
