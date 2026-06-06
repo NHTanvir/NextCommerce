@@ -1,58 +1,252 @@
 'use client';
 
 import { useState } from 'react';
-import { useGetProductsQuery } from '@/store/api/catalog.api';
-import styles from '../admin.module.scss';
+import Link from 'next/link';
+import { useGetProductsQuery, useGetCategoriesQuery, useGetBrandsQuery, useDeactivateProductMutation } from '@/store/api/catalog.api';
+import styles from './products.module.scss';
+
+function formatPrice(cents: number) {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest First' },
+  { value: 'oldest', label: 'Oldest First' },
+  { value: 'price_asc', label: 'Price: Low → High' },
+  { value: 'price_desc', label: 'Price: High → Low' },
+  { value: 'az', label: 'A → Z' },
+  { value: 'za', label: 'Z → A' },
+];
 
 export default function AdminProductsPage() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useGetProductsQuery({ page, limit: 20 });
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [brand, setBrand] = useState('');
+  const [sort, setSort] = useState('newest');
+  const [deactivating, setDeactivating] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState('');
+
+  const { data, isLoading, refetch } = useGetProductsQuery({
+    page,
+    limit: 20,
+    search: search || undefined,
+    categoryId: categoryId || undefined,
+    brand: brand || undefined,
+  });
+
+  const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: brands = [] } = useGetBrandsQuery();
+  const [deactivate] = useDeactivateProductMutation();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearch(searchInput.trim());
+    setPage(1);
+  };
+
+  const handleClear = () => {
+    setSearchInput('');
+    setSearch('');
+    setCategoryId('');
+    setBrand('');
+    setSort('newest');
+    setPage(1);
+  };
+
+  const handleDeactivate = async (id: string, title: string) => {
+    if (!confirm(`Deactivate "${title}"? It will be hidden from the storefront.`)) return;
+    setDeactivating(id);
+    try {
+      await deactivate(id).unwrap();
+      setSuccessMsg(`"${title}" deactivated.`);
+      refetch();
+      setTimeout(() => setSuccessMsg(''), 3000);
+    } catch {
+      alert('Failed to deactivate product.');
+    } finally {
+      setDeactivating(null);
+    }
+  };
+
+  const products: any[] = data?.data ?? (data as any)?.items ?? [];
+  const totalPages = data?.totalPages ?? 1;
+  const total = data?.total ?? 0;
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.pageTitle}>Products</h1>
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Products</h1>
+          <p className={styles.subtitle}>{total.toLocaleString()} total products</p>
+        </div>
+        <div className={styles.headerActions}>
+          <Link href="/admin/products/create" className="btn btn--primary btn--sm">
+            + New Product
+          </Link>
+          <Link href="/admin/import" className="btn btn--ghost btn--sm">
+            Import CSV
+          </Link>
+        </div>
+      </div>
 
+      {successMsg && <div className={styles.successBanner}>{successMsg}</div>}
+
+      {/* Filters */}
+      <div className={styles.filters}>
+        <form className={styles.searchForm} onSubmit={handleSearch}>
+          <input
+            className={styles.searchInput}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search by title, brand, or slug…"
+          />
+          <button type="submit" className="btn btn--primary btn--sm">Search</button>
+          {(search || categoryId || brand) && (
+            <button type="button" className="btn btn--ghost btn--sm" onClick={handleClear}>
+              Clear Filters
+            </button>
+          )}
+        </form>
+
+        <div className={styles.filterRow}>
+          <select
+            className={styles.filterSelect}
+            value={categoryId}
+            onChange={(e) => { setCategoryId(e.target.value); setPage(1); }}
+          >
+            <option value="">All Categories</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+
+          <select
+            className={styles.filterSelect}
+            value={brand}
+            onChange={(e) => { setBrand(e.target.value); setPage(1); }}
+          >
+            <option value="">All Brands</option>
+            {brands.map((b) => (
+              <option key={b.brand} value={b.brand}>{b.brand} ({b.productCount})</option>
+            ))}
+          </select>
+
+          <select
+            className={styles.filterSelect}
+            value={sort}
+            onChange={(e) => { setSort(e.target.value); setPage(1); }}
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Table */}
       <div className={styles.tableWrap}>
-        <table>
+        <table className={styles.table}>
           <thead>
             <tr>
-              <th>Title</th>
+              <th>Product</th>
               <th>Brand</th>
               <th>Category</th>
+              <th>Price</th>
               <th>Variants</th>
-              <th>Min Price</th>
+              <th>Status</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {isLoading && (
-              <tr><td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>Loading…</td></tr>
+              <tr>
+                <td colSpan={7} className={styles.loadingRow}>Loading products…</td>
+              </tr>
             )}
-            {data?.items.map((p) => {
+            {!isLoading && products.length === 0 && (
+              <tr>
+                <td colSpan={7} className={styles.emptyRow}>
+                  No products found.{search && ` Try a different search term.`}
+                </td>
+              </tr>
+            )}
+            {products.map((p: any) => {
               const minPrice = p.variants?.length
-                ? Math.min(...p.variants.map((v) => v.priceCents))
-                : 0;
+                ? Math.min(...p.variants.map((v: any) => v.priceCents))
+                : p.basePriceCents ?? 0;
               return (
                 <tr key={p.id}>
-                  <td style={{ fontWeight: 600 }}>{p.title}</td>
-                  <td style={{ color: 'var(--color-text-muted)' }}>{p.brand ?? '—'}</td>
-                  <td style={{ color: 'var(--color-text-muted)' }}>{p.category?.name ?? '—'}</td>
-                  <td style={{ color: 'var(--color-text-muted)' }}>{p.variants?.length ?? 0}</td>
-                  <td style={{ fontWeight: 700 }}>${(minPrice / 100).toFixed(2)}</td>
+                  <td>
+                    <div className={styles.productCell}>
+                      {p.images?.[0]?.url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.images[0].url} alt={p.title} className={styles.productThumb} />
+                      ) : (
+                        <div className={styles.productThumbPlaceholder}>👟</div>
+                      )}
+                      <div>
+                        <p className={styles.productTitle}>{p.title}</p>
+                        <p className={styles.productSlug}>{p.slug}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className={styles.muted}>{p.brand ?? '—'}</td>
+                  <td className={styles.muted}>{p.category?.name ?? p.categoryName ?? '—'}</td>
+                  <td className={styles.price}>{formatPrice(minPrice)}</td>
+                  <td className={styles.center}>{p.variants?.length ?? 0}</td>
+                  <td>
+                    <span className={p.isActive !== false ? styles.badgeActive : styles.badgeInactive}>
+                      {p.isActive !== false ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td>
+                    <div className={styles.rowActions}>
+                      <Link href={`/admin/products/${p.id}`} className="btn btn--ghost btn--sm">
+                        Edit
+                      </Link>
+                      <Link href={`/admin/products/${p.id}/variants`} className="btn btn--ghost btn--sm">
+                        Variants
+                      </Link>
+                      {p.isActive !== false && (
+                        <button
+                          className="btn btn--danger btn--sm"
+                          disabled={deactivating === p.id}
+                          onClick={() => handleDeactivate(p.id, p.title)}
+                        >
+                          {deactivating === p.id ? '…' : 'Deactivate'}
+                        </button>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-        {data && data.totalPages > 1 && (
-          <div style={{ padding: '1rem 1.25rem', display: 'flex', gap: '0.5rem', borderTop: '1px solid var(--color-border)' }}>
-            <button className="btn btn--ghost btn--sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-            <span style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', padding: '0 0.5rem', lineHeight: '2' }}>
-              Page {page} of {data.totalPages}
-            </span>
-            <button className="btn btn--ghost btn--sm" disabled={page >= data.totalPages} onClick={() => setPage((p) => p + 1)}>Next →</button>
-          </div>
-        )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button
+            className="btn btn--ghost btn--sm"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            ← Prev
+          </button>
+          <span className={styles.pageInfo}>Page {page} of {totalPages}</span>
+          <button
+            className="btn btn--ghost btn--sm"
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 }
