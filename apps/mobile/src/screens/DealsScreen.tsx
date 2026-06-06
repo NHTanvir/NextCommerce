@@ -12,10 +12,9 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ShopStackParamList } from '@/navigation/types';
+import { fetchDeals as apiFetchDeals } from '@/api/catalog';
 
 type Nav = NativeStackNavigationProp<ShopStackParamList>;
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 const COLORS = {
   bg: '#0d1117',
@@ -105,11 +104,8 @@ export default function DealsScreen() {
     if (refresh) setRefreshing(true);
     else setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/catalog/products?limit=60&sort=newest`);
-      const data = await res.json();
-      const all: ProductSummary[] = data.data ?? data ?? [];
-      const withDeals = all.filter((p) => getDiscountPct(p.basePriceCents, p.salePriceCents) > 0);
-      setProducts(withDeals.length > 0 ? withDeals : all.slice(0, 20));
+      const result = await apiFetchDeals(60);
+      setProducts(result.data ?? []);
     } catch {
       setProducts([]);
     } finally {
