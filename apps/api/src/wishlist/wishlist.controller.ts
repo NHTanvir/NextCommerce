@@ -4,11 +4,14 @@ import {
   Post,
   Delete,
   Param,
+  Query,
   UseGuards,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { WishlistService } from './wishlist.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -44,5 +47,19 @@ export class WishlistController {
   @ApiOperation({ summary: 'Toggle product in wishlist' })
   toggle(@CurrentUser() user: UserPayload, @Param('productId') productId: string) {
     return this.wishlistService.toggle(user.sub, productId);
+  }
+
+  @Get('admin/most-wishlisted')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: 'Get most wishlisted products (admin)' })
+  getMostWishlisted(@Query('limit') limit?: string) {
+    return this.wishlistService.getMostWishlisted(limit ? parseInt(limit, 10) : 10);
+  }
+
+  @Get('count/:productId')
+  @ApiOperation({ summary: 'Get wishlist count for a product' })
+  getCount(@Param('productId') productId: string) {
+    return this.wishlistService.getCountForProduct(productId);
   }
 }

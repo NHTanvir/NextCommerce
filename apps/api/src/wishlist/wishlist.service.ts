@@ -44,4 +44,20 @@ export class WishlistService {
     await this.repo.save(this.repo.create({ userId, productId }));
     return { wishlisted: true };
   }
+
+  async getMostWishlisted(limit = 10): Promise<Array<{ productId: string; count: number }>> {
+    const rows = await this.repo
+      .createQueryBuilder('w')
+      .select('w.productId', 'productId')
+      .addSelect('COUNT(w.id)', 'count')
+      .groupBy('w.productId')
+      .orderBy('COUNT(w.id)', 'DESC')
+      .limit(limit)
+      .getRawMany<{ productId: string; count: string }>();
+    return rows.map((r) => ({ productId: r.productId, count: Number(r.count) }));
+  }
+
+  async getCountForProduct(productId: string): Promise<number> {
+    return this.repo.count({ where: { productId } });
+  }
 }
