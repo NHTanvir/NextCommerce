@@ -12,6 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
+import { fetchSearch as apiFetchSearch, fetchTrendingSearchTerms } from '@/api/catalog';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -30,7 +31,6 @@ interface TrendingTerm {
   category: string;
 }
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 const MAX_RECENT = 8;
 
 export function SearchScreen() {
@@ -44,9 +44,8 @@ export function SearchScreen() {
   const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/search/trending?limit=8`)
-      .then((r) => r.json())
-      .then((data) => Array.isArray(data) && setTrending(data))
+    fetchTrendingSearchTerms(8)
+      .then((data) => setTrending(data))
       .catch(() => {});
   }, []);
 
@@ -66,9 +65,7 @@ export function SearchScreen() {
     }
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(trimmed)}&limit=20`);
-      const data = await res.json();
-      const items = data.results ?? data.data ?? data ?? [];
+      const items = await apiFetchSearch(trimmed, 20);
       setResults(items);
       setSearched(true);
       addToRecent(trimmed);
