@@ -16,8 +16,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { IsOptional, IsString, IsNumber, Min } from 'class-validator';
-import { IsArray, IsBoolean, IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsArray, IsBoolean, IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
   ApiTags,
