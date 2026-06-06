@@ -46,3 +46,11 @@ export async function fetchSearchSuggestions(q: string, limit = 8): Promise<Arra
 export async function fetchCategories(): Promise<Array<{ id: string; slug: string; name: string }>> {
   return apiFetch('/categories');
 }
+
+export async function fetchSearch(q: string, limit = 20): Promise<Array<{ id: string; slug: string; title: string; brand: string; basePriceCents: number; categoryName?: string }>> {
+  return apiFetch(`/search?q=${encodeURIComponent(q)}&limit=${limit}`);
+}
+
+export async function fetchTrendingSearchTerms(limit = 8): Promise<Array<{ term: string; category: string }>> {
+  return apiFetch(`/search/trending?limit=${limit}`);
+}
