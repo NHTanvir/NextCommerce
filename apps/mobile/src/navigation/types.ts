@@ -31,6 +31,7 @@ export type ShopStackParamList = {
   Trending: undefined;
   Brands: undefined;
   Deals: undefined;
+  Collections: undefined;
   Search: undefined;
 };
 

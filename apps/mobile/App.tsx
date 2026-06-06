@@ -29,6 +29,7 @@ import StoreLocatorScreen from '@/screens/StoreLocatorScreen';
 import TrendingScreen from '@/screens/TrendingScreen';
 import BrandsScreen from '@/screens/BrandsScreen';
 import DealsScreen from '@/screens/DealsScreen';
+import CollectionsScreen from '@/screens/CollectionsScreen';
 import HelpScreen from '@/screens/HelpScreen';
 import AddressBookScreen from '@/screens/AddressBookScreen';
 import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
@@ -58,6 +59,7 @@ function ShopNavigator() {
       <ShopStack.Screen name="Trending" component={TrendingScreen} options={{ title: 'Trending' }} />
       <ShopStack.Screen name="Brands" component={BrandsScreen} options={{ title: 'Shop by Brand' }} />
       <ShopStack.Screen name="Deals" component={DealsScreen} options={{ title: "Today's Deals" }} />
+      <ShopStack.Screen name="Collections" component={CollectionsScreen} options={{ title: 'Collections' }} />
     </ShopStack.Navigator>
   );
 }
