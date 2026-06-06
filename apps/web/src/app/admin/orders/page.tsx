@@ -5,6 +5,7 @@ import {
   useGetAdminOrdersQuery,
   useUpdateOrderStatusMutation,
   useBulkFulfillOrdersMutation,
+  useGetOrderStatusBreakdownQuery,
 } from '@/store/api/orders.api';
 import type { OrderStatus } from '@nextcommerce/shared';
 import { ORDER_STATUS_TRANSITIONS } from '@nextcommerce/shared';
@@ -94,6 +95,7 @@ export default function AdminOrdersPage() {
   const [page, setPage] = useState(1);
   const limit = 25;
   const { data, isLoading, isFetching } = useGetAdminOrdersQuery({ page, limit });
+  const { data: statusBreakdown = [] } = useGetOrderStatusBreakdownQuery();
   const [updateStatus] = useUpdateOrderStatusMutation();
   const [bulkFulfill, { isLoading: bulking }] = useBulkFulfillOrdersMutation();
 
@@ -157,6 +159,18 @@ export default function AdminOrdersPage() {
           </div>
         )}
       </div>
+
+      {statusBreakdown.length > 0 && (
+        <div className={styles.statusBreakdown}>
+          {statusBreakdown.map((s) => (
+            <div key={s.status} className={styles.statusChip} style={{ '--status-color': STATUS_COLORS[s.status] ?? '#8b949e' } as React.CSSProperties}>
+              <span className={styles.statusDot} />
+              <span className={styles.statusName}>{s.status}</span>
+              <span className={styles.statusCount}>{s.count}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {isLoading ? (
         <div className={styles.loading}>Loading orders…</div>

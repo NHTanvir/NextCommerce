@@ -240,3 +240,40 @@
   gap: 0.75rem;
   margin-top: 0.25rem;
 }
+
+.statusBreakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.statusChip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 100px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  font-size: 0.8rem;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status-color, #8b949e);
+  flex-shrink: 0;
+}
+
+.statusName {
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: capitalize;
+}
+
+.statusCount {
+  font-weight: 800;
+  color: var(--status-color, #8b949e);
+}
