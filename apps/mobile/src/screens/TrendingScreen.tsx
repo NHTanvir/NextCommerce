@@ -12,10 +12,9 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ShopStackParamList } from '@/navigation/types';
+import { fetchTrending as apiFetchTrending } from '@/api/catalog';
 
 type Nav = NativeStackNavigationProp<ShopStackParamList>;
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 interface ProductSummary {
   id: string;
@@ -67,10 +66,12 @@ export default function TrendingScreen() {
   const fetchTrending = useCallback(async (refresh = false) => {
     if (refresh) setRefreshing(true);
     try {
-      const cat = activeCategory !== 'All' ? `&category=${encodeURIComponent(activeCategory)}` : '';
-      const res = await fetch(`${API_URL}/catalog/products?limit=20&sort=newest${cat}`);
-      const data = await res.json();
-      setProducts(data.data ?? data ?? []);
+      const result = await apiFetchTrending(20);
+      let items = result.products ?? [];
+      if (activeCategory !== 'All') {
+        items = items.filter((p: any) => p.categoryName === activeCategory);
+      }
+      setProducts(items);
     } catch {
       setProducts([]);
     } finally {
