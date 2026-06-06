@@ -3,7 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useGetProductsQuery, useGetCategoriesQuery, useGetBrandsQuery, useDeactivateProductMutation } from '@/store/api/catalog.api';
+import { getStoredToken } from '@/lib/auth';
 import styles from './products.module.scss';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 function formatPrice(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
@@ -27,6 +30,27 @@ export default function AdminProductsPage() {
   const [sort, setSort] = useState('newest');
   const [deactivating, setDeactivating] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const token = getStoredToken();
+      const res = await fetch(`${API_URL}/catalog/export`, {
+        headers: { Authorization: `Bearer ${token ?? ''}` },
+      });
+      if (!res.ok) { alert('Export failed'); return; }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `products-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const { data, isLoading, refetch } = useGetProductsQuery({
     page,
@@ -88,6 +112,9 @@ export default function AdminProductsPage() {
           <Link href="/admin/import" className="btn btn--ghost btn--sm">
             Import CSV
           </Link>
+          <button className="btn btn--ghost btn--sm" onClick={handleExport} disabled={exporting}>
+            {exporting ? 'Exporting…' : '↓ Export CSV'}
+          </button>
         </div>
       </div>
 

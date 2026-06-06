@@ -12,8 +12,10 @@ import {
   HttpCode,
   HttpStatus,
   Req,
+  Res,
   BadRequestException,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { IsOptional, IsString, IsNumber, Min } from 'class-validator';
 import { IsArray, IsBoolean, IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -240,5 +242,39 @@ export class CatalogController {
     if (!csvText.trim()) throw new BadRequestException('CSV body is required');
     const rows = this.importService.parseCsv(csvText);
     return this.importService.importRows(rows);
+  }
+
+  @Get('export')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Export all products as CSV' })
+  async exportCsv(@Res() res: Response) {
+    const result = await this.catalogService.getProducts({ page: 1, limit: 10000 });
+    const products = result.data;
+
+    const headers = ['id', 'title', 'slug', 'brand', 'description', 'basePriceCents', 'salePriceCents', 'categoryId', 'isActive', 'imageUrl', 'createdAt'];
+
+    const rows = products.map((p: any) => [
+      p.id,
+      `"${(p.title ?? '').replace(/"/g, '""')}"`,
+      p.slug,
+      `"${(p.brand ?? '').replace(/"/g, '""')}"`,
+      `"${(p.description ?? '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+      p.basePriceCents,
+      p.salePriceCents ?? '',
+      p.categoryId ?? '',
+      p.isActive ? 'true' : 'false',
+      p.images?.[0]?.url ?? '',
+      p.createdAt ?? '',
+    ].join(','));
+
+    const csv = [headers.join(','), ...rows].join('\n');
+
+    res.set({
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="products-${new Date().toISOString().slice(0, 10)}.csv"`,
+    });
+    res.send(csv);
   }
 }
