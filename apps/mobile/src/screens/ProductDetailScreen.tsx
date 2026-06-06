@@ -148,6 +148,18 @@ export function ProductDetailScreen() {
           </TouchableOpacity>
 
 
+          {/* Q&A link */}
+          <TouchableOpacity
+            style={styles.sizeGuideLink}
+            onPress={() => product && nav.navigate('ProductQnA', {
+              productId: product.id,
+              productTitle: product.title,
+            })}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.sizeGuideLinkText}>💬 Questions & Answers</Text>
+          </TouchableOpacity>
+
           {/* Size guide link */}
           <TouchableOpacity
             style={styles.sizeGuideLink}
