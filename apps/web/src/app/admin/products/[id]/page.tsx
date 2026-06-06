@@ -124,6 +124,12 @@ export default function AdminEditProductPage() {
           <span className={product.isActive ? styles.badgeActive : styles.badgeInactive}>
             {product.isActive ? 'Active' : 'Inactive'}
           </span>
+          <Link href={`/admin/products/${id}/variants`} className="btn btn--ghost btn--sm">
+            Variants
+          </Link>
+          <Link href={`/admin/products/${id}/specs`} className="btn btn--ghost btn--sm">
+            Specs
+          </Link>
         </div>
       </div>
 

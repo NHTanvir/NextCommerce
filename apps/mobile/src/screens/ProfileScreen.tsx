@@ -81,6 +81,11 @@ export function ProfileScreen() {
       onPress: () => navigation.navigate('StoreLocator'),
     },
     {
+      icon: '👁️',
+      label: 'Recently Viewed',
+      onPress: () => navigation.navigate('RecentlyViewed'),
+    },
+    {
       icon: '💬',
       label: 'Help & Support',
       onPress: () => navigation.navigate('Help'),

@@ -250,6 +250,45 @@ export class CatalogService {
     return products.map((p) => this.toDto(p));
   }
 
+  async getVariantsForProduct(productId: string) {
+    return this.variantRepo.find({
+      where: { productId },
+      order: { size: 'ASC' },
+    });
+  }
+
+  async addVariant(productId: string, data: {
+    size: number;
+    color: string;
+    sku: string;
+    stockQty: number;
+    priceCents: number;
+  }) {
+    const product = await this.productRepo.findOne({ where: { id: productId } });
+    if (!product) throw new NotFoundException('Product not found');
+    const variant = this.variantRepo.create({ ...data, productId });
+    return this.variantRepo.save(variant);
+  }
+
+  async updateVariant(variantId: string, data: Partial<{
+    size: number;
+    color: string;
+    sku: string;
+    stockQty: number;
+    priceCents: number;
+  }>) {
+    const variant = await this.variantRepo.findOne({ where: { id: variantId } });
+    if (!variant) throw new NotFoundException('Variant not found');
+    await this.variantRepo.update(variantId, data);
+    return this.variantRepo.findOne({ where: { id: variantId } });
+  }
+
+  async deleteVariant(variantId: string): Promise<void> {
+    const variant = await this.variantRepo.findOne({ where: { id: variantId } });
+    if (!variant) throw new NotFoundException('Variant not found');
+    await this.variantRepo.delete(variantId);
+  }
+
   async bulkActivate(productIds: string[], isActive: boolean): Promise<{ updated: number }> {
     if (!productIds.length) return { updated: 0 };
     const result = await this.productRepo

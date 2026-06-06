@@ -14,6 +14,7 @@ import {
   Req,
   BadRequestException,
 } from '@nestjs/common';
+import { IsOptional, IsString, IsNumber, Min } from 'class-validator';
 import { IsArray, IsBoolean, IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
@@ -47,6 +48,22 @@ class BulkPriceUpdateDto {
 class BulkActivateDto {
   @IsArray() productIds: string[];
   @IsBoolean() isActive: boolean;
+}
+
+class CreateVariantDto {
+  @IsNumber() size: number;
+  @IsString() color: string;
+  @IsString() sku: string;
+  @IsInt() @Min(0) stockQty: number;
+  @IsInt() @Min(1) priceCents: number;
+}
+
+class UpdateVariantDto {
+  @IsOptional() @IsNumber() size?: number;
+  @IsOptional() @IsString() color?: string;
+  @IsOptional() @IsString() sku?: string;
+  @IsOptional() @IsInt() @Min(0) stockQty?: number;
+  @IsOptional() @IsInt() @Min(1) priceCents?: number;
 }
 
 @ApiTags('catalog')
@@ -163,6 +180,47 @@ export class CatalogController {
   @ApiOperation({ summary: '[Admin] Bulk activate or deactivate products' })
   bulkActivate(@Body() dto: BulkActivateDto) {
     return this.catalogService.bulkActivate(dto.productIds, dto.isActive);
+  }
+
+  @Get('products/:id/variants')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] List all variants for a product' })
+  @ApiParam({ name: 'id', description: 'Product UUID' })
+  getVariants(@Param('id') id: string) {
+    return this.catalogService.getVariantsForProduct(id);
+  }
+
+  @Post('products/:id/variants')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Add a new variant to a product' })
+  @ApiParam({ name: 'id', description: 'Product UUID' })
+  addVariant(@Param('id') id: string, @Body() dto: CreateVariantDto) {
+    return this.catalogService.addVariant(id, dto);
+  }
+
+  @Patch('variants/:variantId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Update a product variant' })
+  @ApiParam({ name: 'variantId', description: 'Variant UUID' })
+  updateVariant(@Param('variantId') variantId: string, @Body() dto: UpdateVariantDto) {
+    return this.catalogService.updateVariant(variantId, dto);
+  }
+
+  @Delete('variants/:variantId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: '[Admin] Delete a product variant' })
+  @ApiParam({ name: 'variantId', description: 'Variant UUID' })
+  deleteVariant(@Param('variantId') variantId: string) {
+    return this.catalogService.deleteVariant(variantId);
   }
 
   @Post('import')
