@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addItem, setCartOpen } from '@/store/slices/cart.slice';
 import { trackView } from '@/store/slices/recentlyViewed.slice';
 import { addToCompare, removeFromCompare, selectIsComparing, selectCompareCount } from '@/store/slices/compare.slice';
+import { useGetProductWishlistCountQuery } from '@/store/api/wishlist.api';
 import { RelatedProducts } from '@/components/features/RelatedProducts';
 import { ProductReviews } from '@/components/features/ProductReviews';
 import { ProductSpecifications } from '@/components/features/ProductSpecifications';
@@ -27,6 +28,7 @@ export default function ProductPage() {
   const [addToCartApi] = useAddToCartMutation();
   const isComparing = useAppSelector(product ? selectIsComparing(product.id) : () => false);
   const compareCount = useAppSelector(selectCompareCount);
+  const { data: wishlistCount = 0 } = useGetProductWishlistCountQuery(product?.id ?? '', { skip: !product?.id });
 
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
@@ -136,6 +138,9 @@ export default function ProductPage() {
         {product.brand && <span className={styles.brand}>{product.brand}</span>}
         <h1 className={styles.title}>{product.title}</h1>
         <div className={styles.price}>${(price / 100).toFixed(2)}</div>
+        {wishlistCount > 0 && (
+          <p className={styles.wishlistSocial}>♥ {wishlistCount} {wishlistCount === 1 ? 'person has' : 'people have'} wishlisted this</p>
+        )}
 
         {product.description && (
           <p className={styles.description}>{product.description}</p>
