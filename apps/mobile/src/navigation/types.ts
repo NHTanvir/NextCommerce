@@ -32,6 +32,7 @@ export type ShopStackParamList = {
   Brands: undefined;
   Deals: undefined;
   Collections: undefined;
+  Tags: undefined;
   Search: undefined;
 };
 
