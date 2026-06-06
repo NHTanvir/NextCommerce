@@ -73,6 +73,7 @@ export const catalogApi = apiSlice.injectEndpoints({
       brand: string;
       slug: string;
       basePriceCents: number;
+      salePriceCents: number;
       categoryId: string;
       isActive: boolean;
       images: Array<{ url: string; alt: string }>;
@@ -103,6 +104,17 @@ export const catalogApi = apiSlice.injectEndpoints({
       query: () => '/catalog/brands',
       providesTags: [{ type: 'Category' as const, id: 'brands' }],
     }),
+
+    getDeals: build.query<
+      { data: Array<ProductDto & { salePriceCents: number | null; discountPct: number }>; total: number; page: number; totalPages: number },
+      { minDiscount?: number; limit?: number; page?: number }
+    >({
+      query: ({ minDiscount = 0, limit = 20, page = 1 } = {}) => ({
+        url: '/catalog/deals',
+        params: { minDiscount, limit, page },
+      }),
+      providesTags: [{ type: 'Product', id: 'deals' }],
+    }),
   }),
 });
 
@@ -116,4 +128,5 @@ export const {
   useUpdateProductMutation,
   useDeactivateProductMutation,
   useGetBrandsQuery,
+  useGetDealsQuery,
 } = catalogApi;

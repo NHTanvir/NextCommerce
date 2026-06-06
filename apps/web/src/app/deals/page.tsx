@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useGetProductsQuery, useGetCategoriesQuery } from '@/store/api/catalog.api';
+import { useGetDealsQuery, useGetCategoriesQuery } from '@/store/api/catalog.api';
 import { ProductCard, ProductCardSkeleton } from '@/components/ui/ProductCard';
 import styles from './deals.module.scss';
 
@@ -20,11 +20,6 @@ const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest First' },
 ];
 
-function getDiscountPct(base: number, sale: number) {
-  if (!sale || sale >= base) return 0;
-  return Math.round(((base - sale) / base) * 100);
-}
-
 export default function DealsPage() {
   const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -32,37 +27,26 @@ export default function DealsPage() {
   const [sort, setSort] = useState('discount_desc');
 
   const { data: categories } = useGetCategoriesQuery();
-  const { data, isLoading, isFetching } = useGetProductsQuery({
-    page,
-    limit: 24,
-    categoryId: selectedCategory || undefined,
-  });
+  const { data, isLoading, isFetching } = useGetDealsQuery({ minDiscount, page, limit: 24 });
 
   const loading = isLoading || isFetching;
   const products = data?.data ?? [];
 
-  const dealsProducts = useMemo(() => {
-    return products.filter((p) => {
-      const salePriceCents = (p as any).salePriceCents;
-      const pct = getDiscountPct(p.basePriceCents, salePriceCents);
-      return pct >= minDiscount;
-    });
-  }, [products, minDiscount]);
-
   const sorted = useMemo(() => {
-    return [...dealsProducts].sort((a, b) => {
-      const aPct = getDiscountPct(a.basePriceCents, (a as any).salePriceCents);
-      const bPct = getDiscountPct(b.basePriceCents, (b as any).salePriceCents);
-      if (sort === 'discount_desc') return bPct - aPct;
-      if (sort === 'price_asc') return a.basePriceCents - b.basePriceCents;
-      if (sort === 'price_desc') return b.basePriceCents - a.basePriceCents;
+    let filtered = selectedCategory
+      ? products.filter((p) => (p as any).categoryId === selectedCategory)
+      : products;
+    return [...filtered].sort((a, b) => {
+      if (sort === 'discount_desc') return (b.discountPct ?? 0) - (a.discountPct ?? 0);
+      if (sort === 'price_asc') return (a.salePriceCents ?? a.basePriceCents) - (b.salePriceCents ?? b.basePriceCents);
+      if (sort === 'price_desc') return (b.salePriceCents ?? b.basePriceCents) - (a.salePriceCents ?? a.basePriceCents);
       return 0;
     });
-  }, [dealsProducts, sort]);
+  }, [products, selectedCategory, sort]);
 
   const totalSavings = useMemo(() => {
     return sorted.reduce((acc, p) => {
-      const sale = (p as any).salePriceCents;
+      const sale = p.salePriceCents;
       return acc + (sale ? Math.max(0, p.basePriceCents - sale) : 0);
     }, 0);
   }, [sorted]);
