@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Image,
   Alert,
+  Share,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp, NativeStackRouteProp } from '@react-navigation/native-stack';
@@ -102,6 +103,14 @@ export function ProductDetailScreen() {
     Alert.alert('Added to Cart', `${product!.title} added successfully!`);
   }
 
+  async function handleShare() {
+    if (!product) return;
+    await Share.share({
+      title: product.title,
+      message: `Check out ${product.title} on NextCommerce!\nhttps://nextcommerce.app/products/${product.slug}`,
+    });
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -115,8 +124,15 @@ export function ProductDetailScreen() {
         </View>
 
         <View style={styles.content}>
-          {product.brand && <Text style={styles.brand}>{product.brand.toUpperCase()}</Text>}
-          <Text style={styles.title}>{product.title}</Text>
+          <View style={styles.titleRow}>
+            <View style={{ flex: 1 }}>
+              {product.brand && <Text style={styles.brand}>{product.brand.toUpperCase()}</Text>}
+              <Text style={styles.title}>{product.title}</Text>
+            </View>
+            <TouchableOpacity onPress={handleShare} style={styles.shareBtn} activeOpacity={0.7}>
+              <Text style={styles.shareBtnText}>⬆ Share</Text>
+            </TouchableOpacity>
+          </View>
           <Text style={styles.price}>${(price / 100).toFixed(2)}</Text>
 
           {product.description && (
@@ -263,6 +279,17 @@ const styles = StyleSheet.create({
   img: { width: '100%', height: '100%' },
   imgPlaceholder: { fontSize: 80 },
   content: { padding: 20, gap: 12 },
+  titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  shareBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.card,
+    marginTop: 4,
+  },
+  shareBtnText: { fontSize: 12, color: COLORS.muted, fontWeight: '600' },
   brand: { fontSize: 11, fontWeight: '700', color: COLORS.muted, letterSpacing: 2 },
   title: { fontSize: 22, fontWeight: '900', color: COLORS.text, letterSpacing: -0.5 },
   price: { fontSize: 24, fontWeight: '900', color: COLORS.accent },
