@@ -13,6 +13,7 @@ import { LoginScreen } from '@/screens/LoginScreen';
 import { RegisterScreen } from '@/screens/RegisterScreen';
 import { ProfileScreen } from '@/screens/ProfileScreen';
 import { CartScreen } from '@/screens/CartScreen';
+import CheckoutScreen from '@/screens/CheckoutScreen';
 import { SearchScreen } from '@/screens/SearchScreen';
 import { WishlistScreen } from '@/screens/WishlistScreen';
 import NotificationsScreen from '@/screens/NotificationsScreen';
@@ -40,11 +41,12 @@ import BackInStockScreen from '@/screens/BackInStockScreen';
 import ProductQnAScreen from '@/screens/ProductQnAScreen';
 import BundlesScreen from '@/screens/BundlesScreen';
 import PromotionsScreen from '@/screens/PromotionsScreen';
-import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
+import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList, CartStackParamList } from '@/navigation/types';
 
 const ShopStack = createNativeStackNavigator<ShopStackParamList>();
 const OrdersStack = createNativeStackNavigator<OrdersStackParamList>();
 const AccountStack = createNativeStackNavigator<AccountStackParamList>();
+const CartStack = createNativeStackNavigator<CartStackParamList>();
 const Tab = createBottomTabNavigator();
 
 const HEADER_OPTIONS = {
@@ -111,6 +113,15 @@ function AccountNavigator() {
   );
 }
 
+function CartNavigator() {
+  return (
+    <CartStack.Navigator screenOptions={HEADER_OPTIONS}>
+      <CartStack.Screen name="Cart" component={CartScreen} options={{ title: 'Cart' }} />
+      <CartStack.Screen name="Checkout" component={CheckoutScreen} options={{ title: 'Checkout' }} />
+    </CartStack.Navigator>
+  );
+}
+
 function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
   return <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>;
 }
@@ -140,12 +151,10 @@ export default function App() {
           />
           <Tab.Screen
             name="Cart"
-            component={CartScreen}
+            component={CartNavigator}
             options={{
               tabBarIcon: ({ focused }) => <TabIcon emoji="🛒" focused={focused} />,
-              ...HEADER_OPTIONS,
-              headerShown: true,
-              title: 'Cart',
+              headerShown: false,
             }}
           />
           <Tab.Screen

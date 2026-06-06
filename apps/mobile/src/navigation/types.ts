@@ -70,3 +70,8 @@ export type WishlistStackParamList = {
   Wishlist: undefined;
   ProductDetail: { slug: string };
 };
+
+export type CartStackParamList = {
+  Cart: undefined;
+  Checkout: undefined;
+};

@@ -11,10 +11,10 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+import type { CartStackParamList, RootStackParamList } from '../navigation/types';
 import { PriceTag } from '../components/PriceTag';
 
-type Nav = NativeStackNavigationProp<RootStackParamList>;
+type Nav = NativeStackNavigationProp<CartStackParamList>;
 
 interface CartItem {
   id: string;
@@ -143,7 +143,7 @@ export function CartScreen() {
       <View style={styles.checkout}>
         <TouchableOpacity
           style={styles.checkoutBtn}
-          onPress={() => Alert.alert('Checkout', 'Checkout coming soon!')}
+          onPress={() => navigation.navigate('Checkout')}
         >
           <Text style={styles.checkoutBtnText}>Proceed to Checkout</Text>
         </TouchableOpacity>
