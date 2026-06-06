@@ -75,4 +75,19 @@ export class BackInStockService {
     const pendingCount = await this.repo.count({ where: { notified: false } });
     return { data, total, pendingCount };
   }
+
+  async getMostRequestedVariants(limit = 20): Promise<Array<{ variantId: string; productId: string; pendingCount: number }>> {
+    const rows = await this.repo
+      .createQueryBuilder('b')
+      .select('b.variantId', 'variantId')
+      .addSelect('b.productId', 'productId')
+      .addSelect('COUNT(b.id)', 'pendingCount')
+      .where('b.notified = false')
+      .groupBy('b.variantId')
+      .addGroupBy('b.productId')
+      .orderBy('COUNT(b.id)', 'DESC')
+      .limit(limit)
+      .getRawMany<{ variantId: string; productId: string; pendingCount: string }>();
+    return rows.map((r) => ({ variantId: r.variantId, productId: r.productId, pendingCount: Number(r.pendingCount) }));
+  }
 }

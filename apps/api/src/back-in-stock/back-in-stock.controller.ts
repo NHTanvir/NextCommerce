@@ -72,4 +72,12 @@ export class BackInStockController {
   findAll(@Query('page') page?: string, @Query('limit') limit?: string) {
     return this.service.findAll(page ? Number(page) : 1, limit ? Number(limit) : 30);
   }
+
+  @Get('admin/most-requested')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get most requested variants for restocking' })
+  getMostRequested(@Query('limit') limit?: string) {
+    return this.service.getMostRequestedVariants(limit ? Number(limit) : 20);
+  }
 }
