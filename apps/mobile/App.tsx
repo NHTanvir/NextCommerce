@@ -38,6 +38,7 @@ import AddressBookScreen from '@/screens/AddressBookScreen';
 import PriceAlertsScreen from '@/screens/PriceAlertsScreen';
 import BackInStockScreen from '@/screens/BackInStockScreen';
 import ProductQnAScreen from '@/screens/ProductQnAScreen';
+import BundlesScreen from '@/screens/BundlesScreen';
 import type { RootStackParamList, ShopStackParamList, OrdersStackParamList, AccountStackParamList } from '@/navigation/types';
 
 const ShopStack = createNativeStackNavigator<ShopStackParamList>();
@@ -69,6 +70,7 @@ function ShopNavigator() {
       <ShopStack.Screen name="Tags" component={TagsScreen} options={{ title: 'Browse by Tag' }} />
       <ShopStack.Screen name="NewArrivals" component={NewArrivalsScreen} options={{ title: 'New Arrivals' }} />
       <ShopStack.Screen name="ProductQnA" component={ProductQnAScreen} options={{ title: 'Questions & Answers' }} />
+      <ShopStack.Screen name="Bundles" component={BundlesScreen} options={{ title: 'Product Bundles' }} />
     </ShopStack.Navigator>
   );
 }

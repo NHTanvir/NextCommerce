@@ -271,6 +271,19 @@ export default function HomeScreen() {
         <Text style={styles.dealsBannerArrow}>→</Text>
       </TouchableOpacity>
 
+      {/* Bundles banner */}
+      <TouchableOpacity
+        style={styles.bundlesBanner}
+        onPress={() => (navigation as any).navigate('Bundles')}
+        activeOpacity={0.85}
+      >
+        <View>
+          <Text style={styles.bundlesBannerLabel}>🎁 Product Bundles</Text>
+          <Text style={styles.bundlesBannerSub}>Buy together and save up to 30%</Text>
+        </View>
+        <Text style={styles.bundlesBannerArrow}>→</Text>
+      </TouchableOpacity>
+
       {/* CTA */}
       <TouchableOpacity style={styles.ctaBanner} onPress={goToList} activeOpacity={0.85}>
         <Text style={styles.ctaTitle}>Shop All Products</Text>
@@ -498,6 +511,33 @@ const styles = StyleSheet.create({
   dealsBannerArrow: {
     fontSize: 20,
     color: COLORS.accent,
+    fontWeight: '700',
+  },
+  bundlesBanner: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    backgroundColor: '#1a1a0a',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#f0b72f40',
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  bundlesBannerLabel: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: COLORS.text,
+    marginBottom: 2,
+  },
+  bundlesBannerSub: {
+    fontSize: 12,
+    color: COLORS.muted,
+  },
+  bundlesBannerArrow: {
+    fontSize: 20,
+    color: '#f0b72f',
     fontWeight: '700',
   },
   ctaBanner: {

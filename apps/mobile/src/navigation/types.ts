@@ -36,6 +36,7 @@ export type ShopStackParamList = {
   NewArrivals: undefined;
   Search: undefined;
   ProductQnA: { productId: string; productTitle?: string };
+  Bundles: undefined;
 };
 
 export type OrdersStackParamList = {
