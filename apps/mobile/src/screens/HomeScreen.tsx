@@ -13,7 +13,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ProductDto } from '@nextcommerce/shared';
-import { fetchProducts } from '@/api/catalog';
+import { fetchProducts, fetchTrending, fetchNewArrivals } from '@/api/catalog';
 import type { RootStackParamList } from '@/navigation/types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'ProductList'>;
@@ -119,13 +119,15 @@ export default function HomeScreen() {
   const loadData = async () => {
     try {
       const [t, n] = await Promise.all([
-        fetchProducts({ limit: 6, page: 1 }),
-        fetchProducts({ limit: 6, page: 2 }),
+        fetchTrending(6),
+        fetchNewArrivals(30, 6),
       ]);
-      setTrending(t.data ?? []);
-      setNewArrivals(n.data ?? []);
+      setTrending(t.products ?? []);
+      setNewArrivals(n ?? []);
     } catch {
-      // silently fail
+      const fallback = await fetchProducts({ limit: 12, page: 1 }).catch(() => ({ data: [] }));
+      setTrending(fallback.data.slice(0, 6));
+      setNewArrivals(fallback.data.slice(6, 12));
     } finally {
       setLoading(false);
       setRefreshing(false);
