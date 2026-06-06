@@ -54,3 +54,7 @@ export async function fetchSearch(q: string, limit = 20): Promise<Array<{ id: st
 export async function fetchTrendingSearchTerms(limit = 8): Promise<Array<{ term: string; category: string }>> {
   return apiFetch(`/search/trending?limit=${limit}`);
 }
+
+export async function fetchBrands(): Promise<Array<{ brand: string; productCount: number }>> {
+  return apiFetch('/catalog/brands');
+}
