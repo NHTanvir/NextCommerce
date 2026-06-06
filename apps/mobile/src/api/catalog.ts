@@ -58,3 +58,11 @@ export async function fetchTrendingSearchTerms(limit = 8): Promise<Array<{ term:
 export async function fetchBrands(): Promise<Array<{ brand: string; productCount: number }>> {
   return apiFetch('/catalog/brands');
 }
+
+export async function fetchCollections(): Promise<Array<{ id: string; name: string; slug: string; description: string | null; productIds: string[]; discountPercent: number; isActive: boolean; endsAt: string | null }>> {
+  return apiFetch('/collections');
+}
+
+export async function fetchTags(): Promise<string[]> {
+  return apiFetch('/tags');
+}
