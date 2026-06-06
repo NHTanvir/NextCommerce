@@ -19,6 +19,7 @@ export default function AdminEditProductPage() {
     brand: '',
     slug: '',
     basePriceCents: '',
+    salePriceCents: '',
     categoryId: '',
     imageUrl: '',
     imageAlt: '',
@@ -37,6 +38,7 @@ export default function AdminEditProductPage() {
         brand: product.brand ?? '',
         slug: product.slug ?? '',
         basePriceCents: product.basePriceCents ? String(product.basePriceCents / 100) : '',
+        salePriceCents: (product as any).salePriceCents ? String((product as any).salePriceCents / 100) : '',
         categoryId: product.categoryId ?? '',
         imageUrl: product.images?.[0]?.url ?? '',
         imageAlt: product.images?.[0]?.alt ?? '',
@@ -55,6 +57,15 @@ export default function AdminEditProductPage() {
       setError('Price must be a positive number.');
       return;
     }
+    const saleCents = form.salePriceCents ? Math.round(parseFloat(form.salePriceCents) * 100) : undefined;
+    if (saleCents !== undefined && (isNaN(saleCents) || saleCents <= 0)) {
+      setError('Sale price must be a positive number.');
+      return;
+    }
+    if (saleCents !== undefined && saleCents >= priceCents) {
+      setError('Sale price must be less than the regular price.');
+      return;
+    }
 
     try {
       await updateProduct({
@@ -64,6 +75,7 @@ export default function AdminEditProductPage() {
         brand: form.brand,
         slug: form.slug,
         basePriceCents: priceCents,
+        ...(saleCents !== undefined && { salePriceCents: saleCents }),
         categoryId: form.categoryId,
         isActive: form.isActive,
         images: form.imageUrl ? [{ url: form.imageUrl, alt: form.imageAlt || form.title }] : [],
@@ -157,7 +169,7 @@ export default function AdminEditProductPage() {
           <h2 className={styles.sectionTitle}>Pricing &amp; Catalog</h2>
           <div className={styles.grid3}>
             <div className={styles.field}>
-              <label className={styles.label}>Price (USD) <span className={styles.req}>*</span></label>
+              <label className={styles.label}>Regular Price (USD) <span className={styles.req}>*</span></label>
               <input
                 className={styles.input}
                 type="number"
@@ -169,6 +181,28 @@ export default function AdminEditProductPage() {
               />
             </div>
             <div className={styles.field}>
+              <label className={styles.label}>
+                Sale Price (USD)
+                <span style={{ marginLeft: '0.375rem', fontSize: '0.7rem', color: 'var(--color-text-muted)', fontWeight: 400 }}>
+                  optional — leave blank to clear
+                </span>
+              </label>
+              <input
+                className={styles.input}
+                type="number"
+                min="0.01"
+                step="0.01"
+                placeholder="e.g. 79.99"
+                value={form.salePriceCents}
+                onChange={(e) => setForm((f) => ({ ...f, salePriceCents: e.target.value }))}
+              />
+              {form.salePriceCents && form.basePriceCents && (
+                <p style={{ fontSize: '0.75rem', color: '#3fb950', marginTop: '0.25rem' }}>
+                  {Math.round(((parseFloat(form.basePriceCents) - parseFloat(form.salePriceCents)) / parseFloat(form.basePriceCents)) * 100)}% discount
+                </p>
+              )}
+            </div>
+            <div className={styles.field}>
               <label className={styles.label}>Category ID <span className={styles.req}>*</span></label>
               <input
                 className={styles.input}
@@ -177,15 +211,15 @@ export default function AdminEditProductPage() {
                 required
               />
             </div>
-            <div className={styles.field}>
-              <label className={styles.label}>URL Slug <span className={styles.req}>*</span></label>
-              <input
-                className={styles.input}
-                value={form.slug}
-                onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-                required
-              />
-            </div>
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>URL Slug <span className={styles.req}>*</span></label>
+            <input
+              className={styles.input}
+              value={form.slug}
+              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
+              required
+            />
           </div>
         </div>
 

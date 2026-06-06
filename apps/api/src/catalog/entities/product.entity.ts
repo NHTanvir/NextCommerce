@@ -34,6 +34,9 @@ export class Product {
   @Column({ type: 'int', unsigned: true })
   basePriceCents: number;
 
+  @Column({ type: 'int', unsigned: true, nullable: true })
+  salePriceCents: number | null;
+
   @Column({ type: 'json', default: '[]' })
   images: Array<{ url: string; alt: string }>;
 

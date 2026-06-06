@@ -32,6 +32,7 @@ export class CreateProductDto {
   @ApiProperty() @IsString() brand: string;
   @ApiProperty() @IsString() slug: string;
   @ApiProperty() @IsInt() @Min(1) basePriceCents: number;
+  @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) salePriceCents?: number;
   @ApiProperty() @IsUUID() categoryId: string;
   @ApiPropertyOptional() @IsOptional() @IsArray() @ValidateNested({ each: true }) @Type(() => ProductImageDto) images?: ProductImageDto[];
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isActive?: boolean;

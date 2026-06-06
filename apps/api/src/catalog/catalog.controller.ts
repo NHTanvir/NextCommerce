@@ -133,6 +133,20 @@ export class CatalogController {
     return this.recommendationsService.getTrending(limit ? parseInt(limit, 10) : 8);
   }
 
+  @Get('deals')
+  @ApiOperation({ summary: 'Get products on sale, sorted by discount percentage' })
+  getDeals(
+    @Query('minDiscount') minDiscount?: string,
+    @Query('limit') limit?: string,
+    @Query('page') page?: string,
+  ) {
+    return this.catalogService.getDeals(
+      minDiscount ? parseInt(minDiscount, 10) : 0,
+      limit ? parseInt(limit, 10) : 20,
+      page ? parseInt(page, 10) : 1,
+    );
+  }
+
   @Patch('products/bulk-price')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

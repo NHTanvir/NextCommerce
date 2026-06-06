@@ -67,6 +67,42 @@ export class CatalogService {
     });
   }
 
+  async getDeals(
+    minDiscountPct = 0,
+    limit = 20,
+    page = 1,
+  ): Promise<{ data: ReturnType<typeof this.toDto>[]; total: number; page: number; totalPages: number }> {
+    const qb = this.productRepo
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.category', 'category')
+      .leftJoinAndSelect('p.variants', 'variants')
+      .where('p.isActive = true')
+      .andWhere('p.salePriceCents IS NOT NULL')
+      .andWhere('p.salePriceCents < p.basePriceCents');
+
+    const all = await qb.getMany();
+
+    const withPct = all
+      .map((p) => ({
+        product: p,
+        discountPct: p.salePriceCents
+          ? Math.round(((p.basePriceCents - p.salePriceCents) / p.basePriceCents) * 100)
+          : 0,
+      }))
+      .filter((x) => x.discountPct >= minDiscountPct)
+      .sort((a, b) => b.discountPct - a.discountPct);
+
+    const total = withPct.length;
+    const slice = withPct.slice((page - 1) * limit, page * limit);
+
+    return {
+      data: slice.map(({ product }) => this.toDto(product)),
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   async create(dto: CreateProductDto): Promise<Product> {
     const product = this.productRepo.create({
       title: dto.title,
@@ -74,6 +110,7 @@ export class CatalogService {
       brand: dto.brand,
       slug: dto.slug,
       basePriceCents: dto.basePriceCents,
+      salePriceCents: dto.salePriceCents ?? null,
       categoryId: dto.categoryId,
       images: dto.images || [],
       isActive: dto.isActive ?? true,
@@ -103,6 +140,7 @@ export class CatalogService {
       ...(dto.brand !== undefined && { brand: dto.brand }),
       ...(dto.slug !== undefined && { slug: dto.slug }),
       ...(dto.basePriceCents !== undefined && { basePriceCents: dto.basePriceCents }),
+      ...(dto.salePriceCents !== undefined && { salePriceCents: dto.salePriceCents }),
       ...(dto.categoryId !== undefined && { categoryId: dto.categoryId }),
       ...(dto.images !== undefined && { images: dto.images }),
       ...(dto.isActive !== undefined && { isActive: dto.isActive }),
@@ -224,6 +262,10 @@ export class CatalogService {
   }
 
   private toDto(p: Product) {
+    const discountPct = p.salePriceCents && p.salePriceCents < p.basePriceCents
+      ? Math.round(((p.basePriceCents - p.salePriceCents) / p.basePriceCents) * 100)
+      : 0;
+
     return {
       id: p.id,
       slug: p.slug,
@@ -231,6 +273,8 @@ export class CatalogService {
       description: p.description,
       brand: p.brand,
       basePriceCents: p.basePriceCents,
+      salePriceCents: p.salePriceCents ?? null,
+      discountPct,
       categoryId: p.categoryId,
       categoryName: p.category?.name,
       images: p.images,
