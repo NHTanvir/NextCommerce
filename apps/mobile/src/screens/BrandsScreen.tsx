@@ -12,10 +12,9 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ShopStackParamList } from '@/navigation/types';
+import { fetchBrands as apiFetchBrands } from '@/api/catalog';
 
 type Nav = NativeStackNavigationProp<ShopStackParamList>;
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 interface BrandItem {
   brand: string;
@@ -60,9 +59,8 @@ export default function BrandsScreen() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetch(`${API_URL}/api/catalog/brands`)
-      .then((r) => r.json())
-      .then((data) => setBrands(Array.isArray(data) ? data : []))
+    apiFetchBrands()
+      .then((data) => setBrands(data))
       .catch(() => setBrands([]))
       .finally(() => setLoading(false));
   }, []);
