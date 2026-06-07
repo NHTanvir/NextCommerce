@@ -41,6 +41,15 @@ export class ReviewsController {
     return this.reviewsService.findAll(page ? Number(page) : 1, limit ? Number(limit) : 20);
   }
 
+  @Get('admin/top-reviewed')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Get top reviewed products by review count' })
+  getTopReviewed(@Query('limit') limit?: string) {
+    return this.reviewsService.getTopReviewedProducts(limit ? Number(limit) : 10);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
