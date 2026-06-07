@@ -10,26 +10,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native-stack';
 import type { ShopStackParamList } from '@/navigation/types';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
-
-interface ReviewDto {
-  id: string;
-  userId: string;
-  user?: { id: string; name: string };
-  rating: number;
-  title: string;
-  body: string;
-  createdAt: string;
-}
-
-interface RatingDist {
-  1: number;
-  2: number;
-  3: number;
-  4: number;
-  5: number;
-}
+import { fetchProductReviews, fetchRatingDistribution, type ReviewDto, type RatingDist } from '@/api/reviews';
 
 type Route = RouteProp<{ params: { productId: string; productTitle?: string } }, 'params'>;
 
@@ -85,12 +66,12 @@ export default function ProductReviewsScreen() {
     if (!productId) return;
     setLoading(true);
     Promise.all([
-      fetch(`${API_URL}/reviews?productId=${productId}`).then((r) => r.json()),
-      fetch(`${API_URL}/reviews/distribution?productId=${productId}`).then((r) => r.json()),
+      fetchProductReviews(productId),
+      fetchRatingDistribution(productId),
     ])
       .then(([reviewData, distData]) => {
-        setReviews(Array.isArray(reviewData) ? reviewData : []);
-        setDist(distData && typeof distData === 'object' ? distData : null);
+        setReviews(reviewData);
+        setDist(distData);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
