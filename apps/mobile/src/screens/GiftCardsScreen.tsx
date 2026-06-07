@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,40 +11,18 @@ import {
   Clipboard,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
+import {
+  purchaseGiftCard,
+  checkGiftCardBalance,
+  fetchMyGiftCards,
+  type GiftCard,
+  type GiftCardBalance,
+} from '@/api/giftCards';
 
 const PRESET_AMOUNTS = [25, 50, 100, 250, 500];
 
 type Tab = 'buy' | 'check' | 'my-cards';
-
-interface GiftCard {
-  id: string;
-  code: string;
-  initialAmountCents: number;
-  remainingCents: number;
-  isActive: boolean;
-  expiresAt: string;
-}
-
-interface BalanceResult {
-  code: string;
-  remaining: number;
-  isValid: boolean;
-  expiresAt: string;
-}
-
-const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001/api';
-
-async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    ...options,
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message ?? 'Request failed');
-  }
-  return res.json();
-}
 
 export default function GiftCardsScreen() {
   const navigation = useNavigation();
@@ -62,7 +40,23 @@ export default function GiftCardsScreen() {
   // Check balance tab
   const [balanceCode, setBalanceCode] = useState('');
   const [checking, setChecking] = useState(false);
-  const [balanceResult, setBalanceResult] = useState<BalanceResult | null>(null);
+  const [balanceResult, setBalanceResult] = useState<GiftCardBalance | null>(null);
+
+  // My cards tab
+  const [myCards, setMyCards] = useState<GiftCard[]>([]);
+  const [loadingCards, setLoadingCards] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (activeTab === 'my-cards') {
+        setLoadingCards(true);
+        fetchMyGiftCards()
+          .then(setMyCards)
+          .catch(() => Alert.alert('Error', 'Could not load your gift cards.'))
+          .finally(() => setLoadingCards(false));
+      }
+    }, [activeTab]),
+  );
 
   const effectiveAmount = selectedAmount ?? (customAmount ? parseFloat(customAmount) : 0);
   const canPurchase = effectiveAmount >= 5 && recipientEmail.includes('@');
@@ -71,14 +65,11 @@ export default function GiftCardsScreen() {
     if (!canPurchase) return;
     setPurchasing(true);
     try {
-      const card = await apiFetch<GiftCard>('/gift-cards/purchase', {
-        method: 'POST',
-        body: JSON.stringify({
-          amountCents: Math.round(effectiveAmount * 100),
-          recipientEmail,
-          recipientName: recipientName || undefined,
-          message: message || undefined,
-        }),
+      const card = await purchaseGiftCard({
+        amountCents: Math.round(effectiveAmount * 100),
+        recipientEmail,
+        recipientName: recipientName || undefined,
+        message: message || undefined,
       });
       setPurchasedCard(card);
     } catch (err: any) {
@@ -94,7 +85,7 @@ export default function GiftCardsScreen() {
     setChecking(true);
     setBalanceResult(null);
     try {
-      const result = await apiFetch<BalanceResult>(`/gift-cards/balance/${trimmed}`);
+      const result = await checkGiftCardBalance(trimmed);
       setBalanceResult(result);
     } catch {
       Alert.alert('Not Found', 'No gift card found with that code.');
@@ -287,19 +278,52 @@ export default function GiftCardsScreen() {
 
         {/* MY CARDS TAB */}
         {activeTab === 'my-cards' && (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>🎁</Text>
-            <Text style={styles.emptyTitle}>No gift cards yet</Text>
-            <Text style={styles.emptyBody}>
-              Gift cards you purchase will appear here.
-            </Text>
-            <TouchableOpacity
-              style={styles.primaryBtn}
-              onPress={() => setActiveTab('buy')}
-            >
-              <Text style={styles.primaryBtnText}>Buy a Gift Card</Text>
-            </TouchableOpacity>
-          </View>
+          loadingCards ? (
+            <ActivityIndicator color="#e94560" size="large" style={{ marginTop: 40 }} />
+          ) : myCards.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyIcon}>🎁</Text>
+              <Text style={styles.emptyTitle}>No gift cards yet</Text>
+              <Text style={styles.emptyBody}>
+                Gift cards you purchase will appear here.
+              </Text>
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={() => setActiveTab('buy')}
+              >
+                <Text style={styles.primaryBtnText}>Buy a Gift Card</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={{ gap: 10 }}>
+              {myCards.map((card) => (
+                <View key={card.id} style={styles.myCardRow}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.myCardCode}>{card.code}</Text>
+                    {card.recipientEmail && (
+                      <Text style={styles.myCardMeta}>To: {card.recipientEmail}</Text>
+                    )}
+                    <Text style={styles.myCardMeta}>
+                      Issued {new Date(card.createdAt).toLocaleDateString()}
+                    </Text>
+                  </View>
+                  <View style={{ alignItems: 'flex-end', gap: 4 }}>
+                    <Text style={styles.myCardAmount}>
+                      ${(card.remainingAmountCents / 100).toFixed(2)}
+                    </Text>
+                    <Text style={styles.myCardAmountSub}>
+                      of ${(card.initialAmountCents / 100).toFixed(2)}
+                    </Text>
+                    <View style={[styles.statusBadge, { backgroundColor: card.isActive ? 'rgba(63,185,80,0.15)' : 'rgba(139,148,158,0.15)' }]}>
+                      <Text style={[styles.statusText, { color: card.isActive ? '#3fb950' : '#8b949e' }]}>
+                        {card.isActive ? 'Active' : 'Used'}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )
         )}
       </ScrollView>
     </View>
@@ -422,4 +446,19 @@ const styles = StyleSheet.create({
   emptyIcon: { fontSize: 48 },
   emptyTitle: { fontSize: 18, fontWeight: '800', color: '#e6edf3' },
   emptyBody: { fontSize: 14, color: '#8b949e', textAlign: 'center', lineHeight: 20 },
+  myCardRow: {
+    backgroundColor: '#161b22',
+    borderWidth: 1,
+    borderColor: '#21262d',
+    borderRadius: 10,
+    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  myCardCode: { fontSize: 13, fontFamily: 'monospace', color: '#e6edf3', letterSpacing: 1, marginBottom: 4 },
+  myCardMeta: { fontSize: 12, color: '#8b949e', marginTop: 2 },
+  myCardAmount: { fontSize: 18, fontWeight: '800', color: '#3fb950' },
+  myCardAmountSub: { fontSize: 11, color: '#8b949e' },
+  statusBadge: { borderRadius: 100, paddingVertical: 2, paddingHorizontal: 8 },
+  statusText: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4 },
 });
