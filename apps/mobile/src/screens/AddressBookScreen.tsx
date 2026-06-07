@@ -10,9 +10,7 @@ import {
   StyleSheet,
   RefreshControl,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
+import { fetchAddresses, createAddress, deleteAddress, type Address } from '@/api/addresses';
 
 const COLORS = {
   bg: '#0d1117',
@@ -23,15 +21,6 @@ const COLORS = {
   accent: '#e94560',
   success: '#3fb950',
 };
-
-interface Address {
-  id: string;
-  line1: string;
-  line2: string | null;
-  city: string;
-  country: string;
-  postalCode: string;
-}
 
 const EMPTY_FORM = {
   line1: '',
@@ -49,28 +38,6 @@ const COUNTRIES = [
   { code: 'BD', name: 'Bangladesh' },
 ];
 
-async function getToken(): Promise<string | null> {
-  return AsyncStorage.getItem('nc_token');
-}
-
-async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = await getToken();
-  const res = await fetch(`${API_URL}/api${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init?.headers,
-    },
-    ...init,
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.message ?? `API error ${res.status}`);
-  }
-  if (res.status === 204) return undefined as T;
-  return res.json() as Promise<T>;
-}
-
 export default function AddressBookScreen() {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(false);
@@ -84,8 +51,8 @@ export default function AddressBookScreen() {
   const loadAddresses = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      const data = await apiFetch<Address[]>('/addresses');
-      setAddresses(data ?? []);
+      const data = await fetchAddresses();
+      setAddresses(data);
       setLoaded(true);
     } catch (err: any) {
       if (!silent) setError(err.message ?? 'Failed to load addresses');
@@ -108,15 +75,12 @@ export default function AddressBookScreen() {
     setError('');
     setSubmitting(true);
     try {
-      await apiFetch('/addresses', {
-        method: 'POST',
-        body: JSON.stringify({
-          line1: form.line1,
-          line2: form.line2 || undefined,
-          city: form.city,
-          country: form.country,
-          postalCode: form.postalCode,
-        }),
+      await createAddress({
+        line1: form.line1,
+        line2: form.line2 || undefined,
+        city: form.city,
+        country: form.country,
+        postalCode: form.postalCode,
       });
       setForm(EMPTY_FORM);
       setShowForm(false);
@@ -139,7 +103,7 @@ export default function AddressBookScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await apiFetch(`/addresses/${id}`, { method: 'DELETE' });
+              await deleteAddress(id);
               setAddresses((prev) => prev.filter((a) => a.id !== id));
             } catch {
               Alert.alert('Error', 'Failed to delete address.');
