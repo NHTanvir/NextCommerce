@@ -91,4 +91,10 @@ export class AnalyticsController {
   getAovTrend(@Query('days', new DefaultValuePipe(30), ParseIntPipe) days: number) {
     return this.analyticsService.getAverageOrderValueTrend(Math.min(days, 365));
   }
+
+  @Get('weekday-distribution')
+  @ApiOperation({ summary: 'Get order volume and revenue broken down by day of week' })
+  getRevenueByWeekday() {
+    return this.analyticsService.getRevenueByWeekday();
+  }
 }
