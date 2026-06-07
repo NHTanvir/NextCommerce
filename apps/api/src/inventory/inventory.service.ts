@@ -75,4 +75,23 @@ export class InventoryService {
       .orderBy('v.stockQty', 'ASC')
       .getMany();
   }
+
+  async getStockSummary(): Promise<{ totalVariants: number; totalStock: number; outOfStock: number; lowStock: number; inStock: number }> {
+    const rows = await this.variantRepo
+      .createQueryBuilder('v')
+      .select('COUNT(v.id)', 'totalVariants')
+      .addSelect('SUM(v.stockQty)', 'totalStock')
+      .addSelect('SUM(CASE WHEN v.stockQty = 0 THEN 1 ELSE 0 END)', 'outOfStock')
+      .addSelect(`SUM(CASE WHEN v.stockQty > 0 AND v.stockQty <= ${LOW_STOCK_THRESHOLD} THEN 1 ELSE 0 END)`, 'lowStock')
+      .addSelect(`SUM(CASE WHEN v.stockQty > ${LOW_STOCK_THRESHOLD} THEN 1 ELSE 0 END)`, 'inStock')
+      .getRawOne<{ totalVariants: string; totalStock: string; outOfStock: string; lowStock: string; inStock: string }>();
+
+    return {
+      totalVariants: parseInt(rows?.totalVariants ?? '0', 10),
+      totalStock: parseInt(rows?.totalStock ?? '0', 10),
+      outOfStock: parseInt(rows?.outOfStock ?? '0', 10),
+      lowStock: parseInt(rows?.lowStock ?? '0', 10),
+      inStock: parseInt(rows?.inStock ?? '0', 10),
+    };
+  }
 }
