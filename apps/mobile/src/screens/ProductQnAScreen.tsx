@@ -12,9 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
+import { fetchProductQnA, askQuestion, type QnAQuestion, type QnAAnswer } from '@/api/qna';
 
 const COLORS = {
   bg: '#0d1117',
@@ -29,24 +27,8 @@ const COLORS = {
   adminBg: '#1a2332',
 };
 
-interface Answer {
-  id: string;
-  body: string;
-  isAdminAnswer: boolean;
-  userId: string;
-  createdAt: string;
-}
-
-interface Question {
-  id: string;
-  productId: string;
-  userId: string;
-  body: string;
-  isAnswered: boolean;
-  isHidden: boolean;
-  answers: Answer[];
-  createdAt: string;
-}
+type Answer = QnAAnswer;
+type Question = QnAQuestion;
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -125,18 +107,12 @@ export default function ProductQnAScreen() {
   const [loading, setLoading] = useState(true);
   const [newQuestion, setNewQuestion] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
 
   const fetchQnA = useCallback(async () => {
     setLoading(true);
     try {
-      const stored = await AsyncStorage.getItem('nc_token');
-      setToken(stored);
-      const res = await fetch(`${API_URL}/qna?productId=${productId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setQuestions(Array.isArray(data) ? data.filter((q: Question) => !q.isHidden) : []);
-      }
+      const data = await fetchProductQnA(productId);
+      setQuestions(data.filter((q) => !q.isHidden));
     } catch {
       setQuestions([]);
     } finally {
@@ -152,28 +128,12 @@ export default function ProductQnAScreen() {
       Alert.alert('Question too short', 'Please write at least 10 characters.');
       return;
     }
-    if (!token) {
-      Alert.alert('Sign in required', 'Please sign in to ask a question.');
-      return;
-    }
     setSubmitting(true);
     try {
-      const res = await fetch(`${API_URL}/qna/ask`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ productId, body }),
-      });
-      if (res.ok) {
-        const newQ = await res.json();
-        setQuestions((prev) => [newQ, ...prev]);
-        setNewQuestion('');
-        Alert.alert('Question submitted!', 'We will notify you when someone answers.');
-      } else {
-        Alert.alert('Error', 'Failed to submit question.');
-      }
+      const newQ = await askQuestion(productId, body);
+      setQuestions((prev) => [newQ, ...prev]);
+      setNewQuestion('');
+      Alert.alert('Question submitted!', 'We will notify you when someone answers.');
     } catch {
       Alert.alert('Error', 'Failed to submit question.');
     } finally {

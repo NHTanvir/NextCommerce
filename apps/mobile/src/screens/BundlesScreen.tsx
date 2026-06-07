@@ -12,10 +12,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ShopStackParamList } from '@/navigation/types';
+import { fetchBundles as apiFetchBundles, type Bundle } from '@/api/bundles';
 
 type Nav = NativeStackNavigationProp<ShopStackParamList>;
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 const COLORS = {
   bg: '#0d1117',
@@ -38,15 +37,7 @@ const BUNDLE_PALETTES = [
   { bg: '#06b6d4', light: '#06b6d420' },
 ];
 
-interface BundleDto {
-  id: string;
-  name: string;
-  description: string | null;
-  productIds: string[];
-  discountPercent: number;
-  isActive: boolean;
-  endsAt: string | null;
-}
+type BundleDto = Bundle;
 
 function timeUntil(iso: string): string {
   const diff = new Date(iso).getTime() - Date.now();
@@ -117,11 +108,8 @@ export default function BundlesScreen() {
   const fetchBundles = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     try {
-      const res = await fetch(`${API_URL}/bundles`);
-      if (res.ok) {
-        const data = await res.json();
-        setBundles(Array.isArray(data) ? data : []);
-      }
+      const data = await apiFetchBundles();
+      setBundles(data);
     } catch {
       setBundles([]);
     } finally {

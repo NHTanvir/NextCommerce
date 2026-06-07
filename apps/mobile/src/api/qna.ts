@@ -24,23 +24,33 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export interface QnAItem {
+export interface QnAAnswer {
   id: string;
-  question: string;
-  answer: string | null;
-  askedBy?: string;
-  answeredAt?: string | null;
+  body: string;
+  isAdminAnswer: boolean;
+  userId: string;
   createdAt: string;
 }
 
-export async function fetchProductQnA(productId: string): Promise<QnAItem[]> {
-  const data = await apiFetch<QnAItem[]>(`/qna?productId=${productId}`);
+export interface QnAQuestion {
+  id: string;
+  productId: string;
+  userId: string;
+  body: string;
+  isAnswered: boolean;
+  isHidden: boolean;
+  answers: QnAAnswer[];
+  createdAt: string;
+}
+
+export async function fetchProductQnA(productId: string): Promise<QnAQuestion[]> {
+  const data = await apiFetch<QnAQuestion[]>(`/qna?productId=${productId}`);
   return Array.isArray(data) ? data : [];
 }
 
-export async function askQuestion(productId: string, question: string): Promise<QnAItem> {
-  return apiFetch<QnAItem>('/qna/ask', {
+export async function askQuestion(productId: string, body: string): Promise<QnAQuestion> {
+  return apiFetch<QnAQuestion>('/qna/ask', {
     method: 'POST',
-    body: JSON.stringify({ productId, question }),
+    body: JSON.stringify({ productId, body }),
   });
 }
