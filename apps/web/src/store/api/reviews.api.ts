@@ -91,6 +91,11 @@ export const reviewsApi = apiSlice.injectEndpoints({
         { type: 'Review' as const, id: `votes-${reviewId}` },
       ],
     }),
+
+    getTopReviewedProducts: build.query<Array<{ productId: string; reviewCount: number; avgRating: number }>, number | void>({
+      query: (limit = 10) => `/reviews/admin/top-reviewed?limit=${limit}`,
+      providesTags: [{ type: 'Review' as const, id: 'TOP_REVIEWED' }],
+    }),
   }),
 });
 
@@ -103,4 +108,5 @@ export const {
   useDeleteReviewMutation,
   useGetReviewVotesQuery,
   useVoteReviewMutation,
+  useGetTopReviewedProductsQuery,
 } = reviewsApi;
