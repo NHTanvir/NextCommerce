@@ -124,4 +124,22 @@ export class ReviewsService {
     const vote = await this.voteRepo.findOne({ where: { reviewId, userId } });
     return vote ? vote.isHelpful : null;
   }
+
+  async getTopReviewedProducts(limit = 10): Promise<Array<{ productId: string; reviewCount: number; avgRating: number }>> {
+    const rows = await this.reviewRepo
+      .createQueryBuilder('r')
+      .select('r.productId', 'productId')
+      .addSelect('COUNT(r.id)', 'reviewCount')
+      .addSelect('AVG(r.rating)', 'avgRating')
+      .groupBy('r.productId')
+      .orderBy('COUNT(r.id)', 'DESC')
+      .limit(limit)
+      .getRawMany<{ productId: string; reviewCount: string; avgRating: string }>();
+
+    return rows.map((r) => ({
+      productId: r.productId,
+      reviewCount: parseInt(r.reviewCount, 10),
+      avgRating: Math.round(parseFloat(r.avgRating) * 10) / 10,
+    }));
+  }
 }
