@@ -11,23 +11,9 @@ import {
   Clipboard,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { fetchReferralStats, fetchReferralHistory } from '@/api/referrals';
+import type { ReferralStats, ReferralHistory } from '@/api/referrals';
 
-interface ReferralStats {
-  code: string | null;
-  totalReferrals: number;
-  completedReferrals: number;
-  pendingReferrals: number;
-  totalPointsEarned: number;
-}
-
-interface ReferralHistory {
-  id: string;
-  status: 'pending' | 'completed' | 'paid';
-  rewardPointsGranted: number | null;
-  createdAt: string;
-}
-
-const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 const APP_URL = 'https://nextcommerce.app';
 
 export default function ReferralsScreen() {
@@ -37,10 +23,7 @@ export default function ReferralsScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${API_BASE}/referrals/stats`).then((r) => r.json()),
-      fetch(`${API_BASE}/referrals/history`).then((r) => r.json()),
-    ])
+    Promise.all([fetchReferralStats(), fetchReferralHistory()])
       .then(([s, h]) => {
         setStats(s);
         setHistory(h);
