@@ -88,6 +88,16 @@ export class PromotionsService {
     await this.repo.remove(promo);
   }
 
+  async getStats(): Promise<{ total: number; active: number; expired: number; totalRedemptions: number; topPromotion: string | null }> {
+    const all = await this.repo.find({ order: { usageCount: 'DESC' } });
+    const now = new Date();
+    const active = all.filter((p) => p.isActive && p.startsAt <= now && p.endsAt >= now).length;
+    const expired = all.filter((p) => p.endsAt < now).length;
+    const totalRedemptions = all.reduce((s, p) => s + (p.usageCount ?? 0), 0);
+    const topPromotion = all.length > 0 ? all[0].name : null;
+    return { total: all.length, active, expired, totalRedemptions, topPromotion };
+  }
+
   async applyToOrder(promotionId: string, orderAmountCents: number): Promise<ApplyResult> {
     const promo = await this.findOne(promotionId);
     const now = new Date();
