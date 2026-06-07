@@ -11,6 +11,7 @@ import {
   useGetTopCustomersQuery,
   useGetCustomerSegmentsQuery,
   useGetAovTrendQuery,
+  useGetWeekdayDistributionQuery,
 } from '@/store/api/analytics.api';
 import { useGetMostWishlistedQuery } from '@/store/api/wishlist.api';
 import styles from './analytics.module.scss';
@@ -30,6 +31,7 @@ export default function AdminAnalyticsPage() {
   const { data: topCustomers = [] } = useGetTopCustomersQuery(10);
   const { data: segments } = useGetCustomerSegmentsQuery();
   const { data: aovTrend = [] } = useGetAovTrendQuery(days);
+  const { data: weekday = [] } = useGetWeekdayDistributionQuery();
   const { data: mostWishlisted = [] } = useGetMostWishlistedQuery(10);
 
   const maxRevenue = Math.max(...revenue.map((r) => r.totalCents), 1);
@@ -296,6 +298,28 @@ export default function AdminAnalyticsPage() {
           </table>
         </div>
       )}
+      {/* Weekday distribution */}
+      {weekday.length > 0 && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Orders by Day of Week</h2>
+          <div className={styles.chartWrap}>
+            {(() => {
+              const maxOrders = Math.max(...weekday.map((w) => w.orderCount), 1);
+              return weekday.map((w) => (
+                <div key={w.weekday} className={styles.bar}>
+                  <div
+                    className={styles.barFill}
+                    style={{ height: `${Math.max(4, (w.orderCount / maxOrders) * 180)}px` }}
+                    title={`${w.weekdayName}: ${w.orderCount} orders`}
+                  />
+                  <span className={styles.barLabel}>{w.weekdayName}</span>
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
+      )}
+
       {/* Most wishlisted */}
       {mostWishlisted.length > 0 && (
         <div className={styles.section}>
