@@ -11,8 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
+import { fetchActivePromotions } from '@/api/promotions';
 
 const COLORS = {
   bg: '#0d1117',
@@ -36,19 +35,7 @@ const PROMO_PALETTES = [
   '#ec4899',
 ];
 
-interface Promotion {
-  id: string;
-  name: string;
-  description: string | null;
-  discountType: 'percentage' | 'fixed';
-  discountValue: number;
-  minimumOrderAmount: number | null;
-  usageLimit: number | null;
-  usageCount: number;
-  startsAt: string;
-  endsAt: string;
-  isActive: boolean;
-}
+import type { Promotion } from '@/api/promotions';
 
 function formatDiscount(type: string, value: number): string {
   if (type === 'percentage') return `${value}% OFF`;
@@ -133,11 +120,8 @@ export default function PromotionsScreen() {
   const fetchPromotions = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     try {
-      const res = await fetch(`${API_URL}/promotions/active`);
-      if (res.ok) {
-        const data = await res.json();
-        setPromotions(Array.isArray(data) ? data : []);
-      }
+      const data = await fetchActivePromotions();
+      setPromotions(data);
     } catch {
       setPromotions([]);
     } finally {
