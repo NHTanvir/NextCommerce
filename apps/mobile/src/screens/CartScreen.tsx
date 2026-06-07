@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CartStackParamList, RootStackParamList } from '../navigation/types';
 import { PriceTag } from '../components/PriceTag';
+import { validateCoupon } from '@/api/coupons';
 
 type Nav = NativeStackNavigationProp<CartStackParamList>;
 
@@ -40,20 +41,12 @@ export function CartScreen() {
     if (!couponCode.trim()) return;
     try {
       setValidatingCoupon(true);
-      const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
-      const res = await fetch(`${API_URL}/api/coupons/validate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: couponCode.trim(), orderTotalCents: subtotal }),
-      });
-      const data = await res.json();
-      if (data.valid || data.data?.valid) {
-        const discountCents = data.discountCents ?? data.data?.discountCents ?? 0;
-        setDiscount(discountCents);
-        Alert.alert('Coupon Applied!', `You saved ${(discountCents / 100).toFixed(2)} USD`);
+      const data = await validateCoupon(couponCode.trim(), subtotal);
+      if (data.valid) {
+        setDiscount(data.discountCents);
+        Alert.alert('Coupon Applied!', `You saved ${(data.discountCents / 100).toFixed(2)} USD`);
       } else {
-        const msg = data.message ?? data.data?.message ?? 'Invalid coupon code';
-        Alert.alert('Invalid Coupon', msg);
+        Alert.alert('Invalid Coupon', data.message ?? 'Invalid coupon code');
       }
     } catch {
       Alert.alert('Error', 'Failed to validate coupon.');
