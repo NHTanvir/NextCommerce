@@ -5,6 +5,7 @@ import {
   useAdminGetGiftCardsQuery,
   useAdminDeleteGiftCardMutation,
   useAdminIssueGiftCardMutation,
+  useAdminGetGiftCardStatsQuery,
 } from '@/store/api/gift-cards.api';
 import styles from '../admin.module.scss';
 
@@ -26,6 +27,7 @@ export default function AdminGiftCardsPage() {
   });
 
   const { data, isLoading, isFetching } = useAdminGetGiftCardsQuery({ page, limit: 20 });
+  const { data: stats } = useAdminGetGiftCardStatsQuery();
   const [deleteCard] = useAdminDeleteGiftCardMutation();
   const [issueCard, { isLoading: issuing }] = useAdminIssueGiftCardMutation();
 
@@ -48,9 +50,11 @@ export default function AdminGiftCardsPage() {
     }
   }
 
-  const totalCards = data?.total ?? 0;
-  const totalValue = data?.data.reduce((s, c) => s + c.initialAmountCents, 0) ?? 0;
-  const totalRemaining = data?.data.reduce((s, c) => s + c.remainingAmountCents, 0) ?? 0;
+  const totalCards = stats?.total ?? data?.total ?? 0;
+  const totalValue = stats?.totalIssuedCents ?? 0;
+  const totalRemaining = stats?.totalRemainingCents ?? 0;
+  const totalRedeemed = stats?.totalRedeemedCents ?? 0;
+  const activeCards = stats?.active ?? 0;
 
   return (
     <div className={styles.page}>
@@ -62,7 +66,7 @@ export default function AdminGiftCardsPage() {
       </div>
 
       {/* Summary */}
-      <div className={styles.statsGrid} style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
+      <div className={styles.statsGrid} style={{ gridTemplateColumns: 'repeat(5,1fr)' }}>
         <div className={styles.statCard}>
           <div className={styles.statIconWrap} style={{ color: '#e94560', background: '#e9456018' }}>🎁</div>
           <div className={styles.statBody}>
@@ -71,10 +75,17 @@ export default function AdminGiftCardsPage() {
           </div>
         </div>
         <div className={styles.statCard}>
+          <div className={styles.statIconWrap} style={{ color: '#10b981', background: '#10b98118' }}>✅</div>
+          <div className={styles.statBody}>
+            <span className={styles.statValue}>{activeCards}</span>
+            <span className={styles.statLabel}>Active</span>
+          </div>
+        </div>
+        <div className={styles.statCard}>
           <div className={styles.statIconWrap} style={{ color: '#3b82f6', background: '#3b82f618' }}>💳</div>
           <div className={styles.statBody}>
             <span className={styles.statValue}>{fmt(totalValue)}</span>
-            <span className={styles.statLabel}>Total Value</span>
+            <span className={styles.statLabel}>Total Issued Value</span>
           </div>
         </div>
         <div className={styles.statCard}>
@@ -82,6 +93,13 @@ export default function AdminGiftCardsPage() {
           <div className={styles.statBody}>
             <span className={styles.statValue}>{fmt(totalRemaining)}</span>
             <span className={styles.statLabel}>Remaining Balance</span>
+          </div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={styles.statIconWrap} style={{ color: '#f59e0b', background: '#f59e0b18' }}>🏷️</div>
+          <div className={styles.statBody}>
+            <span className={styles.statValue}>{fmt(totalRedeemed)}</span>
+            <span className={styles.statLabel}>Total Redeemed</span>
           </div>
         </div>
       </div>

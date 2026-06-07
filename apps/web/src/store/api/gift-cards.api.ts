@@ -32,6 +32,16 @@ export interface AdminGiftCardList {
   totalPages: number;
 }
 
+export interface GiftCardStats {
+  total: number;
+  active: number;
+  fullyRedeemed: number;
+  expired: number;
+  totalIssuedCents: number;
+  totalRemainingCents: number;
+  totalRedeemedCents: number;
+}
+
 export const giftCardsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     checkGiftCardBalance: build.query<GiftCardBalance, string>({
@@ -64,6 +74,11 @@ export const giftCardsApi = apiSlice.injectEndpoints({
       query: (body) => ({ url: '/gift-cards/purchase', method: 'POST', body }),
       invalidatesTags: ['GiftCards'],
     }),
+
+    adminGetGiftCardStats: build.query<GiftCardStats, void>({
+      query: () => '/gift-cards/admin/stats',
+      providesTags: ['GiftCards'],
+    }),
   }),
 });
 
@@ -75,4 +90,5 @@ export const {
   useAdminGetGiftCardsQuery,
   useAdminDeleteGiftCardMutation,
   useAdminIssueGiftCardMutation,
+  useAdminGetGiftCardStatsQuery,
 } = giftCardsApi;

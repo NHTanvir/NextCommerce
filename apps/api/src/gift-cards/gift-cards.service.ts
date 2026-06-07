@@ -98,4 +98,35 @@ export class GiftCardsService {
       order: { createdAt: 'DESC' },
     });
   }
+
+  async getStats(): Promise<{
+    total: number;
+    active: number;
+    fullyRedeemed: number;
+    expired: number;
+    totalIssuedCents: number;
+    totalRemainingCents: number;
+    totalRedeemedCents: number;
+  }> {
+    const row = await this.cardRepo
+      .createQueryBuilder('gc')
+      .select('COUNT(*)', 'total')
+      .addSelect('SUM(CASE WHEN gc.isActive = 1 THEN 1 ELSE 0 END)', 'active')
+      .addSelect('SUM(CASE WHEN gc.remainingAmountCents = 0 THEN 1 ELSE 0 END)', 'fullyRedeemed')
+      .addSelect('SUM(CASE WHEN gc.expiresAt < NOW() AND gc.isActive = 1 THEN 1 ELSE 0 END)', 'expired')
+      .addSelect('COALESCE(SUM(gc.initialAmountCents), 0)', 'totalIssuedCents')
+      .addSelect('COALESCE(SUM(gc.remainingAmountCents), 0)', 'totalRemainingCents')
+      .addSelect('COALESCE(SUM(gc.initialAmountCents - gc.remainingAmountCents), 0)', 'totalRedeemedCents')
+      .getRawOne();
+
+    return {
+      total: Number(row.total) || 0,
+      active: Number(row.active) || 0,
+      fullyRedeemed: Number(row.fullyRedeemed) || 0,
+      expired: Number(row.expired) || 0,
+      totalIssuedCents: Number(row.totalIssuedCents) || 0,
+      totalRemainingCents: Number(row.totalRemainingCents) || 0,
+      totalRedeemedCents: Number(row.totalRedeemedCents) || 0,
+    };
+  }
 }

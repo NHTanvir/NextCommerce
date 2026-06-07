@@ -54,6 +54,15 @@ export class GiftCardsController {
     return this.giftCardsService.findAll(page ? Number(page) : 1, limit ? Number(limit) : 20);
   }
 
+  @Get('admin/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Get gift card statistics' })
+  getStats() {
+    return this.giftCardsService.getStats();
+  }
+
   @Delete('admin/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
