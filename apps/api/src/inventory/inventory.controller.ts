@@ -53,6 +53,12 @@ export class InventoryController {
       .then((count) => ({ published: count }));
   }
 
+  @Get('summary')
+  @ApiOperation({ summary: '[Admin] Get overall stock summary across all variants' })
+  getStockSummary() {
+    return this.inventoryService.getStockSummary();
+  }
+
   @Patch('variants/:id/adjust')
   @ApiOperation({ summary: '[Admin] Adjust variant stock by delta (+/-)' })
   adjustStock(@Param('id') id: string, @Body() dto: AdjustStockDto) {
