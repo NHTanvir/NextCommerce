@@ -30,6 +30,15 @@ export class PromotionsController {
     return this.service.findActive();
   }
 
+  @Get('admin/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get promotions stats (admin)' })
+  getStats() {
+    return this.service.getStats();
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
