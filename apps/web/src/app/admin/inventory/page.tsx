@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
   useGetLowStockAlertsQuery,
   useAdjustStockMutation,
+  useGetStockSummaryQuery,
 } from '@/store/api/inventory.api';
 import styles from '../admin.module.scss';
 
@@ -13,6 +14,7 @@ export default function AdminInventoryPage() {
   const [saving, setSaving] = useState<string | null>(null);
 
   const { data: alerts = [], isLoading, refetch } = useGetLowStockAlertsQuery(threshold);
+  const { data: stockSummary } = useGetStockSummaryQuery();
   const [adjustStock] = useAdjustStockMutation();
 
   const handleAdjust = async (variantId: string) => {
@@ -35,6 +37,22 @@ export default function AdminInventoryPage() {
 
   return (
     <div className={styles.page}>
+      {stockSummary && (
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          {[
+            { label: 'Total Variants', value: stockSummary.totalVariants, color: '#58a6ff' },
+            { label: 'Total Stock', value: stockSummary.totalStock.toLocaleString(), color: '#3fb950' },
+            { label: 'In Stock', value: stockSummary.inStock, color: '#3fb950' },
+            { label: 'Low Stock', value: stockSummary.lowStock, color: '#f59e0b' },
+            { label: 'Out of Stock', value: stockSummary.outOfStock, color: '#e94560' },
+          ].map((s) => (
+            <div key={s.label} className={styles.metricCard} style={{ flex: '1', minWidth: '140px' }}>
+              <span className={styles.metricValue} style={{ color: s.color }}>{s.value}</span>
+              <span className={styles.metricLabel}>{s.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <div className={styles.dashHeader}>
         <h1 className={styles.pageTitle}>Inventory Management</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
