@@ -69,6 +69,13 @@ export interface AovTrendPoint {
   avgOrderValueCents: number;
 }
 
+export interface WeekdayDistribution {
+  weekday: number;
+  weekdayName: string;
+  orderCount: number;
+  totalCents: number;
+}
+
 export const analyticsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getDashboardSummary: build.query<DashboardSummary, void>({
@@ -110,6 +117,10 @@ export const analyticsApi = apiSlice.injectEndpoints({
     getAovTrend: build.query<AovTrendPoint[], number | void>({
       query: (days = 30) => `/analytics/aov-trend?days=${days}`,
     }),
+
+    getWeekdayDistribution: build.query<WeekdayDistribution[], void>({
+      query: () => '/analytics/weekday-distribution',
+    }),
   }),
 });
 
@@ -124,4 +135,5 @@ export const {
   useGetCustomerSegmentsQuery,
   useGetCohortDataQuery,
   useGetAovTrendQuery,
+  useGetWeekdayDistributionQuery,
 } = analyticsApi;
