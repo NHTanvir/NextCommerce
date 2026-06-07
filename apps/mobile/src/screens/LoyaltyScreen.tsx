@@ -10,22 +10,12 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-interface LoyaltyBalance {
-  points: number;
-  tier: string;
-  lifetimePoints: number;
-  nextTierPoints: number | null;
-}
-
-interface LoyaltyTransaction {
-  id: string;
-  type: 'earn' | 'redeem' | 'bonus' | 'expire' | 'refund';
-  points: number;
-  description: string;
-  createdAt: string;
-}
+import {
+  fetchLoyaltyBalance,
+  fetchLoyaltyHistory,
+  redeemLoyaltyPoints,
+} from '@/api/loyalty';
+import type { LoyaltyBalance, LoyaltyTransaction } from '@/api/loyalty';
 
 const TIER_ICONS: Record<string, string> = { bronze: '🥉', silver: '🥈', gold: '🥇', platinum: '💎' };
 const TIER_COLORS: Record<string, string> = { bronze: '#cd7f32', silver: '#c0c0c0', gold: '#ffd700', platinum: '#b9f2ff' };
@@ -39,21 +29,11 @@ const TX_TYPE_LABELS: Record<string, { label: string; color: string; prefix: str
   refund:  { label: 'Refunded', color: '#58a6ff', prefix: '+' },
 };
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
-
 function daysSince(iso: string): string {
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
   if (days === 0) return 'Today';
   if (days === 1) return 'Yesterday';
   return `${days} days ago`;
-}
-
-async function getAuthToken(): Promise<string | null> {
-  try {
-    return await AsyncStorage.getItem('auth_token');
-  } catch {
-    return null;
-  }
 }
 
 export default function LoyaltyScreen() {
@@ -71,20 +51,12 @@ export default function LoyaltyScreen() {
       else setLoading(true);
       setError(null);
 
-      const token = await getAuthToken();
-      if (!token) {
-        setError('Please sign in to view your loyalty points.');
-        return;
-      }
-
-      const headers = { Authorization: `Bearer ${token}` };
-      const [balRes, histRes] = await Promise.all([
-        fetch(`${API_URL}/api/loyalty/balance`, { headers }),
-        fetch(`${API_URL}/api/loyalty/history?limit=20`, { headers }),
+      const [bal, hist] = await Promise.all([
+        fetchLoyaltyBalance(),
+        fetchLoyaltyHistory(20),
       ]);
-
-      if (balRes.ok) setBalance(await balRes.json());
-      if (histRes.ok) setHistory(await histRes.json());
+      setBalance(bal);
+      setHistory(hist);
     } catch {
       setError('Failed to load loyalty data. Please try again.');
     } finally {
@@ -116,13 +88,7 @@ export default function LoyaltyScreen() {
           onPress: async () => {
             try {
               setRedeeming(true);
-              const token = await getAuthToken();
-              const res = await fetch(`${API_URL}/api/loyalty/redeem`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ points: pts }),
-              });
-              if (!res.ok) throw new Error('Redemption failed');
+              await redeemLoyaltyPoints(pts);
               setRedeemAmount('');
               Alert.alert('Success!', `$${dollarValue} discount has been added to your account.`);
               loadData();
