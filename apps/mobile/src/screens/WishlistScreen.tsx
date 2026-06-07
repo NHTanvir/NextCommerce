@@ -12,43 +12,22 @@ import {
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
+import { fetchWishlist as apiFetchWishlist, removeFromWishlist } from '@/api/wishlist';
+import type { WishlistItem } from '@/api/wishlist';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
-
-interface WishlistItem {
-  id: string;
-  productId: string;
-  product: {
-    slug: string;
-    title: string;
-    brand: string;
-    basePriceCents: number;
-  };
-  addedAt: string;
-}
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 export function WishlistScreen() {
   const navigation = useNavigation<Nav>();
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [token] = useState<string | null>(null);
 
   const fetchWishlist = useCallback(async (refresh = false) => {
-    if (!token) {
-      setItems([]);
-      setLoading(false);
-      return;
-    }
     try {
       if (refresh) setRefreshing(true);
       else setLoading(true);
-      const res = await fetch(`${API_URL}/api/wishlist`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
+      const data = await apiFetchWishlist();
       setItems(data ?? []);
     } catch {
       setItems([]);
@@ -56,7 +35,7 @@ export function WishlistScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [token]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -65,7 +44,6 @@ export function WishlistScreen() {
   );
 
   const handleRemove = async (productId: string, title: string) => {
-    if (!token) return;
     Alert.alert('Remove from Wishlist', `Remove "${title}" from your wishlist?`, [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -73,10 +51,7 @@ export function WishlistScreen() {
         style: 'destructive',
         onPress: async () => {
           try {
-            await fetch(`${API_URL}/api/wishlist/${productId}`, {
-              method: 'DELETE',
-              headers: { Authorization: `Bearer ${token}` },
-            });
+            await removeFromWishlist(productId);
             setItems((prev) => prev.filter((i) => i.productId !== productId));
           } catch {
             Alert.alert('Error', 'Failed to remove item.');
@@ -85,18 +60,6 @@ export function WishlistScreen() {
       },
     ]);
   };
-
-  if (!token) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.emptyIcon}>♡</Text>
-        <Text style={styles.emptyTitle}>Sign in to view wishlist</Text>
-        <TouchableOpacity style={styles.signInBtn} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.signInBtnText}>Sign In</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   if (loading) {
     return (
