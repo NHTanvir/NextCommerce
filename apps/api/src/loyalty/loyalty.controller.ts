@@ -61,4 +61,12 @@ export class LoyaltyController {
   listAccounts(@Query('page') page?: string, @Query('limit') limit?: string) {
     return this.loyaltyService.listAccounts(page ? Number(page) : 1, limit ? Number(limit) : 30);
   }
+
+  @Get('admin/tier-breakdown')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get loyalty tier distribution' })
+  getTierBreakdown() {
+    return this.loyaltyService.getTierBreakdown();
+  }
 }
