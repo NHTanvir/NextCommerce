@@ -11,13 +11,11 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp, RouteProp } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { OrdersStackParamList } from '@/navigation/types';
+import { submitReview } from '@/api/reviews';
 
 type Nav = NativeStackNavigationProp<OrdersStackParamList, 'OrderDetail'>;
 type Route = RouteProp<{ params: { orderId: string; productTitle?: string; variantId?: string } }, 'params'>;
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 const COLORS = {
   bg: '#0d1117',
@@ -28,10 +26,6 @@ const COLORS = {
   accent: '#e94560',
   star: '#f59e0b',
 };
-
-async function getToken(): Promise<string | null> {
-  return AsyncStorage.getItem('nc_token');
-}
 
 function StarRating({ rating, onRate }: { rating: number; onRate: (n: number) => void }) {
   return (
@@ -87,31 +81,17 @@ export default function OrderFeedbackScreen() {
 
     setSubmitting(true);
     try {
-      const token = await getToken();
-      const res = await fetch(`${API_URL}/api/reviews`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          orderId,
-          variantId,
-          rating,
-          title: title.trim() || undefined,
-          body: body.trim(),
-          tags: [...selectedTags],
-        }),
+      await submitReview({
+        orderId,
+        variantId,
+        rating,
+        title: title.trim() || undefined,
+        body: body.trim(),
+        tags: [...selectedTags],
       });
-
-      if (res.ok) {
-        setDone(true);
-      } else {
-        const err = await res.json().catch(() => ({}));
-        Alert.alert('Error', err?.message ?? 'Failed to submit review.');
-      }
-    } catch {
-      Alert.alert('Error', 'Network error. Please try again.');
+      setDone(true);
+    } catch (err: any) {
+      Alert.alert('Error', err?.message ?? 'Failed to submit review.');
     } finally {
       setSubmitting(false);
     }
