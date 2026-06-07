@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { submitReturnRequest } from '@/api/returns';
 
 type ReturnReason =
   | 'defective'
@@ -36,7 +37,6 @@ const METHODS: { value: ReturnMethod; label: string; sub: string }[] = [
   { value: 'exchange', label: 'Exchange', sub: 'Swap for the same or different item' },
 ];
 
-const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 
 export default function RequestReturnScreen() {
   const navigation = useNavigation<any>();
@@ -54,23 +54,14 @@ export default function RequestReturnScreen() {
     if (!canSubmit) return;
     setSubmitting(true);
     try {
-      const res = await fetch(`${API_BASE}/returns`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderId,
-          reason,
-          resolution: method,
-          notes: notes.trim() || undefined,
-        }),
+      await submitReturnRequest({
+        orderId,
+        reason: reason!,
+        notes: notes.trim() || undefined,
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message ?? 'Request failed');
-      }
       Alert.alert(
         'Return Requested',
-        'Your return request has been submitted. We\'ll review it within 24 hours.',
+        "Your return request has been submitted. We'll review it within 24 hours.",
         [{ text: 'OK', onPress: () => navigation.goBack() }],
       );
     } catch (err: any) {
