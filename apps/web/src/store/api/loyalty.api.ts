@@ -39,6 +39,11 @@ export const loyaltyApi = apiSlice.injectEndpoints({
         { type: 'User' as const, id: 'LOYALTY_HISTORY' },
       ],
     }),
+
+    getLoyaltyTierBreakdown: build.query<Array<{ tier: string; count: number; totalPoints: number }>, void>({
+      query: () => '/loyalty/admin/tier-breakdown',
+      providesTags: [{ type: 'User' as const, id: 'LOYALTY_TIERS' }],
+    }),
   }),
 });
 
@@ -46,4 +51,5 @@ export const {
   useGetLoyaltyBalanceQuery,
   useGetLoyaltyHistoryQuery,
   useRedeemPointsMutation,
+  useGetLoyaltyTierBreakdownQuery,
 } = loyaltyApi;
