@@ -321,6 +321,26 @@ export class AnalyticsService {
     }));
   }
 
+  async getRevenueByWeekday(): Promise<{ weekday: number; weekdayName: string; orderCount: number; totalCents: number }[]> {
+    const rows = await this.orderRepo
+      .createQueryBuilder('o')
+      .select('DAYOFWEEK(o.placedAt)', 'weekday')
+      .addSelect('COUNT(o.id)', 'orderCount')
+      .addSelect('SUM(o.totalCents)', 'totalCents')
+      .where("o.status NOT IN ('cancelled', 'refunded')")
+      .groupBy('DAYOFWEEK(o.placedAt)')
+      .orderBy('DAYOFWEEK(o.placedAt)', 'ASC')
+      .getRawMany<{ weekday: string; orderCount: string; totalCents: string }>();
+
+    const DAYS = ['', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return rows.map((r) => ({
+      weekday: parseInt(r.weekday, 10),
+      weekdayName: DAYS[parseInt(r.weekday, 10)] ?? '',
+      orderCount: parseInt(r.orderCount, 10),
+      totalCents: parseInt(r.totalCents ?? '0', 10),
+    }));
+  }
+
   async getAverageOrderValueTrend(days = 30): Promise<{ date: string; avgOrderValueCents: number }[]> {
     const from = new Date();
     from.setDate(from.getDate() - days);
