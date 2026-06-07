@@ -11,11 +11,9 @@ import {
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ShopStackParamList } from '@/navigation/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchBackInStockSubs, removeBackInStockSub, type BackInStockSub } from '@/api/backInStock';
 
 type Nav = NativeStackNavigationProp<ShopStackParamList>;
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 const COLORS = {
   bg: '#0d1117',
@@ -29,27 +27,6 @@ const COLORS = {
   yellow: '#f0b72f',
   purple: '#8957e5',
 };
-
-interface BackInStockSub {
-  id: string;
-  productId: string;
-  variantId: string;
-  notified: boolean;
-  notifiedAt: string | null;
-  createdAt: string;
-  variant?: {
-    size?: number;
-    color?: string;
-    sku?: string;
-    stockQty: number;
-  };
-  product?: {
-    title: string;
-    brand: string;
-    slug: string;
-    images?: Array<{ url: string }>;
-  };
-}
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -145,17 +122,8 @@ export default function BackInStockScreen() {
   const fetchSubs = useCallback(async () => {
     setLoading(true);
     try {
-      const token = await AsyncStorage.getItem('nc_token');
-      if (!token) { setSubs([]); return; }
-      const res = await fetch(`${API_URL}/back-in-stock`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setSubs(Array.isArray(data) ? data : []);
-      } else {
-        setSubs([]);
-      }
+      const data = await fetchBackInStockSubs();
+      setSubs(data);
     } catch {
       setSubs([]);
     } finally {
@@ -176,11 +144,7 @@ export default function BackInStockScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              const token = await AsyncStorage.getItem('nc_token');
-              await fetch(`${API_URL}/back-in-stock/${sub.id}`, {
-                method: 'DELETE',
-                headers: { Authorization: `Bearer ${token ?? ''}` },
-              });
+              await removeBackInStockSub(sub.id);
               setSubs((prev) => prev.filter((s) => s.id !== sub.id));
             } catch {
               Alert.alert('Error', 'Failed to remove subscription.');
