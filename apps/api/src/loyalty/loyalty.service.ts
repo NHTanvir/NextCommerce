@@ -122,4 +122,21 @@ export class LoyaltyService {
     });
     return { data, total };
   }
+
+  async getTierBreakdown(): Promise<Array<{ tier: string; count: number; totalPoints: number }>> {
+    const rows = await this.accountRepo
+      .createQueryBuilder('a')
+      .select('a.tier', 'tier')
+      .addSelect('COUNT(a.id)', 'count')
+      .addSelect('SUM(a.points)', 'totalPoints')
+      .groupBy('a.tier')
+      .orderBy('SUM(a.lifetimePoints)', 'DESC')
+      .getRawMany<{ tier: string; count: string; totalPoints: string }>();
+
+    return rows.map((r) => ({
+      tier: r.tier,
+      count: parseInt(r.count, 10),
+      totalPoints: parseInt(r.totalPoints ?? '0', 10),
+    }));
+  }
 }
