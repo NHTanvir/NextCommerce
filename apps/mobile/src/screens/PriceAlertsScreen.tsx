@@ -11,9 +11,8 @@ import {
   Modal,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
+import { fetchPriceAlerts, deletePriceAlert, updatePriceAlert } from '@/api/priceAlerts';
+import type { PriceAlert } from '@/api/priceAlerts';
 
 const COLORS = {
   bg: '#0d1117',
@@ -27,22 +26,6 @@ const COLORS = {
   yellow: '#f0b72f',
   overlay: 'rgba(0,0,0,0.75)',
 };
-
-interface PriceAlert {
-  id: string;
-  productId: string;
-  targetPriceCents: number | null;
-  isActive: boolean;
-  lastTriggeredAt: string | null;
-  createdAt: string;
-  product?: {
-    title: string;
-    brand: string;
-    basePriceCents: number;
-    salePriceCents?: number | null;
-    slug: string;
-  };
-}
 
 function formatPrice(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
@@ -219,13 +202,8 @@ export default function PriceAlertsScreen() {
   const fetchAlerts = useCallback(async () => {
     setLoading(true);
     try {
-      const token = await AsyncStorage.getItem('nc_token');
-      if (!token) { setAlerts([]); return; }
-      const res = await fetch(`${API_URL}/price-alerts`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      setAlerts(Array.isArray(data) ? data : []);
+      const data = await fetchPriceAlerts();
+      setAlerts(data);
     } catch {
       setAlerts([]);
     } finally {
@@ -246,11 +224,7 @@ export default function PriceAlertsScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              const token = await AsyncStorage.getItem('nc_token');
-              await fetch(`${API_URL}/price-alerts/product/${alert.productId}`, {
-                method: 'DELETE',
-                headers: { Authorization: `Bearer ${token ?? ''}` },
-              });
+              await deletePriceAlert(alert.id);
               setAlerts((prev) => prev.filter((a) => a.id !== alert.id));
             } catch {
               Alert.alert('Error', 'Failed to remove alert.');
@@ -265,19 +239,9 @@ export default function PriceAlertsScreen() {
     if (!editAlert) return;
     setSaving(true);
     try {
-      const token = await AsyncStorage.getItem('nc_token');
-      const res = await fetch(`${API_URL}/price-alerts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token ?? ''}`,
-        },
-        body: JSON.stringify({ productId: editAlert.productId, targetPriceCents: targetCents }),
-      });
-      if (res.ok) {
-        await fetchAlerts();
-        setEditAlert(null);
-      }
+      await updatePriceAlert(editAlert.id, targetCents);
+      await fetchAlerts();
+      setEditAlert(null);
     } catch {
       Alert.alert('Error', 'Failed to update alert.');
     } finally {
