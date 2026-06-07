@@ -10,6 +10,7 @@ import {
   TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { fetchSearch } from '@/api/catalog';
 
 interface Product {
   id: string;
@@ -24,7 +25,6 @@ interface Product {
 }
 
 const MAX_COMPARE = 3;
-const API_BASE = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 
 const COMPARE_ROWS = [
   { key: 'brand', label: 'Brand' },
@@ -46,9 +46,8 @@ export default function CompareScreen() {
     if (searchQuery.trim().length < 2) return;
     setSearching(true);
     try {
-      const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(searchQuery)}&limit=6`);
-      const data = await res.json();
-      setSearchResults(data.results ?? data ?? []);
+      const data = await fetchSearch(searchQuery.trim(), 6);
+      setSearchResults(data as Product[]);
     } catch {
       Alert.alert('Error', 'Search failed.');
     } finally {

@@ -13,8 +13,6 @@ import type { AccountStackParamList } from '../navigation/types';
 
 type Nav = NativeStackNavigationProp<AccountStackParamList, 'Profile'>;
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
-
 interface MenuItem {
   icon: string;
   label: string;
