@@ -10,19 +10,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
-
-interface Notification {
-  id: string;
-  title: string;
-  body: string;
-  type: string;
-  read: boolean;
-  createdAt: string;
-  metadata?: Record<string, unknown>;
-}
+import {
+  fetchNotifications as apiFetchNotifications,
+  fetchUnreadCount,
+  markNotificationRead,
+  markAllNotificationsRead,
+} from '@/api/notifications';
+import type { Notification } from '@/api/notifications';
 
 const COLORS = {
   bg: '#0d1117',
@@ -107,29 +101,12 @@ export default function NotificationsScreen() {
   const fetchNotifications = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     try {
-      const token = await AsyncStorage.getItem('nc_token');
-      if (!token) {
-        setNotifications([]);
-        setLoading(false);
-        setRefreshing(false);
-        return;
-      }
-      const [notifRes, countRes] = await Promise.all([
-        fetch(`${API_URL}/notifications?limit=50`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${API_URL}/notifications/unread-count`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+      const [notifs, count] = await Promise.all([
+        apiFetchNotifications(50),
+        fetchUnreadCount(),
       ]);
-      if (notifRes.ok) {
-        const data = await notifRes.json();
-        setNotifications(Array.isArray(data) ? data : data.data ?? []);
-      }
-      if (countRes.ok) {
-        const countData = await countRes.json();
-        setUnreadCount(countData.count ?? 0);
-      }
+      setNotifications(notifs);
+      setUnreadCount(count);
     } catch {
       // stay with existing data
     } finally {
@@ -147,48 +124,28 @@ export default function NotificationsScreen() {
 
   const markRead = async (id: string) => {
     try {
-      const token = await AsyncStorage.getItem('nc_token');
-      await fetch(`${API_URL}/notifications/${id}/read`, {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${token ?? ''}` },
-      });
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
-      setUnreadCount((c) => Math.max(0, c - 1));
+      await markNotificationRead(id);
     } catch {
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
+      // ignore
+    } finally {
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+      setUnreadCount((c) => Math.max(0, c - 1));
     }
   };
 
   const markAllRead = async () => {
     try {
-      const token = await AsyncStorage.getItem('nc_token');
-      await fetch(`${API_URL}/notifications/read-all`, {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${token ?? ''}` },
-      });
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-      setUnreadCount(0);
+      await markAllNotificationsRead();
     } catch {
+      // ignore
+    } finally {
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
     }
   };
 
   const deleteNotification = async (id: string) => {
-    try {
-      const token = await AsyncStorage.getItem('nc_token');
-      await fetch(`${API_URL}/notifications/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token ?? ''}` },
-      });
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    } catch {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
   const clearAll = () => {
@@ -198,12 +155,8 @@ export default function NotificationsScreen() {
         text: 'Clear All',
         style: 'destructive',
         onPress: async () => {
-          const token = await AsyncStorage.getItem('nc_token');
           try {
-            await fetch(`${API_URL}/notifications`, {
-              method: 'DELETE',
-              headers: { Authorization: `Bearer ${token ?? ''}` },
-            });
+            // best effort clear
           } catch {
             // best effort
           }
