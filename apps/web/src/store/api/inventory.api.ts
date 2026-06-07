@@ -44,6 +44,15 @@ export const inventoryApi = apiSlice.injectEndpoints({
         body: { quantity },
       }),
     }),
+    getStockSummary: builder.query<{
+      totalVariants: number;
+      totalStock: number;
+      outOfStock: number;
+      lowStock: number;
+      inStock: number;
+    }, void>({
+      query: () => '/inventory/summary',
+    }),
   }),
 });
 
@@ -52,4 +61,5 @@ export const {
   useGetLowStockAlertsQuery,
   useAdjustStockMutation,
   useSetStockMutation,
+  useGetStockSummaryQuery,
 } = inventoryApi;
