@@ -14,10 +14,9 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp, NativeStackRouteProp } from '@react-navigation/native-stack';
 import type { ProductDto } from '@nextcommerce/shared';
 import { fetchProduct } from '@/api/catalog';
+import { fetchProductReviews } from '@/api/reviews';
 import { trackRecentlyViewed } from '@/screens/RecentlyViewedScreen';
 import type { ShopStackParamList } from '@/navigation/types';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 type Route = NativeStackRouteProp<ShopStackParamList, 'ProductDetail'>;
 type Nav = NativeStackNavigationProp<ShopStackParamList, 'ProductDetail'>;
@@ -58,10 +57,9 @@ export function ProductDetailScreen() {
           imageUrl: p.images?.[0]?.url,
           categoryName: (p as any).categoryName,
         });
-        fetch(`${API_URL}/reviews?productId=${p.id}`)
-          .then((r) => r.json())
-          .then((reviews: Array<{ rating: number }>) => {
-            if (Array.isArray(reviews) && reviews.length > 0) {
+        fetchProductReviews(p.id)
+          .then((reviews) => {
+            if (reviews.length > 0) {
               setReviewCount(reviews.length);
               setAvgRating(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length);
             }
