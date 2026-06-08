@@ -6,7 +6,7 @@ import { useGetProductsQuery, useGetCategoriesQuery, useGetBrandsQuery, useDeact
 import { getStoredToken } from '@/lib/auth';
 import styles from './products.module.scss';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 function formatPrice(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
@@ -36,7 +36,7 @@ export default function AdminProductsPage() {
     setExporting(true);
     try {
       const token = getStoredToken();
-      const res = await fetch(`${API_URL}/catalog/export`, {
+      const res = await fetch(`${API_BASE}/api/catalog/export`, {
         headers: { Authorization: `Bearer ${token ?? ''}` },
       });
       if (!res.ok) { alert('Export failed'); return; }
