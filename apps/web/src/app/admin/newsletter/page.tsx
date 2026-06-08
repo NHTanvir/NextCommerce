@@ -1,50 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { getStoredToken } from '@/lib/auth';
+import {
+  useGetNewsletterStatsQuery,
+  useGetNewsletterSubscribersQuery,
+} from '@/store/api/newsletter.api';
 import styles from './newsletter.module.scss';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
-interface Subscriber {
-  id: string;
-  email: string;
-  isActive: boolean;
-  subscribedAt: string;
-}
-
-interface SubscribersData {
-  data: Subscriber[];
-  total: number;
-  activeCount: number;
-}
-
 export default function AdminNewsletterPage() {
-  const [data, setData] = useState<SubscribersData | null>(null);
-  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const limit = 50;
 
-  const load = async (p = 1) => {
-    setLoading(true);
-    try {
-      const token = getStoredToken();
-      const res = await fetch(`${API_URL}/api/newsletter/subscribers?page=${p}&limit=${limit}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const json = await res.json();
-        setData(json);
-        setPage(p);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: stats } = useGetNewsletterStatsQuery();
+  const { data, isLoading } = useGetNewsletterSubscribersQuery({ page, limit });
 
   const handleExport = () => {
-    const token = getStoredToken();
     const url = `${API_URL}/api/newsletter/export`;
     const a = document.createElement('a');
     a.href = url;
@@ -74,44 +47,40 @@ export default function AdminNewsletterPage() {
           )}
         </div>
         <div className={styles.actions}>
-          {!data ? (
-            <button
-              className="btn btn--primary"
-              onClick={() => load(1)}
-              disabled={loading}
-            >
-              {loading ? 'Loading…' : 'Load Subscribers'}
-            </button>
-          ) : (
-            <button className="btn btn--outline btn--sm" onClick={handleExport}>
-              Export CSV
-            </button>
-          )}
+          <button className="btn btn--outline btn--sm" onClick={handleExport}>
+            Export CSV
+          </button>
         </div>
       </div>
 
-      {data && (
-        <>
-          {/* Stats */}
-          <div className={styles.statsRow}>
-            <div className={styles.statCard}>
-              <span className={styles.statVal}>{data.activeCount.toLocaleString()}</span>
-              <span className={styles.statLabel}>Active Subscribers</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statVal}>{(data.total - data.activeCount).toLocaleString()}</span>
-              <span className={styles.statLabel}>Unsubscribed</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statVal}>
-                {data.total > 0
-                  ? `${Math.round((data.activeCount / data.total) * 100)}%`
-                  : '—'}
-              </span>
-              <span className={styles.statLabel}>Retention Rate</span>
-            </div>
+      {/* Stats from server */}
+      {stats && (
+        <div className={styles.statsRow}>
+          <div className={styles.statCard}>
+            <span className={styles.statVal} style={{ color: '#3fb950' }}>{stats.active.toLocaleString()}</span>
+            <span className={styles.statLabel}>Active Subscribers</span>
           </div>
+          <div className={styles.statCard}>
+            <span className={styles.statVal} style={{ color: '#8b949e' }}>{stats.inactive.toLocaleString()}</span>
+            <span className={styles.statLabel}>Unsubscribed</span>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statVal} style={{ color: '#58a6ff' }}>{stats.recentlyAdded.toLocaleString()}</span>
+            <span className={styles.statLabel}>New This Week</span>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statVal}>
+              {stats.total > 0 ? `${Math.round((stats.active / stats.total) * 100)}%` : '—'}
+            </span>
+            <span className={styles.statLabel}>Retention Rate</span>
+          </div>
+        </div>
+      )}
 
+      {isLoading ? (
+        <p className={styles.sub}>Loading subscribers…</p>
+      ) : data && (
+        <>
           {/* Filter tabs */}
           <div className={styles.filterTabs}>
             {(['all', 'active', 'inactive'] as const).map((f) => (
@@ -164,16 +133,16 @@ export default function AdminNewsletterPage() {
             <div className={styles.pagination}>
               <button
                 className={styles.pageBtn}
-                disabled={page <= 1 || loading}
-                onClick={() => load(page - 1)}
+                disabled={page <= 1 || isLoading}
+                onClick={() => setPage((p) => p - 1)}
               >
                 ← Prev
               </button>
               <span className={styles.pageInfo}>Page {page} of {totalPages}</span>
               <button
                 className={styles.pageBtn}
-                disabled={page >= totalPages || loading}
-                onClick={() => load(page + 1)}
+                disabled={page >= totalPages || isLoading}
+                onClick={() => setPage((p) => p + 1)}
               >
                 Next →
               </button>
