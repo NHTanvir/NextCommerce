@@ -1,24 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { getStoredToken } from '@/lib/auth';
+import {
+  useGetAdminLoyaltyAccountsQuery,
+  useGetLoyaltyTierBreakdownQuery,
+  useAwardLoyaltyBonusMutation,
+  type LoyaltyAccount,
+} from '@/store/api/loyalty.api';
 import styles from './loyalty.module.scss';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-
-interface LoyaltyAccount {
-  id: string;
-  userId: string;
-  points: number;
-  lifetimePoints: number;
-  tier: string;
-  updatedAt: string;
-}
-
-interface PageData {
-  data: LoyaltyAccount[];
-  total: number;
-}
 
 const TIER_COLORS: Record<string, string> = {
   bronze: '#cd7f32',
@@ -34,172 +23,139 @@ const TIER_EMOJI: Record<string, string> = {
   platinum: '💎',
 };
 
+const LIMIT = 30;
+
 export default function AdminLoyaltyPage() {
-  const [data, setData] = useState<PageData | null>(null);
-  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [awardModal, setAwardModal] = useState<LoyaltyAccount | null>(null);
   const [awardForm, setAwardForm] = useState({ points: '', description: '' });
   const [awardMsg, setAwardMsg] = useState('');
-  const limit = 30;
 
-  const load = async (p = 1) => {
-    setLoading(true);
-    try {
-      const token = getStoredToken();
-      const res = await fetch(`${API_URL}/api/loyalty/admin/accounts?page=${p}&limit=${limit}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const json = await res.json();
-        setData(json);
-        setPage(p);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, isLoading } = useGetAdminLoyaltyAccountsQuery({ page, limit: LIMIT });
+  const { data: tierBreakdown = [] } = useGetLoyaltyTierBreakdownQuery();
+  const [awardBonus] = useAwardLoyaltyBonusMutation();
+
+  const accounts = data?.data ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.ceil(total / LIMIT);
+
+  const tierCounts = (['platinum', 'gold', 'silver', 'bronze'] as const).reduce(
+    (acc, tier) => {
+      const found = tierBreakdown.find((t) => t.tier === tier);
+      acc[tier] = found?.count ?? 0;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   const handleAward = async () => {
     if (!awardModal || !awardForm.points || !awardForm.description) return;
-    const token = getStoredToken();
     try {
-      const res = await fetch(`${API_URL}/api/loyalty/admin/award`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          userId: awardModal.userId,
-          points: Number(awardForm.points),
-          description: awardForm.description,
-        }),
-      });
-      if (res.ok) {
-        setAwardMsg('Points awarded successfully!');
-        setAwardForm({ points: '', description: '' });
-        setTimeout(() => {
-          setAwardModal(null);
-          setAwardMsg('');
-          load(page);
-        }, 1500);
-      } else {
-        setAwardMsg('Failed to award points.');
-      }
+      await awardBonus({
+        userId: awardModal.userId,
+        points: Number(awardForm.points),
+        description: awardForm.description,
+      }).unwrap();
+      setAwardMsg('Points awarded successfully!');
+      setAwardForm({ points: '', description: '' });
+      setTimeout(() => {
+        setAwardModal(null);
+        setAwardMsg('');
+      }, 1500);
     } catch {
-      setAwardMsg('Error occurred.');
+      setAwardMsg('Failed to award points.');
     }
   };
-
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
-  const tiers = data ? {
-    platinum: data.data.filter((a) => a.tier === 'platinum').length,
-    gold: data.data.filter((a) => a.tier === 'gold').length,
-    silver: data.data.filter((a) => a.tier === 'silver').length,
-    bronze: data.data.filter((a) => a.tier === 'bronze').length,
-  } : null;
 
   return (
     <div className={styles.page}>
       <div className={styles.topBar}>
         <div>
           <h1 className={styles.heading}>Loyalty Program</h1>
-          {data && <p className={styles.sub}>{data.total} enrolled members</p>}
+          {total > 0 && <p className={styles.sub}>{total} enrolled members</p>}
         </div>
-        {!data ? (
-          <button className="btn btn--primary" onClick={() => load(1)} disabled={loading}>
-            {loading ? 'Loading…' : 'Load Accounts'}
-          </button>
-        ) : null}
       </div>
 
-      {tiers && (
-        <div className={styles.tierGrid}>
-          {(['platinum', 'gold', 'silver', 'bronze'] as const).map((tier) => (
-            <div key={tier} className={styles.tierCard}>
-              <span className={styles.tierEmoji}>{TIER_EMOJI[tier]}</span>
-              <span className={styles.tierCount}>{tiers[tier]}</span>
-              <span className={styles.tierLabel} style={{ color: TIER_COLORS[tier] }}>
-                {tier.charAt(0).toUpperCase() + tier.slice(1)}
-              </span>
-            </div>
-          ))}
+      <div className={styles.tierGrid}>
+        {(['platinum', 'gold', 'silver', 'bronze'] as const).map((tier) => (
+          <div key={tier} className={styles.tierCard}>
+            <span className={styles.tierEmoji}>{TIER_EMOJI[tier]}</span>
+            <span className={styles.tierCount}>{tierCounts[tier]}</span>
+            <span className={styles.tierLabel} style={{ color: TIER_COLORS[tier] }}>
+              {tier.charAt(0).toUpperCase() + tier.slice(1)}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className={styles.tableWrap}>
+        {isLoading ? (
+          <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading…</p>
+        ) : (
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>User ID</th>
+                <th>Tier</th>
+                <th>Current Points</th>
+                <th>Lifetime Points</th>
+                <th>Last Activity</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {accounts.map((acc, i) => (
+                <tr key={acc.id}>
+                  <td className={styles.rank}>{(page - 1) * LIMIT + i + 1}</td>
+                  <td className={styles.mono}>{acc.userId.slice(-12)}</td>
+                  <td>
+                    <span
+                      className={styles.tierBadge}
+                      style={{ color: TIER_COLORS[acc.tier], borderColor: TIER_COLORS[acc.tier] + '40' }}
+                    >
+                      {TIER_EMOJI[acc.tier]} {acc.tier}
+                    </span>
+                  </td>
+                  <td className={styles.points}>{acc.points.toLocaleString()}</td>
+                  <td className={styles.lifetime}>{acc.lifetimePoints.toLocaleString()}</td>
+                  <td className={styles.date}>
+                    {new Date(acc.updatedAt).toLocaleDateString('en-US', {
+                      month: 'short', day: 'numeric', year: 'numeric',
+                    })}
+                  </td>
+                  <td>
+                    <button className={styles.awardBtn} onClick={() => setAwardModal(acc)}>
+                      Award Points
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button
+            className={styles.pageBtn}
+            disabled={page <= 1 || isLoading}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            ← Prev
+          </button>
+          <span className={styles.pageInfo}>Page {page} of {totalPages}</span>
+          <button
+            className={styles.pageBtn}
+            disabled={page >= totalPages || isLoading}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next →
+          </button>
         </div>
       )}
 
-      {data && (
-        <>
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>User ID</th>
-                  <th>Tier</th>
-                  <th>Current Points</th>
-                  <th>Lifetime Points</th>
-                  <th>Last Activity</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.data.map((acc, i) => (
-                  <tr key={acc.id}>
-                    <td className={styles.rank}>{(page - 1) * limit + i + 1}</td>
-                    <td className={styles.mono}>{acc.userId.slice(-12)}</td>
-                    <td>
-                      <span
-                        className={styles.tierBadge}
-                        style={{ color: TIER_COLORS[acc.tier], borderColor: TIER_COLORS[acc.tier] + '40' }}
-                      >
-                        {TIER_EMOJI[acc.tier]} {acc.tier}
-                      </span>
-                    </td>
-                    <td className={styles.points}>{acc.points.toLocaleString()}</td>
-                    <td className={styles.lifetime}>{acc.lifetimePoints.toLocaleString()}</td>
-                    <td className={styles.date}>
-                      {new Date(acc.updatedAt).toLocaleDateString('en-US', {
-                        month: 'short', day: 'numeric', year: 'numeric',
-                      })}
-                    </td>
-                    <td>
-                      <button
-                        className={styles.awardBtn}
-                        onClick={() => setAwardModal(acc)}
-                      >
-                        Award Points
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {totalPages > 1 && (
-            <div className={styles.pagination}>
-              <button
-                className={styles.pageBtn}
-                disabled={page <= 1 || loading}
-                onClick={() => load(page - 1)}
-              >
-                ← Prev
-              </button>
-              <span className={styles.pageInfo}>Page {page} of {totalPages}</span>
-              <button
-                className={styles.pageBtn}
-                disabled={page >= totalPages || loading}
-                onClick={() => load(page + 1)}
-              >
-                Next →
-              </button>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* Award Modal */}
       {awardModal && (
         <div className={styles.overlay} onClick={() => setAwardModal(null)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
