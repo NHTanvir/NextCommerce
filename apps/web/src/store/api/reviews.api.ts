@@ -96,6 +96,14 @@ export const reviewsApi = apiSlice.injectEndpoints({
       query: (limit = 10) => `/reviews/admin/top-reviewed?limit=${limit}`,
       providesTags: [{ type: 'Review' as const, id: 'TOP_REVIEWED' }],
     }),
+
+    getAdminReviewStats: build.query<{
+      total: number; avgRating: number;
+      fiveStars: number; fourStars: number; threeStars: number; twoStars: number; oneStar: number;
+    }, void>({
+      query: () => '/reviews/admin/stats',
+      providesTags: [{ type: 'Review' as const, id: 'ADMIN_STATS' }],
+    }),
   }),
 });
 
@@ -109,4 +117,5 @@ export const {
   useGetReviewVotesQuery,
   useVoteReviewMutation,
   useGetTopReviewedProductsQuery,
+  useGetAdminReviewStatsQuery,
 } = reviewsApi;
