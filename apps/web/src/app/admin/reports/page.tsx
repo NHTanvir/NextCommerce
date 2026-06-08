@@ -1,21 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { getStoredToken } from '@/lib/auth';
+import {
+  useGetOrderStatusBreakdownQuery,
+  useGetNewCustomersByDayQuery,
+} from '@/store/api/analytics.api';
 import styles from './reports.module.scss';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-
-interface StatusBreakdown {
-  status: string;
-  count: number;
-  totalCents: number;
-}
-
-interface NewCustomer {
-  date: string;
-  newCustomers: number;
-}
 
 const STATUS_COLORS: Record<string, string> = {
   delivered: '#3fb950',
@@ -32,35 +22,12 @@ function formatCents(cents: number) {
 }
 
 export default function AdminReportsPage() {
-  const [statusData, setStatusData] = useState<StatusBreakdown[]>([]);
-  const [customerData, setCustomerData] = useState<NewCustomer[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const [days, setDays] = useState(30);
 
-  const loadReports = async () => {
-    setLoading(true);
-    const token = getStoredToken();
-    const headers = { Authorization: `Bearer ${token}` };
-    try {
-      const [statusRes, customerRes] = await Promise.all([
-        fetch(`${API_URL}/api/analytics/order-status`, { headers }),
-        fetch(`${API_URL}/api/analytics/new-customers?days=${days}`, { headers }),
-      ]);
-      const [statusJson, customerJson] = await Promise.all([
-        statusRes.json(),
-        customerRes.json(),
-      ]);
-      setStatusData(Array.isArray(statusJson) ? statusJson : []);
-      setCustomerData(Array.isArray(customerJson) ? customerJson : []);
-      setLoaded(true);
-    } catch {
-      // show nothing on error
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: statusData = [], isLoading: loadingStatus } = useGetOrderStatusBreakdownQuery();
+  const { data: customerData = [], isLoading: loadingCustomers } = useGetNewCustomersByDayQuery(days);
 
+  const loading = loadingStatus || loadingCustomers;
   const totalOrders = statusData.reduce((s, r) => s + r.count, 0);
   const totalRevenue = statusData.reduce((s, r) => s + r.totalCents, 0);
   const maxCustomers = Math.max(...customerData.map((r) => r.newCustomers), 1);
@@ -81,24 +48,16 @@ export default function AdminReportsPage() {
             <option value={90}>Last 90 days</option>
             <option value={365}>Last year</option>
           </select>
-          <button
-            className="btn btn-primary"
-            onClick={loadReports}
-            disabled={loading}
-          >
-            {loading ? 'Loading…' : loaded ? 'Refresh' : 'Load Reports'}
-          </button>
         </div>
       </div>
 
-      {!loaded && !loading && (
+      {loading && (
         <div className={styles.empty}>
-          <span>📊</span>
-          <p>Click &ldquo;Load Reports&rdquo; to generate analytics data.</p>
+          <p>Loading report data…</p>
         </div>
       )}
 
-      {loaded && (
+      {!loading && (
         <div className={styles.sections}>
           {/* Order Status Breakdown */}
           <section className={styles.section}>
