@@ -27,6 +27,19 @@ export const tagsApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Tag'],
     }),
+
+    removeTagFromProduct: build.mutation<void, { productId: string; name: string }>({
+      query: ({ productId, name }) => ({
+        url: `/tags/${productId}/${encodeURIComponent(name)}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Tag'],
+    }),
+
+    getProductsByTag: build.query<string[], string>({
+      query: (tag) => `/tags/products?tag=${encodeURIComponent(tag)}`,
+      providesTags: (_r, _e, tag) => [{ type: 'Tag' as const, id: `tag-${tag}` }],
+    }),
   }),
 });
 
@@ -34,4 +47,6 @@ export const {
   useGetAdminTagsOverviewQuery,
   useAddTagToProductMutation,
   useRemoveTagGloballyMutation,
+  useRemoveTagFromProductMutation,
+  useGetProductsByTagQuery,
 } = tagsApi;

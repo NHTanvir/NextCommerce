@@ -51,6 +51,19 @@ export const ordersApi = apiSlice.injectEndpoints({
       query: () => '/orders/admin/status-breakdown',
       providesTags: ['Order'],
     }),
+
+    getMyOrderSummary: build.query<{
+      totalOrders: number;
+      totalSpentCents: number;
+      avgOrderValueCents: number;
+      deliveredCount: number;
+      pendingCount: number;
+      cancelledCount: number;
+      lastOrderAt: string | null;
+    }, void>({
+      query: () => '/orders/me/summary',
+      providesTags: ['Order'],
+    }),
   }),
 });
 
@@ -63,4 +76,5 @@ export const {
   useGetAdminOrdersQuery,
   useGetOrdersForUserQuery,
   useGetOrderStatusBreakdownQuery,
+  useGetMyOrderSummaryQuery,
 } = ordersApi;
