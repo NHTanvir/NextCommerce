@@ -76,6 +76,17 @@ export interface WeekdayDistribution {
   totalCents: number;
 }
 
+export interface OrderStatusBreakdown {
+  status: string;
+  count: number;
+  totalCents: number;
+}
+
+export interface NewCustomersByDay {
+  date: string;
+  newCustomers: number;
+}
+
 export const analyticsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getDashboardSummary: build.query<DashboardSummary, void>({
@@ -121,6 +132,14 @@ export const analyticsApi = apiSlice.injectEndpoints({
     getWeekdayDistribution: build.query<WeekdayDistribution[], void>({
       query: () => '/analytics/weekday-distribution',
     }),
+
+    getOrderStatusBreakdown: build.query<OrderStatusBreakdown[], void>({
+      query: () => '/analytics/order-status',
+    }),
+
+    getNewCustomersByDay: build.query<NewCustomersByDay[], number | void>({
+      query: (days = 30) => `/analytics/new-customers?days=${days}`,
+    }),
   }),
 });
 
@@ -136,4 +155,6 @@ export const {
   useGetCohortDataQuery,
   useGetAovTrendQuery,
   useGetWeekdayDistributionQuery,
+  useGetOrderStatusBreakdownQuery,
+  useGetNewCustomersByDayQuery,
 } = analyticsApi;
