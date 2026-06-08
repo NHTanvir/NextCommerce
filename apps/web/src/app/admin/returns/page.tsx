@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
   useGetAdminReturnsQuery,
   useUpdateReturnStatusMutation,
+  useGetAdminReturnStatsQuery,
 } from '@/store/api/returns.api';
 import styles from './returns.module.scss';
 
@@ -28,6 +29,7 @@ const REASON_LABELS: Record<string, string> = {
 export default function AdminReturnsPage() {
   const [filterStatus, setFilterStatus] = useState<ReturnStatus | ''>('');
   const { data: returns = [], isLoading, refetch } = useGetAdminReturnsQuery({ status: filterStatus || undefined });
+  const { data: stats } = useGetAdminReturnStatsQuery();
   const [updateStatus] = useUpdateReturnStatusMutation();
   const [editing, setEditing] = useState<{ id: string; status: ReturnStatus; adminNotes: string } | null>(null);
   const [saving, setSaving] = useState(false);
@@ -52,6 +54,26 @@ export default function AdminReturnsPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>Return Requests</h1>
+      </div>
+
+      {stats && (
+        <div className={styles.statsRow}>
+          {[
+            { label: 'Total', value: stats.total, color: '#8b949e' },
+            { label: 'Pending', value: stats.pending, color: '#f59e0b' },
+            { label: 'Approved', value: stats.approved, color: '#3fb950' },
+            { label: 'Completed', value: stats.completed, color: '#58a6ff' },
+            { label: 'Rejected', value: stats.rejected, color: '#e94560' },
+          ].map(({ label, value, color }) => (
+            <div key={label} className={styles.statCard} style={{ borderColor: `${color}30` }}>
+              <span className={styles.statValue} style={{ color }}>{value}</span>
+              <span className={styles.statLabel}>{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className={styles.header}>
         <div className={styles.filters}>
           <select
             className={styles.filterSelect}

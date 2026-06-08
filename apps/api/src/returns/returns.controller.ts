@@ -37,6 +37,14 @@ export class ReturnsController {
     return this.returnsService.findByUser(user.sub);
   }
 
+  @Get('stats')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get return request statistics' })
+  getStats() {
+    return this.returnsService.getStats();
+  }
+
   @Get()
   @UseGuards(RolesGuard)
   @Roles('admin')

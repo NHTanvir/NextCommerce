@@ -21,8 +21,21 @@ interface CreateReturnRequest {
   notes?: string;
 }
 
+export interface ReturnStats {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  completed: number;
+}
+
 export const returnsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
+    getAdminReturnStats: build.query<ReturnStats, void>({
+      query: () => '/returns/stats',
+      providesTags: ['Returns'],
+    }),
+
     getMyReturns: build.query<ReturnRequest[], void>({
       query: () => '/returns/my',
       providesTags: ['Returns'],
@@ -49,6 +62,7 @@ export const returnsApi = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetAdminReturnStatsQuery,
   useGetMyReturnsQuery,
   useCreateReturnMutation,
   useGetAdminReturnsQuery,

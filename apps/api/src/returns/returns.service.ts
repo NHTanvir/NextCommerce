@@ -72,4 +72,29 @@ export class ReturnsService {
     if (userId && request.userId !== userId) throw new ForbiddenException('Access denied');
     return request;
   }
+
+  async getStats(): Promise<{
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+    completed: number;
+  }> {
+    const row = await this.returnRepo
+      .createQueryBuilder('r')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN r.status = 'pending' THEN 1 ELSE 0 END)", 'pending')
+      .addSelect("SUM(CASE WHEN r.status = 'approved' THEN 1 ELSE 0 END)", 'approved')
+      .addSelect("SUM(CASE WHEN r.status = 'rejected' THEN 1 ELSE 0 END)", 'rejected')
+      .addSelect("SUM(CASE WHEN r.status = 'completed' THEN 1 ELSE 0 END)", 'completed')
+      .getRawOne();
+
+    return {
+      total: Number(row.total) || 0,
+      pending: Number(row.pending) || 0,
+      approved: Number(row.approved) || 0,
+      rejected: Number(row.rejected) || 0,
+      completed: Number(row.completed) || 0,
+    };
+  }
 }
