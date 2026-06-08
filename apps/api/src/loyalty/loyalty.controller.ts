@@ -69,4 +69,12 @@ export class LoyaltyController {
   getTierBreakdown() {
     return this.loyaltyService.getTierBreakdown();
   }
+
+  @Get('admin/stats')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get overall loyalty program statistics' })
+  getAdminStats() {
+    return this.loyaltyService.getAdminStats();
+  }
 }

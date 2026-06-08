@@ -68,6 +68,17 @@ export const loyaltyApi = apiSlice.injectEndpoints({
       query: (body) => ({ url: '/loyalty/admin/award', method: 'POST', body }),
       invalidatesTags: ['Loyalty'],
     }),
+
+    getLoyaltyAdminStats: build.query<{
+      totalAccounts: number;
+      totalPointsInCirculation: number;
+      totalLifetimePoints: number;
+      totalRedemptions: number;
+      totalPointsRedeemed: number;
+    }, void>({
+      query: () => '/loyalty/admin/stats',
+      providesTags: ['Loyalty'],
+    }),
   }),
 });
 
@@ -78,4 +89,5 @@ export const {
   useGetLoyaltyTierBreakdownQuery,
   useGetAdminLoyaltyAccountsQuery,
   useAwardLoyaltyBonusMutation,
+  useGetLoyaltyAdminStatsQuery,
 } = loyaltyApi;

@@ -139,4 +139,34 @@ export class LoyaltyService {
       totalPoints: parseInt(r.totalPoints ?? '0', 10),
     }));
   }
+
+  async getAdminStats(): Promise<{
+    totalAccounts: number;
+    totalPointsInCirculation: number;
+    totalLifetimePoints: number;
+    totalRedemptions: number;
+    totalPointsRedeemed: number;
+  }> {
+    const accountRow = await this.accountRepo
+      .createQueryBuilder('a')
+      .select('COUNT(a.id)', 'totalAccounts')
+      .addSelect('SUM(a.points)', 'totalPoints')
+      .addSelect('SUM(a.lifetimePoints)', 'totalLifetime')
+      .getRawOne<{ totalAccounts: string; totalPoints: string; totalLifetime: string }>();
+
+    const txRow = await this.txRepo
+      .createQueryBuilder('t')
+      .select('COUNT(t.id)', 'totalRedemptions')
+      .addSelect('SUM(ABS(t.points))', 'totalRedeemed')
+      .where("t.type = 'redeem'")
+      .getRawOne<{ totalRedemptions: string; totalRedeemed: string }>();
+
+    return {
+      totalAccounts: Number(accountRow?.totalAccounts) || 0,
+      totalPointsInCirculation: Number(accountRow?.totalPoints) || 0,
+      totalLifetimePoints: Number(accountRow?.totalLifetime) || 0,
+      totalRedemptions: Number(txRow?.totalRedemptions) || 0,
+      totalPointsRedeemed: Number(txRow?.totalRedeemed) || 0,
+    };
+  }
 }
