@@ -49,6 +49,14 @@ export class WishlistController {
     return this.wishlistService.toggle(user.sub, productId);
   }
 
+  @Get('admin/stats')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get wishlist statistics' })
+  getAdminStats() {
+    return this.wishlistService.getAdminStats();
+  }
+
   @Get('admin/most-wishlisted')
   @UseGuards(RolesGuard)
   @Roles('admin')

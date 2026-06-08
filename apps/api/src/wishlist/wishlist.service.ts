@@ -60,4 +60,22 @@ export class WishlistService {
   async getCountForProduct(productId: string): Promise<number> {
     return this.repo.count({ where: { productId } });
   }
+
+  async getAdminStats(): Promise<{
+    totalItems: number;
+    uniqueProducts: number;
+    uniqueUsers: number;
+  }> {
+    const row = await this.repo
+      .createQueryBuilder('w')
+      .select('COUNT(*)', 'totalItems')
+      .addSelect('COUNT(DISTINCT w.productId)', 'uniqueProducts')
+      .addSelect('COUNT(DISTINCT w.userId)', 'uniqueUsers')
+      .getRawOne();
+    return {
+      totalItems: Number(row.totalItems) || 0,
+      uniqueProducts: Number(row.uniqueProducts) || 0,
+      uniqueUsers: Number(row.uniqueUsers) || 0,
+    };
+  }
 }
