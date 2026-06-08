@@ -44,6 +44,11 @@ export const wishlistApi = apiSlice.injectEndpoints({
     getProductWishlistCount: build.query<number, string>({
       query: (productId) => `/wishlist/count/${productId}`,
     }),
+
+    getAdminWishlistStats: build.query<{ totalItems: number; uniqueProducts: number; uniqueUsers: number }, void>({
+      query: () => '/wishlist/admin/stats',
+      providesTags: ['Wishlist'],
+    }),
   }),
 });
 
@@ -54,4 +59,5 @@ export const {
   useToggleWishlistApiMutation,
   useGetMostWishlistedQuery,
   useGetProductWishlistCountQuery,
+  useGetAdminWishlistStatsQuery,
 } = wishlistApi;
