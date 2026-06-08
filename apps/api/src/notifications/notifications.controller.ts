@@ -1,10 +1,12 @@
 import {
   Controller,
   Get,
+  Post,
   Patch,
   Delete,
   Param,
   Query,
+  Body,
   UseGuards,
   ParseUUIDPipe,
   HttpCode,
@@ -13,8 +15,11 @@ import {
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { UserPayload } from '@nextcommerce/shared';
+import { NotificationType } from './entities/notification.entity';
 
 @ApiTags('notifications')
 @Controller('notifications')
@@ -70,5 +75,25 @@ export class NotificationsController {
   @ApiOperation({ summary: 'Delete all notifications for current user' })
   deleteAll(@CurrentUser() user: UserPayload) {
     return this.notificationsService.deleteAllForUser(user.sub);
+  }
+
+  @Get('admin/stats')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get notification statistics' })
+  getAdminStats() {
+    return this.notificationsService.getAdminStats();
+  }
+
+  @Post('admin/broadcast')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Broadcast notification to a list of users' })
+  broadcast(
+    @Body() dto: { userIds: string[]; type: NotificationType; title: string; body: string; actionUrl?: string },
+  ) {
+    return this.notificationsService
+      .broadcastToUsers(dto.userIds, dto.type, dto.title, dto.body, dto.actionUrl)
+      .then((sent) => ({ sent }));
   }
 }

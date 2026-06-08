@@ -138,4 +138,45 @@ export class NotificationsService {
       actionUrl: `/products/${productSlug}`,
     });
   }
+
+  async broadcastToUsers(
+    userIds: string[],
+    type: NotificationType,
+    title: string,
+    body: string,
+    actionUrl?: string,
+  ): Promise<number> {
+    if (userIds.length === 0) return 0;
+    const notifications = userIds.map((userId) =>
+      this.repo.create({ userId, type, title, body, actionUrl: actionUrl ?? null, isRead: false }),
+    );
+    await this.repo.save(notifications);
+    return notifications.length;
+  }
+
+  async getAdminStats(): Promise<{
+    total: number;
+    unread: number;
+    readRate: number;
+    byType: Array<{ type: string; count: number }>;
+  }> {
+    const total = await this.repo.count();
+    const unread = await this.repo.count({ where: { isRead: false } });
+    const readRate = total > 0 ? Math.round(((total - unread) / total) * 100) : 0;
+
+    const rows = await this.repo
+      .createQueryBuilder('n')
+      .select('n.type', 'type')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('n.type')
+      .orderBy('count', 'DESC')
+      .getRawMany<{ type: string; count: string }>();
+
+    return {
+      total,
+      unread,
+      readRate,
+      byType: rows.map((r) => ({ type: r.type, count: Number(r.count) })),
+    };
+  }
 }

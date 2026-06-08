@@ -46,6 +46,20 @@ export const productSpecsApi = apiSlice.injectEndpoints({
         { type: 'Product' as const, id: `specs-${productId}` },
       ],
     }),
+
+    bulkSetSpecs: build.mutation<ProductSpecDto[], {
+      productId: string;
+      specs: Array<{ key: string; value: string; group?: string; sortOrder?: number }>;
+    }>({
+      query: ({ productId, specs }) => ({
+        url: `/products/${productId}/specs/bulk`,
+        method: 'POST',
+        body: { specs },
+      }),
+      invalidatesTags: (_r, _e, { productId }) => [
+        { type: 'Product' as const, id: `specs-${productId}` },
+      ],
+    }),
   }),
 });
 
@@ -54,4 +68,5 @@ export const {
   useGetGroupedSpecsQuery,
   useSetSpecMutation,
   useDeleteSpecMutation,
+  useBulkSetSpecsMutation,
 } = productSpecsApi;

@@ -78,6 +78,26 @@ export const notificationsApi = apiSlice.injectEndpoints({
         { type: 'User' as const, id: 'notifications-count' },
       ],
     }),
+
+    getAdminNotificationStats: build.query<{
+      total: number;
+      unread: number;
+      readRate: number;
+      byType: Array<{ type: string; count: number }>;
+    }, void>({
+      query: () => '/notifications/admin/stats',
+      providesTags: [{ type: 'Notification' as const, id: 'admin-stats' }],
+    }),
+
+    broadcastNotification: build.mutation<{ sent: number }, {
+      userIds: string[];
+      type: NotificationType;
+      title: string;
+      body: string;
+      actionUrl?: string;
+    }>({
+      query: (body) => ({ url: '/notifications/admin/broadcast', method: 'POST', body }),
+    }),
   }),
 });
 
@@ -88,4 +108,6 @@ export const {
   useMarkAllAsReadMutation,
   useDeleteNotificationMutation,
   useDeleteAllNotificationsMutation,
+  useGetAdminNotificationStatsQuery,
+  useBroadcastNotificationMutation,
 } = notificationsApi;
