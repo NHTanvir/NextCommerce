@@ -4,15 +4,12 @@ import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/store/hooks';
 import { selectAuthUser } from '@/store/slices/auth.slice';
-import { getStoredToken } from '@/lib/auth';
+import { useCreateProductMutation } from '@/store/api/catalog.api';
 import styles from './create.module.scss';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 export default function CreateProductPage() {
   const router = useRouter();
   const user = useAppSelector(selectAuthUser);
-  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   const [form, setForm] = useState({
@@ -26,6 +23,8 @@ export default function CreateProductPage() {
     imageAlt: '',
     isActive: true,
   });
+
+  const [createProduct, { isLoading: submitting }] = useCreateProductMutation();
 
   const autofillSlug = (title: string) =>
     title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -50,9 +49,7 @@ export default function CreateProductPage() {
     }
 
     try {
-      setSubmitting(true);
-      const token = getStoredToken();
-      const body = {
+      const product = await createProduct({
         title: form.title,
         description: form.description || `Buy ${form.title} at NextCommerce`,
         brand: form.brand,
@@ -62,28 +59,10 @@ export default function CreateProductPage() {
         isActive: form.isActive,
         images: form.imageUrl ? [{ url: form.imageUrl, alt: form.imageAlt || form.title }] : [],
         variants: [],
-      };
-
-      const res = await fetch(`${API_URL}/api/catalog/products`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.message ?? 'Failed to create product');
-      }
-
-      const product = await res.json();
-      router.push(`/admin/products?created=${product.data?.slug ?? product.slug ?? ''}`);
+      }).unwrap();
+      router.push(`/admin/products?created=${(product as any)?.data?.slug ?? (product as any)?.slug ?? ''}`);
     } catch (err: any) {
-      setError(err.message ?? 'Unexpected error');
-    } finally {
-      setSubmitting(false);
+      setError(err?.data?.message ?? err?.message ?? 'Failed to create product');
     }
   };
 
@@ -100,11 +79,7 @@ export default function CreateProductPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>Create New Product</h1>
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={() => router.back()}
-        >
+        <button type="button" className="btn btn-secondary" onClick={() => router.back()}>
           ← Back
         </button>
       </div>
