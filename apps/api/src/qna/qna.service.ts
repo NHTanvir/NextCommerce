@@ -86,4 +86,30 @@ export class QnaService {
     });
     return { data, total };
   }
+
+  async getStats(): Promise<{
+    totalQuestions: number;
+    answered: number;
+    unanswered: number;
+    hidden: number;
+    totalAnswers: number;
+  }> {
+    const qRow = await this.questionRepo
+      .createQueryBuilder('q')
+      .select('COUNT(*)', 'total')
+      .addSelect('SUM(CASE WHEN q.isAnswered = 1 THEN 1 ELSE 0 END)', 'answered')
+      .addSelect('SUM(CASE WHEN q.isAnswered = 0 AND q.isHidden = 0 THEN 1 ELSE 0 END)', 'unanswered')
+      .addSelect('SUM(CASE WHEN q.isHidden = 1 THEN 1 ELSE 0 END)', 'hidden')
+      .getRawOne();
+
+    const totalAnswers = await this.answerRepo.count();
+
+    return {
+      totalQuestions: Number(qRow.total) || 0,
+      answered: Number(qRow.answered) || 0,
+      unanswered: Number(qRow.unanswered) || 0,
+      hidden: Number(qRow.hidden) || 0,
+      totalAnswers,
+    };
+  }
 }

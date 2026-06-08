@@ -59,6 +59,15 @@ export class QnaController {
     return this.qnaService.hideQuestion(id);
   }
 
+  @Get('admin/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Get Q&A statistics' })
+  getStats() {
+    return this.qnaService.getStats();
+  }
+
   @Get('admin/all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

@@ -25,11 +25,24 @@ export interface AdminQnaResponse {
   total: number;
 }
 
+export interface QnaStats {
+  totalQuestions: number;
+  answered: number;
+  unanswered: number;
+  hidden: number;
+  totalAnswers: number;
+}
+
 export const qnaApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getProductQna: build.query<QuestionDto[], string>({
       query: (productId) => `/qna?productId=${productId}`,
       providesTags: (_r, _e, productId) => [{ type: 'Product' as const, id: `qna-${productId}` }],
+    }),
+
+    getQnaStats: build.query<QnaStats, void>({
+      query: () => '/qna/admin/stats',
+      providesTags: [{ type: 'Product' as const, id: 'qna-admin' }],
     }),
 
     getProductQnaAdmin: build.query<AdminQnaResponse, { page: number; limit: number }>({
@@ -66,6 +79,7 @@ export const qnaApi = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetQnaStatsQuery,
   useGetProductQnaQuery,
   useGetProductQnaAdminQuery,
   useAskQuestionMutation,

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import {
+  useGetQnaStatsQuery,
   useGetProductQnaAdminQuery,
   useHideQuestionMutation,
   useDeleteQuestionMutation,
@@ -13,6 +14,7 @@ export default function AdminQnaPage() {
   const [page, setPage] = useState(1);
   const limit = 20;
 
+  const { data: qnaStats } = useGetQnaStatsQuery();
   const { data, isLoading, isFetching } = useGetProductQnaAdminQuery({ page, limit });
   const [hideQuestion] = useHideQuestionMutation();
   const [deleteQuestion] = useDeleteQuestionMutation();
@@ -57,6 +59,37 @@ export default function AdminQnaPage() {
           <p className={styles.sub}>{total} total question{total !== 1 ? 's' : ''}</p>
         </div>
       </div>
+
+      {qnaStats && (
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          {[
+            { label: 'Total Questions', value: qnaStats.totalQuestions, color: '#8b949e' },
+            { label: 'Answered', value: qnaStats.answered, color: '#3fb950' },
+            { label: 'Unanswered', value: qnaStats.unanswered, color: '#f59e0b' },
+            { label: 'Hidden', value: qnaStats.hidden, color: '#e94560' },
+            { label: 'Total Answers', value: qnaStats.totalAnswers, color: '#58a6ff' },
+          ].map(({ label, value, color }) => (
+            <div
+              key={label}
+              style={{
+                flex: 1,
+                minWidth: 100,
+                background: 'var(--color-surface)',
+                border: `1px solid ${color}30`,
+                borderRadius: '0.75rem',
+                padding: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+            >
+              <span style={{ fontSize: '1.75rem', fontWeight: 800, color, letterSpacing: '-0.03em' }}>{value}</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {isLoading ? (
         <div className={styles.loading}>Loading questions…</div>
