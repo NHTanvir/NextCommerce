@@ -7,6 +7,27 @@ export interface CouponValidationResult {
   message?: string;
 }
 
+export interface CouponDto {
+  id: string;
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  minOrderCents: number | null;
+  maxUsageCount: number | null;
+  usageCount: number;
+  expiresAt: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CouponStats {
+  total: number;
+  active: number;
+  expired: number;
+  totalRedemptions: number;
+  topCoupons: { code: string; usageCount: number }[];
+}
+
 export const couponsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     validateCoupon: builder.mutation<CouponValidationResult, { code: string; orderTotalCents: number }>({
@@ -16,7 +37,33 @@ export const couponsApi = apiSlice.injectEndpoints({
         body,
       }),
     }),
+
+    getAdminCoupons: builder.query<CouponDto[], void>({
+      query: () => '/coupons',
+      providesTags: ['Coupon'],
+    }),
+
+    getAdminCouponStats: builder.query<CouponStats, void>({
+      query: () => '/coupons/admin/stats',
+      providesTags: ['Coupon'],
+    }),
+
+    createCoupon: builder.mutation<CouponDto, Partial<CouponDto>>({
+      query: (body) => ({ url: '/coupons', method: 'POST', body }),
+      invalidatesTags: ['Coupon'],
+    }),
+
+    deactivateCoupon: builder.mutation<CouponDto, string>({
+      query: (id) => ({ url: `/coupons/${id}/deactivate`, method: 'PATCH' }),
+      invalidatesTags: ['Coupon'],
+    }),
   }),
 });
 
-export const { useValidateCouponMutation } = couponsApi;
+export const {
+  useValidateCouponMutation,
+  useGetAdminCouponsQuery,
+  useGetAdminCouponStatsQuery,
+  useCreateCouponMutation,
+  useDeactivateCouponMutation,
+} = couponsApi;
