@@ -54,6 +54,13 @@ export const usersApi = apiSlice.injectEndpoints({
       query: (id) => ({ url: `/users/${id}`, method: 'DELETE' }),
       invalidatesTags: ['User'],
     }),
+
+    getAdminUserStats: build.query<{
+      total: number; admins: number; customers: number; newThisMonth: number;
+    }, void>({
+      query: () => '/users/admin/stats',
+      providesTags: ['User'],
+    }),
   }),
 });
 
@@ -64,4 +71,5 @@ export const {
   useListUsersQuery,
   useGetUserByIdQuery,
   useDeleteUserMutation,
+  useGetAdminUserStatsQuery,
 } = usersApi;
