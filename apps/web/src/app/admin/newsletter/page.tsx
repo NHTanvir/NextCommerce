@@ -7,7 +7,7 @@ import {
 } from '@/store/api/newsletter.api';
 import styles from './newsletter.module.scss';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 export default function AdminNewsletterPage() {
   const [page, setPage] = useState(1);
@@ -18,7 +18,7 @@ export default function AdminNewsletterPage() {
   const { data, isLoading } = useGetNewsletterSubscribersQuery({ page, limit });
 
   const handleExport = () => {
-    const url = `${API_URL}/api/newsletter/export`;
+    const url = `${API_BASE}/api/newsletter/export`;
     const a = document.createElement('a');
     a.href = url;
     a.setAttribute('download', '');
