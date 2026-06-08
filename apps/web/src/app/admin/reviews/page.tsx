@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useGetAdminReviewsQuery, useDeleteReviewMutation } from '@/store/api/reviews.api';
+import { useGetAdminReviewsQuery, useDeleteReviewMutation, useGetAdminReviewStatsQuery } from '@/store/api/reviews.api';
 import styles from './reviews.module.scss';
 
 const STARS = [1, 2, 3, 4, 5] as const;
@@ -59,22 +59,26 @@ export default function AdminReviewsPage() {
   const limit = 20;
 
   const { data, isLoading, isFetching } = useGetAdminReviewsQuery({ page, limit });
+  const { data: statsData } = useGetAdminReviewStatsQuery();
   const [deleteReview] = useDeleteReviewMutation();
 
   const allReviews = data?.data ?? [];
-  const total = data?.total ?? 0;
+  const total = statsData?.total ?? data?.total ?? 0;
 
   const filtered = filterRating ? allReviews.filter((r) => r.rating === filterRating) : allReviews;
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.ceil((data?.total ?? 0) / limit);
 
-  const ratingCounts = STARS.reduce((acc, n) => {
-    acc[n] = allReviews.filter((r) => r.rating === n).length;
-    return acc;
-  }, {} as Record<number, number>);
+  const ratingCounts: Record<number, number> = {
+    5: statsData?.fiveStars ?? allReviews.filter((r) => r.rating === 5).length,
+    4: statsData?.fourStars ?? allReviews.filter((r) => r.rating === 4).length,
+    3: statsData?.threeStars ?? allReviews.filter((r) => r.rating === 3).length,
+    2: statsData?.twoStars ?? allReviews.filter((r) => r.rating === 2).length,
+    1: statsData?.oneStar ?? allReviews.filter((r) => r.rating === 1).length,
+  };
 
-  const avgRating = allReviews.length
+  const avgRating = statsData?.avgRating ?? (allReviews.length
     ? allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
-    : 0;
+    : 0);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Permanently delete this review?')) return;
