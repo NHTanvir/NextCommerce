@@ -49,6 +49,14 @@ export const backInStockApi = apiSlice.injectEndpoints({
         `/back-in-stock/admin/all?page=${page}&limit=${limit}`,
       providesTags: ['StockAlert'],
     }),
+
+    getMostRequestedVariants: build.query<
+      Array<{ variantId: string; productId: string; pendingCount: number }>,
+      number | void
+    >({
+      query: (limit = 20) => `/back-in-stock/admin/most-requested?limit=${limit}`,
+      providesTags: ['StockAlert'],
+    }),
   }),
 });
 
@@ -58,4 +66,5 @@ export const {
   useSubscribeBackInStockMutation,
   useUnsubscribeBackInStockMutation,
   useGetAdminStockAlertsQuery,
+  useGetMostRequestedVariantsQuery,
 } = backInStockApi;

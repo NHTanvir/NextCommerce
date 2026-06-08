@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useGetAdminStockAlertsQuery } from '@/store/api/back-in-stock.api';
+import { useGetAdminStockAlertsQuery, useGetMostRequestedVariantsQuery } from '@/store/api/back-in-stock.api';
 import styles from './stock-alerts.module.scss';
 
 function timeAgo(dateStr: string) {
@@ -19,6 +19,7 @@ export default function AdminStockAlertsPage() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'notified'>('all');
 
   const { data, isLoading } = useGetAdminStockAlertsQuery({ page, limit: LIMIT });
+  const { data: mostRequested = [] } = useGetMostRequestedVariantsQuery(10);
 
   const alerts = data?.data ?? [];
   const total = data?.total ?? 0;
@@ -54,6 +55,21 @@ export default function AdminStockAlertsPage() {
           <span className={styles.statLabel}>Notified</span>
         </div>
       </div>
+
+      {mostRequested.length > 0 && (
+        <section style={{ marginBottom: '1.5rem', background: 'var(--color-surface)', borderRadius: '0.75rem', padding: '1rem' }}>
+          <h2 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>Most Requested (Pending)</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {mostRequested.map((r, i) => (
+              <div key={r.variantId} style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.8rem' }}>
+                <span style={{ fontWeight: 700, color: 'var(--color-text-muted)', minWidth: 20 }}>#{i + 1}</span>
+                <span style={{ fontFamily: 'monospace', color: 'var(--color-text-muted)' }}>{r.variantId.slice(0, 12)}…</span>
+                <span style={{ marginLeft: 'auto', fontWeight: 700, color: '#f59e0b' }}>{r.pendingCount} waiting</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className={styles.filters}>
         {(['all', 'pending', 'notified'] as const).map((f) => (
