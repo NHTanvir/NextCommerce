@@ -1,32 +1,17 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { useAppSelector } from '@/store/hooks';
-import { selectAuthUser } from '@/store/slices/auth.slice';
-import { getStoredToken } from '@/lib/auth';
 import { formatPrice } from '@/lib/formatters';
+import {
+  useGetAdminCouponsQuery,
+  useGetAdminCouponStatsQuery,
+  useCreateCouponMutation,
+  useDeactivateCouponMutation,
+} from '@/store/api/coupons.api';
 import styles from './coupons.module.scss';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-
-interface Coupon {
-  id: string;
-  code: string;
-  discountType: 'percentage' | 'fixed';
-  discountValue: number;
-  usageCount: number;
-  maxUsageCount: number | null;
-  expiresAt: string | null;
-  isActive: boolean;
-}
-
 export default function AdminCouponsPage() {
-  const user = useAppSelector(selectAuthUser);
-  const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     code: '',
     discountType: 'percentage' as 'percentage' | 'fixed',
@@ -35,71 +20,27 @@ export default function AdminCouponsPage() {
     expiresAt: '',
   });
 
-  const loadCoupons = async () => {
-    try {
-      setLoading(true);
-      const token = getStoredToken();
-      const res = await fetch(`${API_URL}/api/coupons`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setCoupons(data.data ?? data);
-      }
-    } finally {
-      setLoading(false);
-      setLoaded(true);
-    }
-  };
+  const { data: coupons = [], isLoading } = useGetAdminCouponsQuery();
+  const { data: stats } = useGetAdminCouponStatsQuery();
+  const [createCoupon, { isLoading: submitting }] = useCreateCouponMutation();
+  const [deactivateCoupon] = useDeactivateCouponMutation();
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      setSubmitting(true);
-      const token = getStoredToken();
-      const body = {
+      await createCoupon({
         code: form.code.toUpperCase(),
         discountType: form.discountType,
         discountValue: Number(form.discountValue),
-        ...(form.maxUsageCount && { maxUsageCount: Number(form.maxUsageCount) }),
-        ...(form.expiresAt && { expiresAt: new Date(form.expiresAt).toISOString() }),
-      };
-      const res = await fetch(`${API_URL}/api/coupons`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(body),
-      });
-      if (res.ok) {
-        setShowForm(false);
-        setForm({ code: '', discountType: 'percentage', discountValue: '', maxUsageCount: '', expiresAt: '' });
-        loadCoupons();
-      }
-    } finally {
-      setSubmitting(false);
+        ...(form.maxUsageCount ? { maxUsageCount: Number(form.maxUsageCount) } : {}),
+        ...(form.expiresAt ? { expiresAt: new Date(form.expiresAt).toISOString() } : {}),
+      }).unwrap();
+      setShowForm(false);
+      setForm({ code: '', discountType: 'percentage', discountValue: '', maxUsageCount: '', expiresAt: '' });
+    } catch {
+      // ignore
     }
   };
-
-  const handleDeactivate = async (id: string) => {
-    const token = getStoredToken();
-    await fetch(`${API_URL}/api/coupons/${id}/deactivate`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    loadCoupons();
-  };
-
-  if (!loaded) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>Coupons</h1>
-          <button className="btn btn-primary" onClick={loadCoupons} disabled={loading}>
-            {loading ? 'Loading...' : 'Load Coupons'}
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.page}>
@@ -109,6 +50,31 @@ export default function AdminCouponsPage() {
           + New Coupon
         </button>
       </div>
+
+      {/* Stats */}
+      {stats && (
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          {[
+            { label: 'Total', value: stats.total, color: '#8b949e' },
+            { label: 'Active', value: stats.active, color: '#3fb950' },
+            { label: 'Expired', value: stats.expired, color: '#e94560' },
+            { label: 'Redemptions', value: stats.totalRedemptions, color: '#58a6ff' },
+          ].map(({ label, value, color }) => (
+            <div
+              key={label}
+              style={{
+                flex: 1, minWidth: 100, background: 'var(--color-surface)',
+                border: `1px solid ${color}30`, borderRadius: '0.75rem',
+                padding: '1rem', display: 'flex', flexDirection: 'column',
+                alignItems: 'center', gap: '0.25rem',
+              }}
+            >
+              <span style={{ fontSize: '1.75rem', fontWeight: 800, color }}>{value}</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {showForm && (
         <form className={styles.form} onSubmit={handleCreate}>
@@ -129,7 +95,7 @@ export default function AdminCouponsPage() {
               <select
                 className={styles.input}
                 value={form.discountType}
-                onChange={(e) => setForm((f) => ({ ...f, discountType: e.target.value as any }))}
+                onChange={(e) => setForm((f) => ({ ...f, discountType: e.target.value as 'percentage' | 'fixed' }))}
               >
                 <option value="percentage">Percentage (%)</option>
                 <option value="fixed">Fixed ($)</option>
@@ -176,47 +142,51 @@ export default function AdminCouponsPage() {
       )}
 
       <div className={styles.tableWrap}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Discount</th>
-              <th>Usage</th>
-              <th>Expires</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {coupons.map((c) => (
-              <tr key={c.id}>
-                <td className={styles.codeCell}>{c.code}</td>
-                <td>
-                  {c.discountType === 'percentage'
-                    ? `${c.discountValue}%`
-                    : formatPrice(c.discountValue)}
-                </td>
-                <td>{c.usageCount} / {c.maxUsageCount ?? '∞'}</td>
-                <td>{c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'Never'}</td>
-                <td>
-                  <span className={`badge ${c.isActive ? 'badge-success' : 'badge-error'}`}>
-                    {c.isActive ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-                <td>
-                  {c.isActive && (
-                    <button
-                      className={styles.deactivateBtn}
-                      onClick={() => handleDeactivate(c.id)}
-                    >
-                      Deactivate
-                    </button>
-                  )}
-                </td>
+        {isLoading ? (
+          <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading…</p>
+        ) : (
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Discount</th>
+                <th>Usage</th>
+                <th>Expires</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {coupons.map((c) => (
+                <tr key={c.id}>
+                  <td className={styles.codeCell}>{c.code}</td>
+                  <td>
+                    {c.discountType === 'percentage'
+                      ? `${c.discountValue}%`
+                      : formatPrice(c.discountValue)}
+                  </td>
+                  <td>{c.usageCount} / {c.maxUsageCount ?? '∞'}</td>
+                  <td>{c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'Never'}</td>
+                  <td>
+                    <span className={`badge ${c.isActive ? 'badge-success' : 'badge-error'}`}>
+                      {c.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td>
+                    {c.isActive && (
+                      <button
+                        className={styles.deactivateBtn}
+                        onClick={() => deactivateCoupon(c.id)}
+                      >
+                        Deactivate
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
