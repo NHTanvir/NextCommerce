@@ -3,7 +3,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useGetProductByIdQuery, useUpdateProductMutation, useDeactivateProductMutation } from '@/store/api/catalog.api';
+import { useGetProductByIdQuery, useUpdateProductMutation, useDeactivateProductMutation, useDeleteProductMutation } from '@/store/api/catalog.api';
 import styles from './edit-product.module.scss';
 
 export default function AdminEditProductPage() {
@@ -12,6 +12,7 @@ export default function AdminEditProductPage() {
   const { data: product, isLoading } = useGetProductByIdQuery(id);
   const [updateProduct, { isLoading: saving }] = useUpdateProductMutation();
   const [deactivate, { isLoading: deactivating }] = useDeactivateProductMutation();
+  const [deleteProduct, { isLoading: deleting }] = useDeleteProductMutation();
 
   const [form, setForm] = useState({
     title: '',
@@ -29,6 +30,7 @@ export default function AdminEditProductPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -92,6 +94,15 @@ export default function AdminEditProductPage() {
       router.push('/admin/products?deactivated=1');
     } catch (err: any) {
       setError(err?.data?.message ?? 'Failed to deactivate.');
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteProduct(id).unwrap();
+      router.push('/admin/products?deleted=1');
+    } catch (err: any) {
+      setError(err?.data?.message ?? 'Failed to delete product.');
     }
   };
 
@@ -282,34 +293,61 @@ export default function AdminEditProductPage() {
       {/* Danger zone */}
       <div className={styles.dangerZone}>
         <h3 className={styles.dangerTitle}>Danger Zone</h3>
-        {!showDeactivateConfirm ? (
-          <button
-            className="btn btn--danger btn--sm"
-            onClick={() => setShowDeactivateConfirm(true)}
-            disabled={!product.isActive}
-          >
-            {product.isActive ? 'Deactivate Product' : 'Already Inactive'}
-          </button>
-        ) : (
-          <div className={styles.confirmBox}>
-            <p>This will hide the product from the storefront. Continue?</p>
-            <div className={styles.confirmActions}>
-              <button
-                className="btn btn--ghost btn--sm"
-                onClick={() => setShowDeactivateConfirm(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn--danger btn--sm"
-                onClick={handleDeactivate}
-                disabled={deactivating}
-              >
-                {deactivating ? 'Deactivating…' : 'Confirm Deactivate'}
-              </button>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          {!showDeactivateConfirm ? (
+            <button
+              className="btn btn--danger btn--sm"
+              onClick={() => setShowDeactivateConfirm(true)}
+              disabled={!product.isActive}
+            >
+              {product.isActive ? 'Deactivate Product' : 'Already Inactive'}
+            </button>
+          ) : (
+            <div className={styles.confirmBox}>
+              <p>This will hide the product from the storefront. Continue?</p>
+              <div className={styles.confirmActions}>
+                <button
+                  className="btn btn--ghost btn--sm"
+                  onClick={() => setShowDeactivateConfirm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn--danger btn--sm"
+                  onClick={handleDeactivate}
+                  disabled={deactivating}
+                >
+                  {deactivating ? 'Deactivating…' : 'Confirm Deactivate'}
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {!showDeleteConfirm ? (
+            <button
+              className="btn btn--danger btn--sm"
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              Delete Permanently
+            </button>
+          ) : (
+            <div className={styles.confirmBox}>
+              <p>Permanently delete this product? This cannot be undone.</p>
+              <div className={styles.confirmActions}>
+                <button className="btn btn--ghost btn--sm" onClick={() => setShowDeleteConfirm(false)}>
+                  Cancel
+                </button>
+                <button
+                  className="btn btn--danger btn--sm"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? 'Deleting…' : 'Confirm Delete'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
