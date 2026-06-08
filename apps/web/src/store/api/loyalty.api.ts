@@ -20,6 +20,20 @@ export interface RedeemResult {
   discountCents: number;
 }
 
+export interface LoyaltyAccount {
+  id: string;
+  userId: string;
+  points: number;
+  lifetimePoints: number;
+  tier: string;
+  updatedAt: string;
+}
+
+export interface LoyaltyAccountsPage {
+  data: LoyaltyAccount[];
+  total: number;
+}
+
 export const loyaltyApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getLoyaltyBalance: build.query<LoyaltyBalance, void>({
@@ -44,6 +58,16 @@ export const loyaltyApi = apiSlice.injectEndpoints({
       query: () => '/loyalty/admin/tier-breakdown',
       providesTags: [{ type: 'User' as const, id: 'LOYALTY_TIERS' }],
     }),
+
+    getAdminLoyaltyAccounts: build.query<LoyaltyAccountsPage, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 30 } = {}) => `/loyalty/admin/accounts?page=${page}&limit=${limit}`,
+      providesTags: ['Loyalty'],
+    }),
+
+    awardLoyaltyBonus: build.mutation<void, { userId: string; points: number; description: string }>({
+      query: (body) => ({ url: '/loyalty/admin/award', method: 'POST', body }),
+      invalidatesTags: ['Loyalty'],
+    }),
   }),
 });
 
@@ -52,4 +76,6 @@ export const {
   useGetLoyaltyHistoryQuery,
   useRedeemPointsMutation,
   useGetLoyaltyTierBreakdownQuery,
+  useGetAdminLoyaltyAccountsQuery,
+  useAwardLoyaltyBonusMutation,
 } = loyaltyApi;
