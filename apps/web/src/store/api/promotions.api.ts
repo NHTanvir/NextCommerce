@@ -56,6 +56,13 @@ export const promotionsApi = apiSlice.injectEndpoints({
       query: (id) => ({ url: `/promotions/${id}`, method: 'DELETE' }),
       invalidatesTags: ['Promotions'],
     }),
+
+    getPromotionStats: builder.query<{
+      total: number; active: number; expired: number; totalRedemptions: number; topPromotion: string | null;
+    }, void>({
+      query: () => '/promotions/admin/stats',
+      providesTags: ['Promotions'],
+    }),
   }),
 });
 
@@ -66,4 +73,5 @@ export const {
   useUpdatePromotionMutation,
   useDeactivatePromotionMutation,
   useDeletePromotionMutation,
+  useGetPromotionStatsQuery,
 } = promotionsApi;

@@ -6,6 +6,7 @@ import {
   useCreatePromotionMutation,
   useDeactivatePromotionMutation,
   useDeletePromotionMutation,
+  useGetPromotionStatsQuery,
   type CreatePromotionPayload,
 } from '@/store/api/promotions.api';
 import styles from './promotions.module.scss';
@@ -22,6 +23,7 @@ const EMPTY_FORM: CreatePromotionPayload = {
 
 export default function AdminPromotionsPage() {
   const { data: promotions = [], isLoading } = useGetAdminPromotionsQuery();
+  const { data: stats } = useGetPromotionStatsQuery();
   const [createPromotion, { isLoading: creating }] = useCreatePromotionMutation();
   const [deactivate] = useDeactivatePromotionMutation();
   const [deletePromotion] = useDeletePromotionMutation();
@@ -70,6 +72,27 @@ export default function AdminPromotionsPage() {
           {showForm ? 'Cancel' : 'New Promotion'}
         </button>
       </div>
+
+      {stats && (
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          {[
+            { label: 'Total', value: stats.total, color: '#58a6ff' },
+            { label: 'Active', value: stats.active, color: '#3fb950' },
+            { label: 'Expired', value: stats.expired, color: '#e94560' },
+            { label: 'Redemptions', value: stats.totalRedemptions, color: '#f59e0b' },
+            { label: 'Top Promo', value: stats.topPromotion ?? '—', color: '#a371f7' },
+          ].map((s) => (
+            <div key={s.label} style={{
+              flex: 1, minWidth: 110, background: 'var(--color-surface)',
+              border: `1px solid ${s.color}30`, borderRadius: '0.75rem',
+              padding: '0.875rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem',
+            }}>
+              <span style={{ fontSize: '1.4rem', fontWeight: 800, color: s.color }}>{s.value}</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {msg && <p className={styles.msg}>{msg}</p>}
 
