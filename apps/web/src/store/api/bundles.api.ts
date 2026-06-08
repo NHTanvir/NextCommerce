@@ -79,6 +79,13 @@ export const bundlesApi = apiSlice.injectEndpoints({
         { type: 'Product' as const, id: 'bundles-admin' },
       ],
     }),
+
+    getBundleStats: build.query<{
+      total: number; active: number; inactive: number; avgDiscountPercent: number; expiringSoon: number;
+    }, void>({
+      query: () => '/bundles/admin/stats',
+      providesTags: [{ type: 'Product' as const, id: 'bundles-admin' }],
+    }),
   }),
 });
 
@@ -91,4 +98,5 @@ export const {
   useUpdateBundleMutation,
   useDeactivateBundleMutation,
   useDeleteBundleMutation,
+  useGetBundleStatsQuery,
 } = bundlesApi;
