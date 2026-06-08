@@ -98,4 +98,28 @@ export class UsersService {
     const user = await this.findById(id);
     await this.userRepo.remove(user);
   }
+
+  async getAdminStats(): Promise<{
+    total: number;
+    admins: number;
+    customers: number;
+    newThisMonth: number;
+  }> {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const row = await this.userRepo
+      .createQueryBuilder('u')
+      .select('COUNT(*)', 'total')
+      .addSelect("SUM(CASE WHEN u.role = 'admin' THEN 1 ELSE 0 END)", 'admins')
+      .addSelect("SUM(CASE WHEN u.role = 'customer' THEN 1 ELSE 0 END)", 'customers')
+      .addSelect('SUM(CASE WHEN u.createdAt >= :startOfMonth THEN 1 ELSE 0 END)', 'newThisMonth')
+      .setParameter('startOfMonth', startOfMonth)
+      .getRawOne();
+    return {
+      total: Number(row.total) || 0,
+      admins: Number(row.admins) || 0,
+      customers: Number(row.customers) || 0,
+      newThisMonth: Number(row.newThisMonth) || 0,
+    };
+  }
 }

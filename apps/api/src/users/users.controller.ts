@@ -49,6 +49,14 @@ export class UsersController {
     return this.usersService.updatePassword(user.id, dto.currentPassword, dto.newPassword);
   }
 
+  @Get('admin/stats')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get user statistics' })
+  getAdminStats() {
+    return this.usersService.getAdminStats();
+  }
+
   @Get()
   @UseGuards(RolesGuard)
   @Roles('admin')
