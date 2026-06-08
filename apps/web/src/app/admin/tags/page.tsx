@@ -1,47 +1,23 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import {
+  useGetAdminTagsOverviewQuery,
+  useAddTagToProductMutation,
+  useRemoveTagGloballyMutation,
+} from '@/store/api/tags.api';
 import styles from '../admin.module.scss';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-
-interface TagWithCount {
-  name: string;
-  productCount: number;
-}
-
-function useAdminTags() {
-  const [tags, setTags] = useState<TagWithCount[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  const reload = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/api/tags/admin/overview`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('nc_token') ?? ''}` },
-      });
-      if (!res.ok) throw new Error('Failed to fetch');
-      setTags(await res.json());
-    } catch {
-      setError('Could not load tags.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { tags, loading, error, reload };
-}
-
 export default function AdminTagsPage() {
-  const { tags, loading, error, reload } = useAdminTags();
+  const { data: tags = [], isLoading, error } = useGetAdminTagsOverviewQuery();
+  const [addTag] = useAddTagToProductMutation();
+  const [removeTagGlobally] = useRemoveTagGloballyMutation();
+
   const [search, setSearch] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
   const [newTag, setNewTag] = useState('');
   const [newProductId, setNewProductId] = useState('');
   const [adding, setAdding] = useState(false);
-
-  useState(() => { reload(); });
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -52,11 +28,7 @@ export default function AdminTagsPage() {
     if (!confirm(`Remove tag "${name}" from all products?`)) return;
     setDeleting(name);
     try {
-      await fetch(`${API_URL}/api/tags/admin/name/${encodeURIComponent(name)}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('nc_token') ?? ''}` },
-      });
-      reload();
+      await removeTagGlobally(name).unwrap();
     } finally {
       setDeleting(null);
     }
@@ -67,13 +39,9 @@ export default function AdminTagsPage() {
     if (!newTag.trim() || !newProductId.trim()) return;
     setAdding(true);
     try {
-      await fetch(`${API_URL}/api/tags/${newProductId.trim()}/${encodeURIComponent(newTag.trim())}`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${localStorage.getItem('nc_token') ?? ''}` },
-      });
+      await addTag({ productId: newProductId.trim(), name: newTag.trim() }).unwrap();
       setNewTag('');
       setNewProductId('');
-      reload();
     } finally {
       setAdding(false);
     }
@@ -87,7 +55,6 @@ export default function AdminTagsPage() {
         <h1 className={styles.pageTitle}>Tag Management</h1>
       </div>
 
-      {/* Stats */}
       <div className={styles.statsGrid} style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
         <div className={styles.statCard}>
           <div className={styles.statIconWrap} style={{ color: '#3b82f6', background: '#3b82f618' }}>🏷️</div>
@@ -114,7 +81,6 @@ export default function AdminTagsPage() {
         </div>
       </div>
 
-      {/* Add tag form */}
       <div className={styles.tableWrap} style={{ marginBottom: '1.5rem' }}>
         <div className={styles.tableHeader}>
           <h2 className={styles.tableTitle}>Add Tag to Product</h2>
@@ -166,7 +132,6 @@ export default function AdminTagsPage() {
         </form>
       </div>
 
-      {/* Tags table */}
       <div className={styles.tableWrap}>
         <div className={styles.tableHeader}>
           <h2 className={styles.tableTitle}>All Tags ({filtered.length})</h2>
@@ -186,11 +151,10 @@ export default function AdminTagsPage() {
                 width: 200,
               }}
             />
-            <button className="btn btn--ghost btn--sm" onClick={reload}>↺ Refresh</button>
           </div>
         </div>
 
-        {error && <p style={{ padding: '1rem', color: 'var(--color-accent)' }}>{error}</p>}
+        {error && <p style={{ padding: '1rem', color: 'var(--color-accent)' }}>Could not load tags.</p>}
 
         <table className={styles.table}>
           <thead>
@@ -202,13 +166,13 @@ export default function AdminTagsPage() {
             </tr>
           </thead>
           <tbody>
-            {loading && (
+            {isLoading && (
               <tr><td colSpan={4} className={styles.emptyCell}>Loading…</td></tr>
             )}
-            {!loading && filtered.length === 0 && (
+            {!isLoading && filtered.length === 0 && (
               <tr><td colSpan={4} className={styles.emptyCell}>No tags found.</td></tr>
             )}
-            {!loading && filtered.map((tag) => {
+            {!isLoading && filtered.map((tag) => {
               const maxCount = Math.max(...filtered.map((t) => t.productCount), 1);
               const pct = (tag.productCount / maxCount) * 100;
               return (
@@ -228,18 +192,8 @@ export default function AdminTagsPage() {
                   </td>
                   <td style={{ fontWeight: 700 }}>{tag.productCount}</td>
                   <td style={{ width: 120 }}>
-                    <div style={{
-                      height: 6,
-                      background: 'var(--color-border)',
-                      borderRadius: 3,
-                      overflow: 'hidden',
-                    }}>
-                      <div style={{
-                        width: `${pct}%`,
-                        height: '100%',
-                        background: 'var(--color-accent)',
-                        borderRadius: 3,
-                      }} />
+                    <div style={{ height: 6, background: 'var(--color-border)', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ width: `${pct}%`, height: '100%', background: 'var(--color-accent)', borderRadius: 3 }} />
                     </div>
                   </td>
                   <td>
