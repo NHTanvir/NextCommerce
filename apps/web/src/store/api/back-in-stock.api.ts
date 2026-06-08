@@ -10,6 +10,12 @@ export interface BackInStockSubDto {
   createdAt: string;
 }
 
+export interface AdminStockAlertsPage {
+  data: BackInStockSubDto[];
+  total: number;
+  pendingCount: number;
+}
+
 export const backInStockApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getBackInStockSubs: build.query<BackInStockSubDto[], void>({
@@ -37,6 +43,12 @@ export const backInStockApi = apiSlice.injectEndpoints({
         { type: 'User' as const, id: `bis-${variantId}` },
       ],
     }),
+
+    getAdminStockAlerts: build.query<AdminStockAlertsPage, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 30 } = {}) =>
+        `/back-in-stock/admin/all?page=${page}&limit=${limit}`,
+      providesTags: ['StockAlert'],
+    }),
   }),
 });
 
@@ -45,4 +57,5 @@ export const {
   useGetVariantSubscriptionStatusQuery,
   useSubscribeBackInStockMutation,
   useUnsubscribeBackInStockMutation,
+  useGetAdminStockAlertsQuery,
 } = backInStockApi;
