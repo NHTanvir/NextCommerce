@@ -59,6 +59,28 @@ export class NewsletterService {
     return { data, total, activeCount };
   }
 
+  async getStats(): Promise<{
+    total: number;
+    active: number;
+    inactive: number;
+    recentlyAdded: number;
+  }> {
+    const row = await this.subRepo
+      .createQueryBuilder('ns')
+      .select('COUNT(*)', 'total')
+      .addSelect('SUM(CASE WHEN ns.isActive = 1 THEN 1 ELSE 0 END)', 'active')
+      .addSelect('SUM(CASE WHEN ns.isActive = 0 THEN 1 ELSE 0 END)', 'inactive')
+      .addSelect("SUM(CASE WHEN ns.subscribedAt >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1 ELSE 0 END)", 'recentlyAdded')
+      .getRawOne();
+
+    return {
+      total: Number(row.total) || 0,
+      active: Number(row.active) || 0,
+      inactive: Number(row.inactive) || 0,
+      recentlyAdded: Number(row.recentlyAdded) || 0,
+    };
+  }
+
   async exportEmails(): Promise<string> {
     const subs = await this.subRepo.find({
       where: { isActive: true },

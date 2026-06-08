@@ -34,6 +34,15 @@ export class NewsletterController {
     return this.newsletterService.unsubscribe(token);
   }
 
+  @Get('stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Get newsletter subscription statistics' })
+  getStats() {
+    return this.newsletterService.getStats();
+  }
+
   @Get('count')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
