@@ -135,4 +135,31 @@ export class BundlesService {
   calculateBundlePrice(totalCents: number, discountPercent: number): number {
     return Math.round(totalCents * (1 - discountPercent / 100));
   }
+
+  async getStats(): Promise<{
+    total: number;
+    active: number;
+    inactive: number;
+    avgDiscountPercent: number;
+    expiringSoon: number;
+  }> {
+    const all = await this.repo.find();
+    const now = new Date();
+    const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const active = all.filter((b) => b.isActive && (!b.endsAt || new Date(b.endsAt) > now)).length;
+    const inactive = all.length - active;
+    const avgDiscount = all.length > 0
+      ? all.reduce((s, b) => s + (b.discountPercent ?? 0), 0) / all.length
+      : 0;
+    const expiringSoon = all.filter(
+      (b) => b.isActive && b.endsAt && new Date(b.endsAt) > now && new Date(b.endsAt) <= sevenDaysFromNow,
+    ).length;
+    return {
+      total: all.length,
+      active,
+      inactive,
+      avgDiscountPercent: Math.round(avgDiscount * 10) / 10,
+      expiringSoon,
+    };
+  }
 }

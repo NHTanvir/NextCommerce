@@ -29,6 +29,15 @@ export class BundlesController {
     return this.bundlesService.findActive();
   }
 
+  @Get('admin/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Get bundle statistics' })
+  getStats() {
+    return this.bundlesService.getStats();
+  }
+
   @Get('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
