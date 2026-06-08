@@ -114,4 +114,22 @@ export class CollectionsService {
     const collection = await this.findById(id);
     await this.collectionRepo.remove(collection);
   }
+
+  async getStats(): Promise<{
+    total: number;
+    active: number;
+    inactive: number;
+    withDiscount: number;
+    expiringSoon: number;
+  }> {
+    const all = await this.collectionRepo.find();
+    const now = new Date();
+    const sevenDays = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const active = all.filter((c) => c.isActive && (!c.endsAt || new Date(c.endsAt) > now)).length;
+    const withDiscount = all.filter((c) => c.discountPercent > 0).length;
+    const expiringSoon = all.filter(
+      (c) => c.isActive && c.endsAt && new Date(c.endsAt) > now && new Date(c.endsAt) <= sevenDays,
+    ).length;
+    return { total: all.length, active, inactive: all.length - active, withDiscount, expiringSoon };
+  }
 }

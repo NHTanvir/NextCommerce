@@ -6,11 +6,13 @@ import {
   useCreateCollectionMutation,
   useUpdateCollectionMutation,
   useDeleteCollectionMutation,
+  useGetCollectionStatsQuery,
 } from '@/store/api/collections.api';
 import styles from './collections.module.scss';
 
 export default function AdminCollectionsPage() {
   const { data: collections = [], isLoading } = useGetAllCollectionsQuery();
+  const { data: stats } = useGetCollectionStatsQuery();
   const [createCollection, { isLoading: creating }] = useCreateCollectionMutation();
   const [updateCollection] = useUpdateCollectionMutation();
   const [deleteCollection] = useDeleteCollectionMutation();
@@ -61,6 +63,27 @@ export default function AdminCollectionsPage() {
           {showForm ? 'Cancel' : '+ New Collection'}
         </button>
       </div>
+
+      {stats && (
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          {[
+            { label: 'Total', value: stats.total, color: '#58a6ff' },
+            { label: 'Active', value: stats.active, color: '#3fb950' },
+            { label: 'Inactive', value: stats.inactive, color: '#8b949e' },
+            { label: 'With Discount', value: stats.withDiscount, color: '#f59e0b' },
+            { label: 'Expiring Soon', value: stats.expiringSoon, color: '#e94560' },
+          ].map((s) => (
+            <div key={s.label} style={{
+              flex: 1, minWidth: 100, background: 'var(--color-surface)',
+              border: `1px solid ${s.color}30`, borderRadius: '0.75rem',
+              padding: '0.875rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem',
+            }}>
+              <span style={{ fontSize: '1.5rem', fontWeight: 800, color: s.color }}>{s.value}</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {showForm && (
         <form className={styles.createForm} onSubmit={handleCreate}>

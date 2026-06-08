@@ -31,6 +31,15 @@ export class CollectionsController {
     return this.collectionsService.create(dto);
   }
 
+  @Get('admin/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Get collection statistics' })
+  getStats() {
+    return this.collectionsService.getStats();
+  }
+
   @Get('admin/all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

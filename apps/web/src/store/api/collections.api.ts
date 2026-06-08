@@ -49,6 +49,13 @@ export const collectionsApi = apiSlice.injectEndpoints({
         { type: 'Product' as const, id: 'COLLECTIONS_ALL' },
       ],
     }),
+
+    getCollectionStats: build.query<{
+      total: number; active: number; inactive: number; withDiscount: number; expiringSoon: number;
+    }, void>({
+      query: () => '/collections/admin/stats',
+      providesTags: [{ type: 'Product' as const, id: 'COLLECTIONS_ALL' }],
+    }),
   }),
 });
 
@@ -58,4 +65,5 @@ export const {
   useCreateCollectionMutation,
   useUpdateCollectionMutation,
   useDeleteCollectionMutation,
+  useGetCollectionStatsQuery,
 } = collectionsApi;
