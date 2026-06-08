@@ -125,6 +125,36 @@ export class ReviewsService {
     return vote ? vote.isHelpful : null;
   }
 
+  async getAdminStats(): Promise<{
+    total: number;
+    avgRating: number;
+    fiveStars: number;
+    fourStars: number;
+    threeStars: number;
+    twoStars: number;
+    oneStar: number;
+  }> {
+    const row = await this.reviewRepo
+      .createQueryBuilder('r')
+      .select('COUNT(*)', 'total')
+      .addSelect('AVG(r.rating)', 'avgRating')
+      .addSelect('SUM(CASE WHEN r.rating = 5 THEN 1 ELSE 0 END)', 'fiveStars')
+      .addSelect('SUM(CASE WHEN r.rating = 4 THEN 1 ELSE 0 END)', 'fourStars')
+      .addSelect('SUM(CASE WHEN r.rating = 3 THEN 1 ELSE 0 END)', 'threeStars')
+      .addSelect('SUM(CASE WHEN r.rating = 2 THEN 1 ELSE 0 END)', 'twoStars')
+      .addSelect('SUM(CASE WHEN r.rating = 1 THEN 1 ELSE 0 END)', 'oneStar')
+      .getRawOne();
+    return {
+      total: Number(row.total) || 0,
+      avgRating: Math.round((parseFloat(row.avgRating) || 0) * 10) / 10,
+      fiveStars: Number(row.fiveStars) || 0,
+      fourStars: Number(row.fourStars) || 0,
+      threeStars: Number(row.threeStars) || 0,
+      twoStars: Number(row.twoStars) || 0,
+      oneStar: Number(row.oneStar) || 0,
+    };
+  }
+
   async getTopReviewedProducts(limit = 10): Promise<Array<{ productId: string; reviewCount: number; avgRating: number }>> {
     const rows = await this.reviewRepo
       .createQueryBuilder('r')

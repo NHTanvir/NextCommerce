@@ -32,6 +32,15 @@ export class ReviewsController {
     return this.reviewsService.findByUser(user.sub);
   }
 
+  @Get('admin/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Get review statistics' })
+  getAdminStats() {
+    return this.reviewsService.getAdminStats();
+  }
+
   @Get('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
