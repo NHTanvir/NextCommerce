@@ -53,6 +53,22 @@ export const inventoryApi = apiSlice.injectEndpoints({
     }, void>({
       query: () => '/inventory/summary',
     }),
+
+    getAlertSummary: builder.query<{
+      outOfStock: number;
+      lowStock: number;
+      healthy: number;
+    }, number | void>({
+      query: (threshold) =>
+        threshold ? `/inventory/alerts/summary?threshold=${threshold}` : '/inventory/alerts/summary',
+    }),
+
+    publishAlerts: builder.mutation<{ published: number }, number | void>({
+      query: (threshold) => ({
+        url: threshold ? `/inventory/alerts/publish?threshold=${threshold}` : '/inventory/alerts/publish',
+        method: 'PATCH',
+      }),
+    }),
   }),
 });
 
@@ -62,4 +78,6 @@ export const {
   useAdjustStockMutation,
   useSetStockMutation,
   useGetStockSummaryQuery,
+  useGetAlertSummaryQuery,
+  usePublishAlertsMutation,
 } = inventoryApi;
