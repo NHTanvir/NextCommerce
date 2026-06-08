@@ -1,21 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { getStoredToken } from '@/lib/auth';
+import { useState } from 'react';
+import { useGetAuditLogsQuery } from '@/store/api/audit.api';
 import styles from './audit.module.scss';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-
-interface AuditLog {
-  id: string;
-  userId: string | null;
-  action: string;
-  resourceId: string | null;
-  resourceType: string | null;
-  metadata: Record<string, unknown> | null;
-  ipAddress: string | null;
-  createdAt: string;
-}
 
 const ACTION_COLORS: Record<string, string> = {
   'user.login': '#58a6ff',
@@ -43,47 +30,22 @@ const ACTION_FILTER_OPTIONS = [
   'inventory.adjust',
 ];
 
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 export default function AdminAuditPage() {
-  const [logs, setLogs] = useState<AuditLog[]>([]);
-  const [loading, setLoading] = useState(true);
   const [action, setAction] = useState('all');
   const [limit, setLimit] = useState(100);
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const token = getStoredToken();
-      const params = new URLSearchParams({ limit: String(limit) });
-      if (action !== 'all') params.set('action', action);
-      const endpoint = action !== 'all'
-        ? `/api/audit/action?${params}`
-        : `/api/audit?${params}`;
-      const res = await fetch(`${API_URL}${endpoint}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setLogs(data);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [action, limit]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  const timeAgo = (dateStr: string) => {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'just now';
-    if (mins < 60) return `${mins}m ago`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
+  const { data: logs = [], isLoading, refetch } = useGetAuditLogsQuery({ limit, action });
 
   return (
     <div className={styles.page}>
@@ -92,12 +54,11 @@ export default function AdminAuditPage() {
           <h1 className={styles.heading}>Audit Log</h1>
           <p className={styles.sub}>Security and activity log for all admin actions</p>
         </div>
-        <button className="btn btn--ghost btn--sm" onClick={load} disabled={loading}>
-          {loading ? 'Loading…' : '↻ Refresh'}
+        <button className="btn btn--ghost btn--sm" onClick={refetch} disabled={isLoading}>
+          {isLoading ? 'Loading…' : '↻ Refresh'}
         </button>
       </div>
 
-      {/* Filters */}
       <div className={styles.filters}>
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel}>Action</label>
@@ -107,9 +68,7 @@ export default function AdminAuditPage() {
             onChange={(e) => setAction(e.target.value)}
           >
             {ACTION_FILTER_OPTIONS.map((a) => (
-              <option key={a} value={a}>
-                {a === 'all' ? 'All Actions' : a}
-              </option>
+              <option key={a} value={a}>{a === 'all' ? 'All Actions' : a}</option>
             ))}
           </select>
         </div>
@@ -127,7 +86,6 @@ export default function AdminAuditPage() {
         </div>
       </div>
 
-      {/* Log table */}
       <div className={styles.tableWrap}>
         <table className={styles.table}>
           <thead>
@@ -141,14 +99,10 @@ export default function AdminAuditPage() {
             </tr>
           </thead>
           <tbody>
-            {loading && logs.length === 0 ? (
-              <tr>
-                <td colSpan={6} className={styles.loading}>Loading…</td>
-              </tr>
+            {isLoading && logs.length === 0 ? (
+              <tr><td colSpan={6} className={styles.loading}>Loading…</td></tr>
             ) : logs.length === 0 ? (
-              <tr>
-                <td colSpan={6} className={styles.empty}>No audit logs found.</td>
-              </tr>
+              <tr><td colSpan={6} className={styles.empty}>No audit logs found.</td></tr>
             ) : (
               logs.map((log) => (
                 <>
@@ -170,12 +124,8 @@ export default function AdminAuditPage() {
                     </td>
                     <td className={styles.mono}>{log.userId ? log.userId.slice(-8) : '—'}</td>
                     <td className={styles.resource}>
-                      {log.resourceType && (
-                        <span className={styles.resourceType}>{log.resourceType}</span>
-                      )}
-                      {log.resourceId && (
-                        <span className={styles.mono}> {log.resourceId.slice(-8)}</span>
-                      )}
+                      {log.resourceType && <span className={styles.resourceType}>{log.resourceType}</span>}
+                      {log.resourceId && <span className={styles.mono}> {log.resourceId.slice(-8)}</span>}
                       {!log.resourceType && !log.resourceId && '—'}
                     </td>
                     <td className={styles.ip}>{log.ipAddress ?? '—'}</td>
