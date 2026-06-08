@@ -100,6 +100,47 @@ export const catalogApi = apiSlice.injectEndpoints({
       ],
     }),
 
+    createProduct: build.mutation<ProductDto, {
+      title: string;
+      description: string;
+      brand: string;
+      slug: string;
+      basePriceCents: number;
+      categoryId: string;
+      isActive: boolean;
+      images: Array<{ url: string; alt: string }>;
+      variants: unknown[];
+    }>({
+      query: (body) => ({ url: '/catalog/products', method: 'POST', body }),
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
+    }),
+
+    getProductVariants: build.query<Array<{
+      id: string; size: number; color: string; sku: string; stockQty: number; priceCents: number;
+    }>, string>({
+      query: (productId) => `/catalog/products/${productId}/variants`,
+      providesTags: (_r, _e, productId) => [{ type: 'Product' as const, id: `variants-${productId}` }],
+    }),
+
+    createVariant: build.mutation<unknown, {
+      productId: string; size: number; color: string; sku: string; stockQty: number; priceCents: number;
+    }>({
+      query: ({ productId, ...body }) => ({ url: `/catalog/products/${productId}/variants`, method: 'POST', body }),
+      invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product' as const, id: `variants-${productId}` }],
+    }),
+
+    updateVariant: build.mutation<unknown, {
+      id: string; size: number; color: string; sku: string; stockQty: number; priceCents: number;
+    }>({
+      query: ({ id, ...body }) => ({ url: `/catalog/variants/${id}`, method: 'PATCH', body }),
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
+    }),
+
+    deleteVariant: build.mutation<void, string>({
+      query: (id) => ({ url: `/catalog/variants/${id}`, method: 'DELETE' }),
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
+    }),
+
     getBrands: build.query<Array<{ brand: string; productCount: number }>, void>({
       query: () => '/catalog/brands',
       providesTags: [{ type: 'Category' as const, id: 'brands' }],
@@ -159,6 +200,11 @@ export const {
   useGetProductByIdQuery,
   useUpdateProductMutation,
   useDeactivateProductMutation,
+  useCreateProductMutation,
+  useGetProductVariantsQuery,
+  useCreateVariantMutation,
+  useUpdateVariantMutation,
+  useDeleteVariantMutation,
   useGetBrandsQuery,
   useGetDealsQuery,
   useGetNewArrivalsQuery,
