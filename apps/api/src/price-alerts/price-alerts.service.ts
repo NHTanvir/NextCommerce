@@ -82,6 +82,15 @@ export class PriceAlertsService {
     return currentPriceCents <= alert.targetPriceCents;
   }
 
+  async findAll(page = 1, limit = 30): Promise<{ data: PriceAlert[]; total: number }> {
+    const [data, total] = await this.repo.findAndCount({
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data, total };
+  }
+
   async getAdminStats(): Promise<{
     total: number;
     active: number;

@@ -5,6 +5,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   HttpCode,
   HttpStatus,
@@ -30,6 +31,17 @@ export class PriceAlertsController {
   @ApiOperation({ summary: '[Admin] Get price alert statistics' })
   getAdminStats() {
     return this.service.getAdminStats();
+  }
+
+  @Get('admin/all')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] List all price alerts with pagination' })
+  findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.service.findAll(page ? Number(page) : 1, limit ? Number(limit) : 30);
   }
 
   @Get()

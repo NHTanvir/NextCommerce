@@ -49,6 +49,12 @@ export const priceAlertsApi = apiSlice.injectEndpoints({
       query: () => '/price-alerts/admin/stats',
       providesTags: [{ type: 'User' as const, id: 'price-alert-stats' }],
     }),
+
+    getAdminPriceAlerts: build.query<{ data: PriceAlertDto[]; total: number }, { page?: number; limit?: number }>({
+      query: ({ page = 1, limit = 30 } = {}) =>
+        `/price-alerts/admin/all?page=${page}&limit=${limit}`,
+      providesTags: [{ type: 'User' as const, id: 'price-alert-stats' }],
+    }),
   }),
 });
 
@@ -58,4 +64,5 @@ export const {
   useSubscribePriceAlertMutation,
   useUnsubscribePriceAlertMutation,
   useGetAdminPriceAlertStatsQuery,
+  useGetAdminPriceAlertsQuery,
 } = priceAlertsApi;
