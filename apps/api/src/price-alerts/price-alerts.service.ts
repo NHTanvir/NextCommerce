@@ -81,4 +81,28 @@ export class PriceAlertsService {
     if (alert.targetPriceCents === null) return true;
     return currentPriceCents <= alert.targetPriceCents;
   }
+
+  async getAdminStats(): Promise<{
+    total: number;
+    active: number;
+    triggered: number;
+    withTarget: number;
+    withoutTarget: number;
+  }> {
+    const row = await this.repo
+      .createQueryBuilder('pa')
+      .select('COUNT(*)', 'total')
+      .addSelect('SUM(CASE WHEN pa.isActive = 1 THEN 1 ELSE 0 END)', 'active')
+      .addSelect('SUM(CASE WHEN pa.lastTriggeredAt IS NOT NULL THEN 1 ELSE 0 END)', 'triggered')
+      .addSelect('SUM(CASE WHEN pa.targetPriceCents IS NOT NULL THEN 1 ELSE 0 END)', 'withTarget')
+      .addSelect('SUM(CASE WHEN pa.targetPriceCents IS NULL THEN 1 ELSE 0 END)', 'withoutTarget')
+      .getRawOne();
+    return {
+      total: Number(row.total) || 0,
+      active: Number(row.active) || 0,
+      triggered: Number(row.triggered) || 0,
+      withTarget: Number(row.withTarget) || 0,
+      withoutTarget: Number(row.withoutTarget) || 0,
+    };
+  }
 }

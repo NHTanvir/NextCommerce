@@ -12,6 +12,8 @@ import {
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { PriceAlertsService, CreatePriceAlertDto } from './price-alerts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { UserPayload } from '@nextcommerce/shared';
 
@@ -21,6 +23,14 @@ import { UserPayload } from '@nextcommerce/shared';
 @ApiBearerAuth()
 export class PriceAlertsController {
   constructor(private readonly service: PriceAlertsService) {}
+
+  @Get('admin/stats')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get price alert statistics' })
+  getAdminStats() {
+    return this.service.getAdminStats();
+  }
 
   @Get()
   @ApiOperation({ summary: 'Get all active price alerts for current user' })
