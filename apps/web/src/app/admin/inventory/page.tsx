@@ -5,6 +5,7 @@ import {
   useGetLowStockAlertsQuery,
   useAdjustStockMutation,
   useGetStockSummaryQuery,
+  usePublishAlertsMutation,
 } from '@/store/api/inventory.api';
 import styles from '../admin.module.scss';
 
@@ -16,6 +17,8 @@ export default function AdminInventoryPage() {
   const { data: alerts = [], isLoading, refetch } = useGetLowStockAlertsQuery(threshold);
   const { data: stockSummary } = useGetStockSummaryQuery();
   const [adjustStock] = useAdjustStockMutation();
+  const [publishAlerts, { isLoading: publishing }] = usePublishAlertsMutation();
+  const [publishResult, setPublishResult] = useState('');
 
   const handleAdjust = async (variantId: string) => {
     const delta = parseInt(deltas[variantId] ?? '0', 10);
@@ -107,7 +110,21 @@ export default function AdminInventoryPage() {
       <div className={styles.tableWrap}>
         <div className={styles.tableHeader}>
           <h2 className={styles.tableTitle}>Low Stock Alerts</h2>
-          <button className="btn btn--ghost btn--sm" onClick={() => refetch()}>↺ Refresh</button>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {publishResult && <span style={{ fontSize: '0.8rem', color: '#3fb950' }}>{publishResult}</span>}
+            <button
+              className="btn btn--ghost btn--sm"
+              disabled={publishing}
+              onClick={async () => {
+                const r = await publishAlerts(threshold).unwrap();
+                setPublishResult(`Published ${r.published} alert(s)`);
+                setTimeout(() => setPublishResult(''), 4000);
+              }}
+            >
+              {publishing ? 'Publishing…' : '📣 Publish Alerts'}
+            </button>
+            <button className="btn btn--ghost btn--sm" onClick={() => refetch()}>↺ Refresh</button>
+          </div>
         </div>
         <table className={styles.table}>
           <thead>
