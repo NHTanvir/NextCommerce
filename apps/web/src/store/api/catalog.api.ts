@@ -188,6 +188,24 @@ export const catalogApi = apiSlice.injectEndpoints({
     }, void>({
       query: () => '/catalog/health',
     }),
+
+    deleteProduct: build.mutation<void, string>({
+      query: (id) => ({ url: `/catalog/products/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['Product'],
+    }),
+
+    bulkUpdatePrices: build.mutation<
+      { updated: number },
+      Array<{ productId: string; basePriceCents: number }>
+    >({
+      query: (updates) => ({ url: '/catalog/products/bulk-price', method: 'PATCH', body: { updates } }),
+      invalidatesTags: ['Product'],
+    }),
+
+    bulkActivateProducts: build.mutation<{ updated: number }, { productIds: string[]; isActive: boolean }>({
+      query: (body) => ({ url: '/catalog/products/bulk-activate', method: 'PATCH', body }),
+      invalidatesTags: ['Product'],
+    }),
   }),
 });
 
@@ -211,4 +229,7 @@ export const {
   useGetFeaturedProductsQuery,
   useGetSearchSuggestionsQuery,
   useGetCatalogHealthQuery,
+  useDeleteProductMutation,
+  useBulkUpdatePricesMutation,
+  useBulkActivateProductsMutation,
 } = catalogApi;
