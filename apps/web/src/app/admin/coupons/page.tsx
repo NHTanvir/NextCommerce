@@ -7,11 +7,13 @@ import {
   useGetAdminCouponStatsQuery,
   useCreateCouponMutation,
   useDeactivateCouponMutation,
+  useBulkGenerateCouponsMutation,
 } from '@/store/api/coupons.api';
 import styles from './coupons.module.scss';
 
 export default function AdminCouponsPage() {
   const [showForm, setShowForm] = useState(false);
+  const [showBulkForm, setShowBulkForm] = useState(false);
   const [form, setForm] = useState({
     code: '',
     discountType: 'percentage' as 'percentage' | 'fixed',
@@ -19,11 +21,36 @@ export default function AdminCouponsPage() {
     maxUsageCount: '',
     expiresAt: '',
   });
+  const [bulkForm, setBulkForm] = useState({
+    count: '10',
+    prefix: '',
+    discountType: 'percentage' as 'percentage' | 'fixed',
+    discountValue: '10',
+    expiresAt: '',
+  });
 
   const { data: coupons = [], isLoading } = useGetAdminCouponsQuery();
   const { data: stats } = useGetAdminCouponStatsQuery();
   const [createCoupon, { isLoading: submitting }] = useCreateCouponMutation();
   const [deactivateCoupon] = useDeactivateCouponMutation();
+  const [bulkGenerate, { isLoading: bulkSubmitting }] = useBulkGenerateCouponsMutation();
+
+  const handleBulkGenerate = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      await bulkGenerate({
+        count: Number(bulkForm.count),
+        ...(bulkForm.prefix ? { prefix: bulkForm.prefix.toUpperCase() } : {}),
+        discountType: bulkForm.discountType,
+        discountValue: Number(bulkForm.discountValue),
+        ...(bulkForm.expiresAt ? { expiresAt: new Date(bulkForm.expiresAt).toISOString() } : {}),
+      }).unwrap();
+      setShowBulkForm(false);
+      setBulkForm({ count: '10', prefix: '', discountType: 'percentage', discountValue: '10', expiresAt: '' });
+    } catch {
+      // ignore
+    }
+  };
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
@@ -46,9 +73,14 @@ export default function AdminCouponsPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>Coupons ({coupons.length})</h1>
-        <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-          + New Coupon
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className="btn btn-secondary" onClick={() => { setShowBulkForm(true); setShowForm(false); }}>
+            Bulk Generate
+          </button>
+          <button className="btn btn-primary" onClick={() => { setShowForm(true); setShowBulkForm(false); }}>
+            + New Coupon
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -74,6 +106,72 @@ export default function AdminCouponsPage() {
             </div>
           ))}
         </div>
+      )}
+
+      {showBulkForm && (
+        <form className={styles.form} onSubmit={handleBulkGenerate}>
+          <h2 className={styles.formTitle}>Bulk Generate Coupons</h2>
+          <div className={styles.formGrid}>
+            <div className={styles.field}>
+              <label>Count (max 500)</label>
+              <input
+                className={styles.input}
+                type="number"
+                min="1"
+                max="500"
+                value={bulkForm.count}
+                onChange={(e) => setBulkForm((f) => ({ ...f, count: e.target.value }))}
+                required
+              />
+            </div>
+            <div className={styles.field}>
+              <label>Prefix (optional)</label>
+              <input
+                className={styles.input}
+                value={bulkForm.prefix}
+                onChange={(e) => setBulkForm((f) => ({ ...f, prefix: e.target.value }))}
+                placeholder="SUMMER"
+                maxLength={16}
+              />
+            </div>
+            <div className={styles.field}>
+              <label>Type</label>
+              <select
+                className={styles.input}
+                value={bulkForm.discountType}
+                onChange={(e) => setBulkForm((f) => ({ ...f, discountType: e.target.value as 'percentage' | 'fixed' }))}
+              >
+                <option value="percentage">Percentage (%)</option>
+                <option value="fixed">Fixed ($)</option>
+              </select>
+            </div>
+            <div className={styles.field}>
+              <label>Value</label>
+              <input
+                className={styles.input}
+                type="number"
+                value={bulkForm.discountValue}
+                onChange={(e) => setBulkForm((f) => ({ ...f, discountValue: e.target.value }))}
+                required
+              />
+            </div>
+            <div className={styles.field}>
+              <label>Expires At</label>
+              <input
+                className={styles.input}
+                type="date"
+                value={bulkForm.expiresAt}
+                onChange={(e) => setBulkForm((f) => ({ ...f, expiresAt: e.target.value }))}
+              />
+            </div>
+          </div>
+          <div className={styles.formActions}>
+            <button type="button" className="btn btn-secondary" onClick={() => setShowBulkForm(false)}>Cancel</button>
+            <button type="submit" className="btn btn-primary" disabled={bulkSubmitting}>
+              {bulkSubmitting ? 'Generating…' : `Generate ${bulkForm.count} Codes`}
+            </button>
+          </div>
+        </form>
       )}
 
       {showForm && (
