@@ -1,21 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getStoredToken } from '@/lib/auth';
+import { useGetMyActivityQuery, type AuditLog } from '@/store/api/audit.api';
 import styles from './activity.module.scss';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-
-interface AuditLog {
-  id: string;
-  action: string;
-  resourceId: string | null;
-  resourceType: string | null;
-  metadata: Record<string, unknown> | null;
-  ipAddress: string | null;
-  createdAt: string;
-}
 
 const ACTION_META: Record<string, { icon: string; label: string; color: string }> = {
   'user.login': { icon: '🔐', label: 'Signed in', color: '#58a6ff' },
@@ -55,25 +42,7 @@ function groupByDate(logs: AuditLog[]): [string, AuditLog[]][] {
 }
 
 export default function AccountActivityPage() {
-  const [logs, setLogs] = useState<AuditLog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    const token = getStoredToken();
-    if (!token) { setLoading(false); setError(true); return; }
-
-    fetch(`${API_URL}/api/audit/me?limit=50`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        setLogs(Array.isArray(data) ? data : []);
-        setLoading(false);
-      })
-      .catch(() => { setError(true); setLoading(false); });
-  }, []);
-
+  const { data: logs = [], isLoading, isError } = useGetMyActivityQuery(50);
   const grouped = groupByDate(logs);
 
   return (
@@ -84,7 +53,7 @@ export default function AccountActivityPage() {
         <p className={styles.sub}>Your recent account actions and events</p>
       </div>
 
-      {loading && (
+      {isLoading && (
         <div className={styles.loading}>
           {[...Array(5)].map((_, i) => (
             <div key={i} className={styles.skeleton} />
@@ -92,7 +61,7 @@ export default function AccountActivityPage() {
         </div>
       )}
 
-      {error && !loading && (
+      {isError && !isLoading && (
         <div className={styles.empty}>
           <span className={styles.emptyIcon}>🔒</span>
           <p>Sign in to view your account activity.</p>
@@ -100,7 +69,7 @@ export default function AccountActivityPage() {
         </div>
       )}
 
-      {!loading && !error && logs.length === 0 && (
+      {!isLoading && !isError && logs.length === 0 && (
         <div className={styles.empty}>
           <span className={styles.emptyIcon}>📋</span>
           <p>No activity recorded yet. Start shopping to see your history here.</p>
@@ -108,7 +77,7 @@ export default function AccountActivityPage() {
         </div>
       )}
 
-      {!loading && !error && logs.length > 0 && (
+      {!isLoading && !isError && logs.length > 0 && (
         <div className={styles.feed}>
           {grouped.map(([date, entries]) => (
             <div key={date} className={styles.group}>

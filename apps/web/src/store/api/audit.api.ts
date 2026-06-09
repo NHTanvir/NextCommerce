@@ -13,6 +13,11 @@ export interface AuditLog {
 
 export const auditApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
+    getMyActivity: build.query<AuditLog[], number | void>({
+      query: (limit = 50) => `/audit/me?limit=${limit}`,
+      providesTags: ['AuditLog'],
+    }),
+
     getAuditLogs: build.query<AuditLog[], { limit?: number; action?: string }>({
       query: ({ limit = 100, action } = {}) => {
         const params = new URLSearchParams({ limit: String(limit) });
@@ -36,4 +41,4 @@ export const auditApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetAuditLogsQuery, useGetAuditStatsQuery } = auditApi;
+export const { useGetMyActivityQuery, useGetAuditLogsQuery, useGetAuditStatsQuery } = auditApi;
