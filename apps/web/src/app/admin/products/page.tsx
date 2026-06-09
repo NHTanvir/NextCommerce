@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useGetProductsQuery, useGetCategoriesQuery, useGetBrandsQuery, useDeactivateProductMutation } from '@/store/api/catalog.api';
-import { getStoredToken } from '@/lib/auth';
+import { useAppSelector } from '@/store/hooks';
+import { selectAuthToken } from '@/store/slices/auth.slice';
 import styles from './products.module.scss';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
@@ -31,14 +32,15 @@ export default function AdminProductsPage() {
   const [deactivating, setDeactivating] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
   const [exporting, setExporting] = useState(false);
+  const token = useAppSelector(selectAuthToken);
 
   const handleExport = async () => {
     setExporting(true);
     try {
-      const token = getStoredToken();
       const res = await fetch(`${API_BASE}/api/catalog/export`, {
         headers: { Authorization: `Bearer ${token ?? ''}` },
       });
+
       if (!res.ok) { alert('Export failed'); return; }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
