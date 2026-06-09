@@ -3,27 +3,16 @@
 import { useState, FormEvent } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { selectAuthUser } from '@/store/slices/auth.slice';
-import { getStoredToken } from '@/lib/auth';
+import {
+  useGetAddressesQuery,
+  useCreateAddressMutation,
+  useDeleteAddressMutation,
+} from '@/store/api/addresses.api';
 import styles from './addresses.module.scss';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-
-interface Address {
-  id: string;
-  line1: string;
-  line2: string | null;
-  city: string;
-  country: string;
-  postalCode: string;
-}
 
 export default function AddressesPage() {
   const user = useAppSelector(selectAuthUser);
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     fullName: '',
     line1: '',
@@ -35,57 +24,32 @@ export default function AddressesPage() {
     phone: '',
   });
 
-  const loadAddresses = async () => {
-    try {
-      setLoading(true);
-      const token = getStoredToken();
-      const res = await fetch(`${API_URL}/api/addresses`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setAddresses(data.data ?? data);
-      }
-    } finally {
-      setLoading(false);
-      setLoaded(true);
-    }
-  };
+  const { data: addresses = [], isLoading } = useGetAddressesQuery(undefined, { skip: !user });
+  const [createAddress, { isLoading: submitting }] = useCreateAddressMutation();
+  const [deleteAddress] = useDeleteAddressMutation();
 
   const handleAdd = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      setSubmitting(true);
-      const token = getStoredToken();
-      await fetch(`${API_URL}/api/addresses`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          fullName: form.fullName,
-          line1: form.line1,
-          line2: form.line2 || undefined,
-          city: form.city,
-          state: form.state || undefined,
-          postalCode: form.postalCode,
-          countryCode: form.countryCode,
-          phone: form.phone || undefined,
-        }),
-      });
+      await createAddress({
+        fullName: form.fullName,
+        line1: form.line1,
+        line2: form.line2 || undefined,
+        city: form.city,
+        state: form.state || undefined,
+        postalCode: form.postalCode,
+        countryCode: form.countryCode,
+        phone: form.phone || undefined,
+      }).unwrap();
       setShowForm(false);
       setForm({ fullName: '', line1: '', line2: '', city: '', state: '', postalCode: '', countryCode: 'US', phone: '' });
-      loadAddresses();
-    } finally {
-      setSubmitting(false);
+    } catch {
+      // ignore
     }
   };
 
   const handleDelete = async (id: string) => {
-    const token = getStoredToken();
-    await fetch(`${API_URL}/api/addresses/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setAddresses((prev) => prev.filter((a) => a.id !== id));
+    await deleteAddress(id);
   };
 
   if (!user) {
@@ -100,16 +64,9 @@ export default function AddressesPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>Saved Addresses</h1>
-        <div className={styles.actions}>
-          {!loaded && (
-            <button className="btn btn-secondary" onClick={loadAddresses} disabled={loading}>
-              {loading ? 'Loading...' : 'Load Addresses'}
-            </button>
-          )}
-          <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-            + Add Address
-          </button>
-        </div>
+        <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+          + Add Address
+        </button>
       </div>
 
       {showForm && (
@@ -146,32 +103,32 @@ export default function AddressesPage() {
         </form>
       )}
 
-      {loaded && (
-        addresses.length === 0 ? (
-          <div className={styles.empty}>
-            <p>No saved addresses yet. Add one above.</p>
-          </div>
-        ) : (
-          <div className={styles.list}>
-            {addresses.map((addr) => (
-              <div key={addr.id} className={styles.card}>
-                <div className={styles.cardInfo}>
-                  <p className={styles.cardLine}>{addr.line1}</p>
-                  {addr.line2 && <p className={styles.cardLine}>{addr.line2}</p>}
-                  <p className={styles.cardLine}>{addr.city}, {addr.postalCode}</p>
-                  <p className={styles.cardLine}>{addr.country}</p>
-                </div>
-                <button
-                  className={styles.deleteBtn}
-                  onClick={() => handleDelete(addr.id)}
-                  aria-label="Delete address"
-                >
-                  Delete
-                </button>
+      {isLoading ? (
+        <p style={{ color: 'var(--color-text-muted)', padding: '1rem' }}>Loading addresses…</p>
+      ) : addresses.length === 0 ? (
+        <div className={styles.empty}>
+          <p>No saved addresses yet. Add one above.</p>
+        </div>
+      ) : (
+        <div className={styles.list}>
+          {addresses.map((addr) => (
+            <div key={addr.id} className={styles.card}>
+              <div className={styles.cardInfo}>
+                <p className={styles.cardLine}>{addr.line1}</p>
+                {addr.line2 && <p className={styles.cardLine}>{addr.line2}</p>}
+                <p className={styles.cardLine}>{addr.city}, {addr.postalCode}</p>
+                <p className={styles.cardLine}>{addr.country}</p>
               </div>
-            ))}
-          </div>
-        )
+              <button
+                className={styles.deleteBtn}
+                onClick={() => handleDelete(addr.id)}
+                aria-label="Delete address"
+              >
+                Delete
+              </button>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
