@@ -21,6 +21,11 @@ export const collectionsApi = apiSlice.injectEndpoints({
       providesTags: [{ type: 'Product' as const, id: 'COLLECTIONS' }],
     }),
 
+    getCollectionBySlug: build.query<CollectionDto, string>({
+      query: (slug) => `/collections/${slug}`,
+      providesTags: (_r, _e, slug) => [{ type: 'Product' as const, id: `COLLECTION_${slug}` }],
+    }),
+
     getAllCollections: build.query<CollectionDto[], void>({
       query: () => '/collections/admin/all',
       providesTags: [{ type: 'Product' as const, id: 'COLLECTIONS_ALL' }],
@@ -36,6 +41,28 @@ export const collectionsApi = apiSlice.injectEndpoints({
 
     updateCollection: build.mutation<CollectionDto, { id: string } & Partial<CollectionDto>>({
       query: ({ id, ...body }) => ({ url: `/collections/${id}`, method: 'PATCH', body }),
+      invalidatesTags: [
+        { type: 'Product' as const, id: 'COLLECTIONS' },
+        { type: 'Product' as const, id: 'COLLECTIONS_ALL' },
+      ],
+    }),
+
+    addProductToCollection: build.mutation<CollectionDto, { id: string; productId: string }>({
+      query: ({ id, productId }) => ({
+        url: `/collections/${id}/products/${productId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: [
+        { type: 'Product' as const, id: 'COLLECTIONS' },
+        { type: 'Product' as const, id: 'COLLECTIONS_ALL' },
+      ],
+    }),
+
+    removeProductFromCollection: build.mutation<CollectionDto, { id: string; productId: string }>({
+      query: ({ id, productId }) => ({
+        url: `/collections/${id}/products/${productId}`,
+        method: 'DELETE',
+      }),
       invalidatesTags: [
         { type: 'Product' as const, id: 'COLLECTIONS' },
         { type: 'Product' as const, id: 'COLLECTIONS_ALL' },
@@ -61,9 +88,12 @@ export const collectionsApi = apiSlice.injectEndpoints({
 
 export const {
   useGetActiveCollectionsQuery,
+  useGetCollectionBySlugQuery,
   useGetAllCollectionsQuery,
   useCreateCollectionMutation,
   useUpdateCollectionMutation,
+  useAddProductToCollectionMutation,
+  useRemoveProductFromCollectionMutation,
   useDeleteCollectionMutation,
   useGetCollectionStatsQuery,
 } = collectionsApi;
