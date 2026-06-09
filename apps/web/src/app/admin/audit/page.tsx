@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useGetAuditLogsQuery } from '@/store/api/audit.api';
+import { useGetAuditLogsQuery, useGetAuditStatsQuery } from '@/store/api/audit.api';
 import styles from './audit.module.scss';
 
 const ACTION_COLORS: Record<string, string> = {
@@ -46,6 +46,7 @@ export default function AdminAuditPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const { data: logs = [], isLoading, refetch } = useGetAuditLogsQuery({ limit, action });
+  const { data: auditStats } = useGetAuditStatsQuery();
 
   return (
     <div className={styles.page}>
@@ -58,6 +59,24 @@ export default function AdminAuditPage() {
           {isLoading ? 'Loading…' : '↻ Refresh'}
         </button>
       </div>
+
+      {auditStats && (
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          {[
+            { label: 'Total Events', value: auditStats.total.toLocaleString(), color: '#58a6ff' },
+            { label: 'Last 24h', value: auditStats.last24h.toLocaleString(), color: '#3fb950' },
+          ].map((s) => (
+            <div key={s.label} style={{
+              flex: '0 1 auto', minWidth: 120, background: 'var(--color-surface)',
+              border: `1px solid ${s.color}30`, borderRadius: '0.75rem',
+              padding: '0.875rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem',
+            }}>
+              <span style={{ fontSize: '1.5rem', fontWeight: 800, color: s.color }}>{s.value}</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className={styles.filters}>
         <div className={styles.filterGroup}>
