@@ -30,6 +30,11 @@ export const newsletterApi = apiSlice.injectEndpoints({
       query: (body) => ({ url: '/newsletter/unsubscribe', method: 'POST', body }),
     }),
 
+    getNewsletterCount: build.query<{ count: number }, void>({
+      query: () => '/newsletter/count',
+      providesTags: ['Newsletter'],
+    }),
+
     getNewsletterStats: build.query<NewsletterStats, void>({
       query: () => '/newsletter/stats',
       providesTags: ['Newsletter'],
@@ -45,6 +50,7 @@ export const newsletterApi = apiSlice.injectEndpoints({
 export const {
   useSubscribeMutation,
   useUnsubscribeMutation,
+  useGetNewsletterCountQuery,
   useGetNewsletterStatsQuery,
   useGetNewsletterSubscribersQuery,
 } = newsletterApi;
