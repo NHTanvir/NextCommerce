@@ -31,6 +31,9 @@ const ADMIN_NAV = [
   { href: '/admin/tags', label: 'Tags', icon: '🏷️' },
   { href: '/admin/import', label: 'Import', icon: '📥' },
   { href: '/admin/catalog-health', label: 'Catalog Health', icon: '🩺' },
+  { href: '/admin/wishlist', label: 'Wishlist', icon: '❤️' },
+  { href: '/admin/price-alerts', label: 'Price Alerts', icon: '💰' },
+  { href: '/admin/notifications', label: 'Notifications', icon: '🔔' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
