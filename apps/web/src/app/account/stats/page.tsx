@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useGetOrdersQuery } from '@/store/api/orders.api';
+import { useGetOrdersQuery, useGetMyOrderSummaryQuery } from '@/store/api/orders.api';
 import { useGetLoyaltyBalanceQuery } from '@/store/api/loyalty.api';
 import { useGetReferralStatsQuery } from '@/store/api/referrals.api';
 import { useGetMeQuery } from '@/store/api/users.api';
@@ -35,12 +35,14 @@ function StatCard({
 export default function AccountStatsPage() {
   const { data: me } = useGetMeQuery();
   const { data: orders = [] } = useGetOrdersQuery();
+  const { data: summary } = useGetMyOrderSummaryQuery();
   const { data: loyalty } = useGetLoyaltyBalanceQuery();
   const { data: referrals } = useGetReferralStatsQuery();
 
-  const totalSpent = orders.reduce((sum, o) => sum + (o.totalCents ?? 0), 0);
-  const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
-  const avgOrderValue = orders.length > 0 ? totalSpent / orders.length : 0;
+  const totalSpent = summary?.totalSpentCents ?? orders.reduce((sum, o) => sum + (o.totalCents ?? 0), 0);
+  const deliveredCount = summary?.deliveredCount ?? orders.filter((o) => o.status === 'delivered').length;
+  const avgOrderValue = summary?.avgOrderValueCents ?? (orders.length > 0 ? totalSpent / orders.length : 0);
+  const totalOrders = summary?.totalOrders ?? orders.length;
 
   const memberSince = me?.createdAt
     ? new Date(me.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
@@ -75,7 +77,7 @@ export default function AccountStatsPage() {
         <StatCard
           icon="🛒"
           label="Total Orders"
-          value={orders.length}
+          value={totalOrders}
           sub={`${deliveredCount} delivered`}
           color="#58a6ff"
         />
