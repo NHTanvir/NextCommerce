@@ -57,6 +57,11 @@ export const cartApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Cart'],
     }),
+
+    mergeCart: build.mutation<CartDto, { anonymousToken: string }>({
+      query: (body) => ({ url: '/cart/merge', method: 'POST', body }),
+      invalidatesTags: ['Cart'],
+    }),
   }),
 });
 
@@ -65,4 +70,5 @@ export const {
   useAddToCartMutation,
   useUpdateCartItemMutation,
   useRemoveCartItemMutation,
+  useMergeCartMutation,
 } = cartApi;
