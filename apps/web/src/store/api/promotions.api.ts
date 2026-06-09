@@ -1,4 +1,4 @@
-import { apiSlice } from './index';
+import { apiSlice } from '../api.slice';
 
 export interface Promotion {
   id: string;
@@ -57,6 +57,11 @@ export const promotionsApi = apiSlice.injectEndpoints({
       invalidatesTags: ['Promotions'],
     }),
 
+    getPromotion: builder.query<Promotion, string>({
+      query: (id) => `/promotions/${id}`,
+      providesTags: (_r, _e, id) => [{ type: 'Promotions' as const, id }],
+    }),
+
     getPromotionStats: builder.query<{
       total: number; active: number; expired: number; totalRedemptions: number; topPromotion: string | null;
     }, void>({
@@ -69,6 +74,7 @@ export const promotionsApi = apiSlice.injectEndpoints({
 export const {
   useGetActivePromotionsQuery,
   useGetAdminPromotionsQuery,
+  useGetPromotionQuery,
   useCreatePromotionMutation,
   useUpdatePromotionMutation,
   useDeactivatePromotionMutation,
