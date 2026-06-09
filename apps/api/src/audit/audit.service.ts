@@ -58,4 +58,31 @@ export class AuditService {
       take: limit,
     });
   }
+
+  async getStats(): Promise<{
+    total: number;
+    last24h: number;
+    byAction: Array<{ action: string; count: number }>;
+  }> {
+    const total = await this.logRepo.count();
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const last24h = await this.logRepo.createQueryBuilder('a')
+      .where('a.createdAt >= :since', { since })
+      .getCount();
+
+    const rows = await this.logRepo
+      .createQueryBuilder('a')
+      .select('a.action', 'action')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('a.action')
+      .orderBy('COUNT(*)', 'DESC')
+      .limit(20)
+      .getRawMany<{ action: string; count: string }>();
+
+    return {
+      total,
+      last24h,
+      byAction: rows.map((r) => ({ action: r.action, count: Number(r.count) })),
+    };
+  }
 }

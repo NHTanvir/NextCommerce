@@ -24,7 +24,16 @@ export const auditApi = apiSlice.injectEndpoints({
       },
       providesTags: ['AuditLog'],
     }),
+
+    getAuditStats: build.query<{
+      total: number;
+      last24h: number;
+      byAction: Array<{ action: string; count: number }>;
+    }, void>({
+      query: () => '/audit/stats',
+      providesTags: ['AuditLog'],
+    }),
   }),
 });
 
-export const { useGetAuditLogsQuery } = auditApi;
+export const { useGetAuditLogsQuery, useGetAuditStatsQuery } = auditApi;

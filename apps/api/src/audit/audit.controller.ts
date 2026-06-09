@@ -44,4 +44,12 @@ export class AuditController {
   findByAction(@Query('action') action: AuditAction, @Query('limit') limit?: string) {
     return this.auditService.findByAction(action, limit ? Number(limit) : 100);
   }
+
+  @Get('stats')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: '[Admin] Get audit log statistics (total, last 24h, by action)' })
+  getStats() {
+    return this.auditService.getStats();
+  }
 }
