@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useGetDashboardSummaryQuery } from '@/store/api/analytics.api';
-import { useGetOrdersQuery } from '@/store/api/orders.api';
+import { useGetAdminOrdersQuery } from '@/store/api/orders.api';
 import { useGetProductsQuery } from '@/store/api/catalog.api';
 import styles from './admin.module.scss';
 
@@ -38,7 +38,7 @@ function formatCents(cents: number) {
 
 export default function AdminDashboard() {
   const { data: summary } = useGetDashboardSummaryQuery();
-  const { data: orders } = useGetOrdersQuery();
+  const { data: ordersPage } = useGetAdminOrdersQuery({ page: 1, limit: 10 });
   const { data: products } = useGetProductsQuery({});
 
   const STATS = summary
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {orders?.slice(0, 10).map((order) => (
+              {ordersPage?.data.slice(0, 10).map((order) => (
                 <tr key={order.id}>
                   <td>
                     <Link href={`/admin/orders/${order.id}`} className={styles.orderId}>
