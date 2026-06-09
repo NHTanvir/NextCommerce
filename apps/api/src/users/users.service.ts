@@ -90,6 +90,16 @@ export class UsersService {
     return { data, total, page, totalPages: Math.ceil(total / limit) };
   }
 
+  async searchUsers(query: string, limit = 20): Promise<User[]> {
+    const q = `%${query.toLowerCase()}%`;
+    return this.userRepo
+      .createQueryBuilder('u')
+      .where('LOWER(u.name) LIKE :q OR LOWER(u.email) LIKE :q', { q })
+      .orderBy('u.createdAt', 'DESC')
+      .take(limit)
+      .getMany();
+  }
+
   async countByRole(role: string): Promise<number> {
     return this.userRepo.count({ where: { role: role as any } });
   }

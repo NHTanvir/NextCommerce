@@ -57,6 +57,19 @@ export class UsersController {
     return this.usersService.getAdminStats();
   }
 
+  @Get('admin/search')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  @ApiQuery({ name: 'q', required: true, type: String })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiOperation({ summary: '[Admin] Search users by name or email' })
+  searchUsers(
+    @Query('q') q: string,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+  ) {
+    return this.usersService.searchUsers(q, Math.min(limit, 50));
+  }
+
   @Get()
   @UseGuards(RolesGuard)
   @Roles('admin')

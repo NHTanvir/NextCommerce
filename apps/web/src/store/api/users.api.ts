@@ -60,6 +60,12 @@ export const usersApi = apiSlice.injectEndpoints({
       invalidatesTags: ['User'],
     }),
 
+    searchUsers: build.query<UserSummary[], { q: string; limit?: number }>({
+      query: ({ q, limit = 20 }) =>
+        `/users/admin/search?q=${encodeURIComponent(q)}&limit=${limit}`,
+      providesTags: ['User'],
+    }),
+
     getAdminUserStats: build.query<{
       total: number; admins: number; customers: number; newThisMonth: number;
     }, void>({
@@ -77,5 +83,6 @@ export const {
   useGetUserByIdQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useSearchUsersQuery,
   useGetAdminUserStatsQuery,
 } = usersApi;
