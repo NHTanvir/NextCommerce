@@ -57,6 +57,19 @@ export const couponsApi = apiSlice.injectEndpoints({
       query: (id) => ({ url: `/coupons/${id}/deactivate`, method: 'PATCH' }),
       invalidatesTags: ['Coupon'],
     }),
+
+    bulkGenerateCoupons: builder.mutation<CouponDto[], {
+      count: number;
+      prefix?: string;
+      discountType: 'percentage' | 'fixed';
+      discountValue: number;
+      minOrderCents?: number;
+      maxUsagePerCode?: number;
+      expiresAt?: string;
+    }>({
+      query: (body) => ({ url: '/coupons/admin/bulk-generate', method: 'POST', body }),
+      invalidatesTags: ['Coupon'],
+    }),
   }),
 });
 
@@ -66,4 +79,5 @@ export const {
   useGetAdminCouponStatsQuery,
   useCreateCouponMutation,
   useDeactivateCouponMutation,
+  useBulkGenerateCouponsMutation,
 } = couponsApi;
