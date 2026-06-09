@@ -7,6 +7,11 @@ export interface TagWithCount {
 
 export const tagsApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
+    getAllTags: build.query<string[], void>({
+      query: () => '/tags',
+      providesTags: ['Tag'],
+    }),
+
     getAdminTagsOverview: build.query<TagWithCount[], void>({
       query: () => '/tags/admin/overview',
       providesTags: ['Tag'],
@@ -44,6 +49,7 @@ export const tagsApi = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetAllTagsQuery,
   useGetAdminTagsOverviewQuery,
   useAddTagToProductMutation,
   useRemoveTagGloballyMutation,
