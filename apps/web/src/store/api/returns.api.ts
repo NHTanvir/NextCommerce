@@ -54,6 +54,11 @@ export const returnsApi = apiSlice.injectEndpoints({
       providesTags: ['Returns'],
     }),
 
+    getReturnById: build.query<ReturnRequest, string>({
+      query: (id) => `/returns/${id}`,
+      providesTags: (_r, _e, id) => [{ type: 'Returns' as const, id }],
+    }),
+
     updateReturnStatus: build.mutation<ReturnRequest, { id: string; status: ReturnStatus; adminNotes?: string }>({
       query: ({ id, ...body }) => ({ url: `/returns/${id}/status`, method: 'PATCH', body }),
       invalidatesTags: ['Returns'],
@@ -66,5 +71,6 @@ export const {
   useGetMyReturnsQuery,
   useCreateReturnMutation,
   useGetAdminReturnsQuery,
+  useGetReturnByIdQuery,
   useUpdateReturnStatusMutation,
 } = returnsApi;
