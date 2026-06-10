@@ -12,6 +12,7 @@ import { CartService } from '../cart/cart.service';
 import { CatalogService } from '../catalog/catalog.service';
 import { EventsService } from '../events/events.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { MetricsService } from '../metrics/metrics.service';
 import { CreateOrderDto, UpdateOrderStatusDto, BulkFulfillDto } from './dto/orders.dto';
 import { ORDER_STATUS_TRANSITIONS, OrderStatus } from '@nextcommerce/shared';
 import { v4 as uuidv4 } from 'uuid';
@@ -26,6 +27,7 @@ export class OrdersService {
     private readonly catalogService: CatalogService,
     private readonly eventsService: EventsService,
     private readonly notificationsService: NotificationsService,
+    private readonly metricsService: MetricsService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -34,6 +36,16 @@ export class OrdersService {
   }
 
   async create(userId: string, dto: CreateOrderDto): Promise<Order> {
+    const startedAt = process.hrtime.bigint();
+    try {
+      return await this.runCheckout(userId, dto);
+    } finally {
+      const elapsedNs = Number(process.hrtime.bigint() - startedAt);
+      this.metricsService.observeCheckout(elapsedNs / 1e9);
+    }
+  }
+
+  private async runCheckout(userId: string, dto: CreateOrderDto): Promise<Order> {
     const cart = await this.cartService.getOrCreate(userId);
     if (!cart.items.length) throw new BadRequestException('Cart is empty');
 
