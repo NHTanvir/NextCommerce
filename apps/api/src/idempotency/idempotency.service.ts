@@ -53,6 +53,10 @@ export class IdempotencyService {
     await this.repo.save(row);
   }
 
+  /**
+   * Delete every key whose `expiresAt` is in the past.
+   * Returns the count of rows removed (0 if none).
+   */
   async purgeExpired(): Promise<number> {
     const result = await this.repo.delete({ expiresAt: LessThan(new Date()) });
     return result.affected ?? 0;
