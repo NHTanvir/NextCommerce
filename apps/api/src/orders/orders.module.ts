@@ -10,6 +10,7 @@ import { CatalogModule } from '../catalog/catalog.module';
 import { EventsModule } from '../events/events.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { IdempotencyModule } from '../idempotency/idempotency.module';
+import { MetricsModule } from '../metrics/metrics.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { IdempotencyModule } from '../idempotency/idempotency.module';
     EventsModule,
     NotificationsModule,
     IdempotencyModule,
+    MetricsModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
