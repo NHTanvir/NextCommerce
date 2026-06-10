@@ -58,3 +58,51 @@ jobs:
 
       - name: Typecheck web
         run: pnpm --filter @nextcommerce/web exec tsc --noEmit
+
+  test-api:
+    name: Test (api)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared
+        run: pnpm --filter @nextcommerce/shared build
+
+      - name: Run api tests
+        run: pnpm --filter @nextcommerce/api test
+
+  test-web:
+    name: Test (web)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared
+        run: pnpm --filter @nextcommerce/shared build
+
+      - name: Run web tests
+        run: pnpm --filter @nextcommerce/web test
