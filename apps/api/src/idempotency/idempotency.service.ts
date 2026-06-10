@@ -31,6 +31,10 @@ export class IdempotencyService {
     return { statusCode: row.statusCode, body: row.responseBody };
   }
 
+  /**
+   * Persist a response for the given key. TTL is 24h from now.
+   * Overwriting an existing key is fine — the same response will be stored.
+   */
   async store(params: {
     key: string;
     userId: string | null;
