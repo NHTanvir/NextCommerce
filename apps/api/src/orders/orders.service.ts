@@ -15,6 +15,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { CreateOrderDto, UpdateOrderStatusDto, BulkFulfillDto } from './dto/orders.dto';
 import { ORDER_STATUS_TRANSITIONS, OrderStatus } from '@nextcommerce/shared';
+import { toOrderNumber } from './order-number';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -32,7 +33,7 @@ export class OrdersService {
   ) {}
 
   private orderNumber(id: string): string {
-    return id.replace(/-/g, '').slice(0, 8).toUpperCase();
+    return toOrderNumber(id);
   }
 
   async create(userId: string, dto: CreateOrderDto): Promise<Order> {
