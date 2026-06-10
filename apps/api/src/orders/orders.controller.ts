@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards, UseInterceptors, Res, StreamableFile } from '@nestjs/common';
 import type { Response } from 'express';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto, UpdateOrderStatusDto, BulkFulfillDto } from './dto/orders.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -8,6 +8,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Public } from '../common/decorators/public.decorator';
+import { IdempotencyInterceptor } from '../idempotency/idempotency.interceptor';
 import { UserPayload } from '@nextcommerce/shared';
 
 @ApiTags('orders')
@@ -18,7 +19,14 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create order from current cart' })
+  @UseInterceptors(IdempotencyInterceptor)
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: false,
+    description:
+      'Optional client-generated key (8–100 chars, [A-Za-z0-9_-]). Repeats return the cached response.',
+  })
+  @ApiOperation({ summary: 'Create order from current cart (idempotent)' })
   create(@Body() dto: CreateOrderDto, @CurrentUser() user: UserPayload) {
     return this.ordersService.create(user.sub, dto);
   }

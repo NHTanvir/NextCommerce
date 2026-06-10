@@ -9,6 +9,7 @@ import { CartModule } from '../cart/cart.module';
 import { CatalogModule } from '../catalog/catalog.module';
 import { EventsModule } from '../events/events.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { IdempotencyModule } from '../idempotency/idempotency.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     CatalogModule,
     EventsModule,
     NotificationsModule,
+    IdempotencyModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
