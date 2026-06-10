@@ -11,6 +11,7 @@ import { Address } from './entities/address.entity';
 import { CartService } from '../cart/cart.service';
 import { CatalogService } from '../catalog/catalog.service';
 import { EventsService } from '../events/events.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CreateOrderDto, UpdateOrderStatusDto, BulkFulfillDto } from './dto/orders.dto';
 import { ORDER_STATUS_TRANSITIONS, OrderStatus } from '@nextcommerce/shared';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,8 +25,13 @@ export class OrdersService {
     private readonly cartService: CartService,
     private readonly catalogService: CatalogService,
     private readonly eventsService: EventsService,
+    private readonly notificationsService: NotificationsService,
     private readonly dataSource: DataSource,
   ) {}
+
+  private orderNumber(id: string): string {
+    return id.replace(/-/g, '').slice(0, 8).toUpperCase();
+  }
 
   async create(userId: string, dto: CreateOrderDto): Promise<Order> {
     const cart = await this.cartService.getOrCreate(userId);
@@ -83,6 +89,12 @@ export class OrdersService {
       totalCents,
       placedAt: order.placedAt.toISOString(),
     });
+
+    await this.notificationsService.notifyOrderPlaced(
+      userId,
+      order.id,
+      this.orderNumber(order.id),
+    );
 
     await this.updateStatus(order.id, 'paid', userId);
 
@@ -152,6 +164,12 @@ export class OrdersService {
         trackingNumber: trackingNumber ?? null,
         carrier: carrier ?? null,
       });
+      await this.notificationsService.notifyOrderShipped(
+        order.userId,
+        id,
+        this.orderNumber(id),
+        trackingNumber,
+      );
     }
 
     return this.findOne(id);
