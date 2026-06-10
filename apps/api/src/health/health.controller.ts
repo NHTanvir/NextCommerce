@@ -1,9 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { HealthService } from './health.service';
 
 @ApiTags('health')
 @Controller('health')
 export class HealthController {
+  constructor(private readonly healthService: HealthService) {}
+
   @Get('live')
   @ApiOperation({ summary: 'Liveness probe — is the process running?' })
   live() {
@@ -11,7 +14,7 @@ export class HealthController {
   }
 
   @Get('ready')
-  @ApiOperation({ summary: 'Readiness probe — is the app ready to serve traffic?' })
+  @ApiOperation({ summary: 'Readiness probe — checks dependencies' })
   ready() {
     return { status: 'ok', timestamp: new Date().toISOString() };
   }
