@@ -17,6 +17,10 @@ export class IdempotencyService {
     private readonly repo: Repository<IdempotencyKey>,
   ) {}
 
+  /**
+   * Look up a previously stored response for an idempotency key.
+   * Expired entries are deleted and treated as a miss.
+   */
   async find(key: string): Promise<CachedResponse | null> {
     const row = await this.repo.findOne({ where: { key } });
     if (!row) return null;
