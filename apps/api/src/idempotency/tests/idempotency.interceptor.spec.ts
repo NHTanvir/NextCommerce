@@ -56,4 +56,15 @@ describe('IdempotencyInterceptor', () => {
       firstValueFrom(interceptor.intercept(ctx, handler) as any),
     ).rejects.toThrow(ConflictException);
   });
+
+  it('replays cached response and sets Idempotent-Replay header', async () => {
+    service.find.mockResolvedValue({ statusCode: 201, body: { id: 'cached' } });
+    const { ctx, res } = makeContext({ 'idempotency-key': 'abcdef123456' });
+    const handler = makeHandler({ id: 'fresh' });
+    const result = await firstValueFrom(interceptor.intercept(ctx, handler) as any);
+    expect(result).toEqual({ id: 'cached' });
+    expect(handler.handle).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.setHeader).toHaveBeenCalledWith('Idempotent-Replay', 'true');
+  });
 });
