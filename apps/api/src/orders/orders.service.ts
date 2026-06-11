@@ -12,6 +12,7 @@ import { CartService } from '../cart/cart.service';
 import { CatalogService } from '../catalog/catalog.service';
 import { EventsService } from '../events/events.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationPreferencesService } from '../notification-preferences/notification-preferences.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { CreateOrderDto, UpdateOrderStatusDto, BulkFulfillDto } from './dto/orders.dto';
 import { ORDER_STATUS_TRANSITIONS, OrderStatus } from '@nextcommerce/shared';
@@ -28,6 +29,7 @@ export class OrdersService {
     private readonly catalogService: CatalogService,
     private readonly eventsService: EventsService,
     private readonly notificationsService: NotificationsService,
+    private readonly preferencesService: NotificationPreferencesService,
     private readonly metricsService: MetricsService,
     private readonly dataSource: DataSource,
   ) {}
