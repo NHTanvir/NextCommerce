@@ -1,4 +1,4 @@
-import { ExecutionContext, CallHandler } from '@nestjs/common';
+import { ExecutionContext, CallHandler, ConflictException } from '@nestjs/common';
 import { firstValueFrom, of } from 'rxjs';
 import { IdempotencyInterceptor } from '../idempotency.interceptor';
 
@@ -47,5 +47,13 @@ describe('IdempotencyInterceptor', () => {
     expect(result).toEqual({ id: 'o-1' });
     expect(service.find).not.toHaveBeenCalled();
     expect(service.store).not.toHaveBeenCalled();
+  });
+
+  it('throws ConflictException on malformed key', async () => {
+    const { ctx } = makeContext({ 'idempotency-key': 'short' });
+    const handler = makeHandler({ id: 'o-1' });
+    await expect(
+      firstValueFrom(interceptor.intercept(ctx, handler) as any),
+    ).rejects.toThrow(ConflictException);
   });
 });
