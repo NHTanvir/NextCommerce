@@ -4,6 +4,7 @@ import { LessThan, Repository } from 'typeorm';
 import { IdempotencyKey } from './entities/idempotency-key.entity';
 
 const TTL_MS = 24 * 60 * 60 * 1000;
+const SWEEP_COOLDOWN_MS = 60 * 60 * 1000;
 
 export interface CachedResponse {
   statusCode: number;
@@ -12,16 +13,27 @@ export interface CachedResponse {
 
 @Injectable()
 export class IdempotencyService {
+  private lastSweep = 0;
+
   constructor(
     @InjectRepository(IdempotencyKey)
     private readonly repo: Repository<IdempotencyKey>,
   ) {}
 
+  private maybeSweep(): void {
+    const now = Date.now();
+    if (now - this.lastSweep < SWEEP_COOLDOWN_MS) return;
+    this.lastSweep = now;
+    void this.purgeExpired().catch(() => undefined);
+  }
+
   /**
    * Look up a previously stored response for an idempotency key.
    * Expired entries are deleted and treated as a miss.
+   * Also schedules an opportunistic background sweep of expired rows.
    */
   async find(key: string): Promise<CachedResponse | null> {
+    this.maybeSweep();
     const row = await this.repo.findOne({ where: { key } });
     if (!row) return null;
     if (row.expiresAt.getTime() < Date.now()) {

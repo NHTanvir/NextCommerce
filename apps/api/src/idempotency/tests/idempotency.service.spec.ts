@@ -96,4 +96,32 @@ describe('IdempotencyService', () => {
       expect(n).toBe(0);
     });
   });
+
+  describe('opportunistic sweep on find()', () => {
+    it('runs purgeExpired on first find call', async () => {
+      mockRepo.findOne.mockResolvedValue(null);
+      mockRepo.delete.mockResolvedValue({ affected: 0 });
+
+      await service.find('k1');
+      // Allow the queued microtask (`void this.purgeExpired()`) to run.
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(mockRepo.delete).toHaveBeenCalled();
+    });
+
+    it('does not re-run sweep within the cooldown window', async () => {
+      mockRepo.findOne.mockResolvedValue(null);
+      mockRepo.delete.mockResolvedValue({ affected: 0 });
+
+      await service.find('k1');
+      await Promise.resolve();
+      const callsAfterFirst = mockRepo.delete.mock.calls.length;
+
+      await service.find('k2');
+      await Promise.resolve();
+
+      expect(mockRepo.delete.mock.calls.length).toBe(callsAfterFirst);
+    });
+  });
 });
