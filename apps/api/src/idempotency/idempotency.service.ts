@@ -30,8 +30,10 @@ export class IdempotencyService {
   /**
    * Look up a previously stored response for an idempotency key.
    * Expired entries are deleted and treated as a miss.
+   * Also schedules an opportunistic background sweep of expired rows.
    */
   async find(key: string): Promise<CachedResponse | null> {
+    this.maybeSweep();
     const row = await this.repo.findOne({ where: { key } });
     if (!row) return null;
     if (row.expiresAt.getTime() < Date.now()) {
