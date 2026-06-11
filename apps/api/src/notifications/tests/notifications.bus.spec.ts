@@ -28,4 +28,14 @@ describe('NotificationsBus', () => {
     expect(received).toHaveLength(1);
     expect(received[0].userId).toBe('u-1');
   });
+
+  it('supports multiple concurrent subscribers', () => {
+    const a: NotificationEvent[] = [];
+    const b: NotificationEvent[] = [];
+    bus.on((e) => a.push(e));
+    bus.on((e) => b.push(e));
+    bus.emit(event('u-1'));
+    expect(a).toHaveLength(1);
+    expect(b).toHaveLength(1);
+  });
 });
