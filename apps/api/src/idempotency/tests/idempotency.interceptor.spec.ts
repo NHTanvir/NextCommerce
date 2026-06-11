@@ -67,4 +67,32 @@ describe('IdempotencyInterceptor', () => {
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.setHeader).toHaveBeenCalledWith('Idempotent-Replay', 'true');
   });
+
+  it('executes handler and stores response on cache miss', async () => {
+    service.find.mockResolvedValue(null);
+    service.store.mockResolvedValue(undefined);
+    const { ctx } = makeContext({ 'idempotency-key': 'abcdef123456' }, { id: 'u-1' });
+    const handler = makeHandler({ id: 'fresh' });
+    const result = await firstValueFrom(interceptor.intercept(ctx, handler) as any);
+    expect(result).toEqual({ id: 'fresh' });
+    expect(handler.handle).toHaveBeenCalled();
+    expect(service.store).toHaveBeenCalledWith(
+      expect.objectContaining({
+        key: 'abcdef123456',
+        userId: 'u-1',
+        statusCode: 200,
+        body: { id: 'fresh' },
+      }),
+    );
+  });
+
+  it('uses null userId when no user attached to request', async () => {
+    service.find.mockResolvedValue(null);
+    const { ctx } = makeContext({ 'idempotency-key': 'abcdef123456' });
+    const handler = makeHandler({ id: 'fresh' });
+    await firstValueFrom(interceptor.intercept(ctx, handler) as any);
+    expect(service.store).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: null }),
+    );
+  });
 });
