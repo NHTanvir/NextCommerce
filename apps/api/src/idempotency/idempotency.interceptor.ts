@@ -29,7 +29,8 @@ export class IdempotencyInterceptor implements NestInterceptor {
       throw new ConflictException('Invalid Idempotency-Key format');
     }
 
-    const userId: string | null = req.user?.id ?? req.user?.userId ?? null;
+    const user = req.user as { id?: string; userId?: string; sub?: string } | undefined;
+    const userId: string | null = user?.id ?? user?.userId ?? user?.sub ?? null;
     const route = `${req.method} ${req.route?.path ?? req.url}`;
 
     return from(this.service.find(key)).pipe(

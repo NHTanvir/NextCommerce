@@ -2,9 +2,14 @@ import { Controller, Get, HttpCode, HttpStatus, HttpException } from '@nestjs/co
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HealthService } from './health.service';
 
-interface ReadyResponse {
+export interface ReadyResponse {
   status: 'ok' | 'degraded';
   dependencies: { database: 'up' | 'down' };
+  timestamp: string;
+}
+
+export interface LiveResponse {
+  status: 'ok';
   timestamp: string;
 }
 
@@ -15,7 +20,7 @@ export class HealthController {
 
   @Get('live')
   @ApiOperation({ summary: 'Liveness probe — is the process running?' })
-  live() {
+  live(): LiveResponse {
     return { status: 'ok', timestamp: new Date().toISOString() };
   }
 

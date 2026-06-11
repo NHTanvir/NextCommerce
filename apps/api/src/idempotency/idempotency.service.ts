@@ -17,6 +17,10 @@ export class IdempotencyService {
     private readonly repo: Repository<IdempotencyKey>,
   ) {}
 
+  /**
+   * Look up a previously stored response for an idempotency key.
+   * Expired entries are deleted and treated as a miss.
+   */
   async find(key: string): Promise<CachedResponse | null> {
     const row = await this.repo.findOne({ where: { key } });
     if (!row) return null;
@@ -27,6 +31,10 @@ export class IdempotencyService {
     return { statusCode: row.statusCode, body: row.responseBody };
   }
 
+  /**
+   * Persist a response for the given key. TTL is 24h from now.
+   * Overwriting an existing key is fine — the same response will be stored.
+   */
   async store(params: {
     key: string;
     userId: string | null;
@@ -45,6 +53,10 @@ export class IdempotencyService {
     await this.repo.save(row);
   }
 
+  /**
+   * Delete every key whose `expiresAt` is in the past.
+   * Returns the count of rows removed (0 if none).
+   */
   async purgeExpired(): Promise<number> {
     const result = await this.repo.delete({ expiresAt: LessThan(new Date()) });
     return result.affected ?? 0;
