@@ -12,6 +12,7 @@ import { CartService } from '../cart/cart.service';
 import { CatalogService } from '../catalog/catalog.service';
 import { EventsService } from '../events/events.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationPreferencesService } from '../notification-preferences/notification-preferences.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { CreateOrderDto, UpdateOrderStatusDto, BulkFulfillDto } from './dto/orders.dto';
 import { ORDER_STATUS_TRANSITIONS, OrderStatus } from '@nextcommerce/shared';
@@ -28,6 +29,7 @@ export class OrdersService {
     private readonly catalogService: CatalogService,
     private readonly eventsService: EventsService,
     private readonly notificationsService: NotificationsService,
+    private readonly preferencesService: NotificationPreferencesService,
     private readonly metricsService: MetricsService,
     private readonly dataSource: DataSource,
   ) {}
@@ -103,11 +105,13 @@ export class OrdersService {
       placedAt: order.placedAt.toISOString(),
     });
 
-    await this.notificationsService.notifyOrderPlaced(
-      userId,
-      order.id,
-      this.orderNumber(order.id),
-    );
+    if (this.preferencesService.shouldSendEmail(userId, 'orderUpdates')) {
+      await this.notificationsService.notifyOrderPlaced(
+        userId,
+        order.id,
+        this.orderNumber(order.id),
+      );
+    }
 
     await this.updateStatus(order.id, 'paid', userId);
 
@@ -177,12 +181,14 @@ export class OrdersService {
         trackingNumber: trackingNumber ?? null,
         carrier: carrier ?? null,
       });
-      await this.notificationsService.notifyOrderShipped(
-        order.userId,
-        id,
-        this.orderNumber(id),
-        trackingNumber,
-      );
+      if (this.preferencesService.shouldSendEmail(order.userId, 'orderUpdates')) {
+        await this.notificationsService.notifyOrderShipped(
+          order.userId,
+          id,
+          this.orderNumber(id),
+          trackingNumber,
+        );
+      }
     }
 
     return this.findOne(id);
