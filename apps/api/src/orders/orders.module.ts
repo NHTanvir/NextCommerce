@@ -9,6 +9,7 @@ import { CartModule } from '../cart/cart.module';
 import { CatalogModule } from '../catalog/catalog.module';
 import { EventsModule } from '../events/events.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { NotificationPreferencesModule } from '../notification-preferences/notification-preferences.module';
 import { IdempotencyModule } from '../idempotency/idempotency.module';
 import { MetricsModule } from '../metrics/metrics.module';
 
@@ -19,6 +20,7 @@ import { MetricsModule } from '../metrics/metrics.module';
     CatalogModule,
     EventsModule,
     NotificationsModule,
+    NotificationPreferencesModule,
     IdempotencyModule,
     MetricsModule,
   ],
