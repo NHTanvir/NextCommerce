@@ -30,4 +30,21 @@ describe('recentlyViewed slice', () => {
     expect(state.items[0].id).toBe('1');
     expect(state.items[1].id).toBe('2');
   });
+
+  it('caps history at 12 items', () => {
+    let state: ReturnType<typeof reducer> = { items: [] };
+    for (let i = 0; i < 20; i++) {
+      state = reducer(state, trackView(product(String(i))));
+    }
+    expect(state.items).toHaveLength(12);
+    // Most recently viewed is at the front
+    expect(state.items[0].id).toBe('19');
+    expect(state.items[11].id).toBe('8');
+  });
+
+  it('clearHistory empties the list', () => {
+    const seeded = reducer({ items: [] }, trackView(product('1')));
+    const cleared = reducer(seeded, clearHistory());
+    expect(cleared.items).toEqual([]);
+  });
 });
