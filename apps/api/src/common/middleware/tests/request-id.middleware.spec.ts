@@ -39,4 +39,16 @@ describe('RequestIdMiddleware', () => {
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
     );
   });
+
+  it('mirrors the same value into the response header for downstream proxies', () => {
+    const req = makeReq({});
+    const res = makeRes();
+
+    middleware.use(req, res, next);
+
+    expect(res.setHeader).toHaveBeenCalledTimes(1);
+    const [name, value] = res.setHeader.mock.calls[0];
+    expect(name).toBe('x-request-id');
+    expect(value).toBe(req.headers['x-request-id']);
+  });
 });
