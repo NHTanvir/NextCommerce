@@ -34,6 +34,19 @@ export class NotificationsController {
     private readonly bus: NotificationsBus,
   ) {}
 
+  @Sse('stream')
+  @ApiOperation({ summary: 'Server-Sent Events stream of new notifications for current user' })
+  stream(@CurrentUser() user: UserPayload): Observable<{ data: unknown }> {
+    return new Observable((subscriber) => {
+      const unsubscribe = this.bus.on((event) => {
+        if (event.userId === user.sub) {
+          subscriber.next({ data: event.notification });
+        }
+      });
+      return unsubscribe;
+    });
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get notifications for current user' })
   findForUser(
