@@ -10,12 +10,21 @@ import { LoginDto } from './dto/login.dto';
 import { User } from '../users/entities/user.entity';
 import { UserPayload } from '@nextcommerce/shared';
 
+const REFRESH_SECRET_ENV = 'JWT_REFRESH_SECRET';
+const REFRESH_TTL = '30d';
+
 @Injectable()
 export class AuthService {
+  private readonly refreshSecret: string;
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) {
+    this.refreshSecret =
+      process.env[REFRESH_SECRET_ENV] ||
+      `${process.env.JWT_SECRET ?? 'fallback-secret'}-refresh`;
+  }
 
   async register(dto: RegisterDto) {
     const existing = await this.usersService.findByEmail(dto.email);
