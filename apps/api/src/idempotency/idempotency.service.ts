@@ -4,6 +4,7 @@ import { LessThan, Repository } from 'typeorm';
 import { IdempotencyKey } from './entities/idempotency-key.entity';
 
 const TTL_MS = 24 * 60 * 60 * 1000;
+const SWEEP_COOLDOWN_MS = 60 * 60 * 1000;
 
 export interface CachedResponse {
   statusCode: number;
@@ -12,10 +13,19 @@ export interface CachedResponse {
 
 @Injectable()
 export class IdempotencyService {
+  private lastSweep = 0;
+
   constructor(
     @InjectRepository(IdempotencyKey)
     private readonly repo: Repository<IdempotencyKey>,
   ) {}
+
+  private maybeSweep(): void {
+    const now = Date.now();
+    if (now - this.lastSweep < SWEEP_COOLDOWN_MS) return;
+    this.lastSweep = now;
+    void this.purgeExpired().catch(() => undefined);
+  }
 
   /**
    * Look up a previously stored response for an idempotency key.
