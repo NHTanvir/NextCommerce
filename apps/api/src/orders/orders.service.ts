@@ -105,11 +105,13 @@ export class OrdersService {
       placedAt: order.placedAt.toISOString(),
     });
 
-    await this.notificationsService.notifyOrderPlaced(
-      userId,
-      order.id,
-      this.orderNumber(order.id),
-    );
+    if (this.preferencesService.shouldSendEmail(userId, 'orderUpdates')) {
+      await this.notificationsService.notifyOrderPlaced(
+        userId,
+        order.id,
+        this.orderNumber(order.id),
+      );
+    }
 
     await this.updateStatus(order.id, 'paid', userId);
 
@@ -179,12 +181,14 @@ export class OrdersService {
         trackingNumber: trackingNumber ?? null,
         carrier: carrier ?? null,
       });
-      await this.notificationsService.notifyOrderShipped(
-        order.userId,
-        id,
-        this.orderNumber(id),
-        trackingNumber,
-      );
+      if (this.preferencesService.shouldSendEmail(order.userId, 'orderUpdates')) {
+        await this.notificationsService.notifyOrderShipped(
+          order.userId,
+          id,
+          this.orderNumber(id),
+          trackingNumber,
+        );
+      }
     }
 
     return this.findOne(id);
