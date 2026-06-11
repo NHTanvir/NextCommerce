@@ -26,4 +26,17 @@ describe('RequestIdMiddleware', () => {
     expect(res.setHeader).toHaveBeenCalledWith('x-request-id', 'incoming-abc');
     expect(next).toHaveBeenCalledTimes(1);
   });
+
+  it('generates a UUID when no incoming header is present', () => {
+    const req = makeReq({});
+    const res = makeRes();
+
+    middleware.use(req, res, next);
+
+    const generated = req.headers['x-request-id'];
+    expect(typeof generated).toBe('string');
+    expect(generated).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+  });
 });
