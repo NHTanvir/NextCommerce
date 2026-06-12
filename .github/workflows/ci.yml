@@ -107,10 +107,34 @@ jobs:
       - name: Run web tests
         run: pnpm --filter @nextcommerce/web test
 
+  test-notifications:
+    name: Test (notifications)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared
+        run: pnpm --filter @nextcommerce/shared build
+
+      - name: Run notifications tests
+        run: pnpm --filter @nextcommerce/notifications test
+
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, test-api, test-web]
+    needs: [lint, typecheck, test-api, test-web, test-notifications]
     steps:
       - uses: actions/checkout@v4
 

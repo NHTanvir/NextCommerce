@@ -28,6 +28,10 @@ export class EventsService implements OnModuleInit, OnModuleDestroy {
     await this.connection?.close();
   }
 
+  isConnected(): boolean {
+    return this.channel !== null && this.connection !== null;
+  }
+
   async publish(eventName: string, payload: Record<string, unknown>): Promise<void> {
     const message = JSON.stringify({ event: eventName, payload, timestamp: new Date().toISOString() });
 
