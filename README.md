@@ -1,5 +1,9 @@
 # NextCommerce
 
+[![CI](https://github.com/NHTanvir/NextCommerce/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/NHTanvir/NextCommerce/actions/workflows/ci.yml)
+[![Release](https://github.com/NHTanvir/NextCommerce/actions/workflows/release.yml/badge.svg)](https://github.com/NHTanvir/NextCommerce/actions/workflows/release.yml)
+[![Security](https://github.com/NHTanvir/NextCommerce/actions/workflows/security.yml/badge.svg)](https://github.com/NHTanvir/NextCommerce/actions/workflows/security.yml)
+
 A full-stack e-commerce platform for premium footwear, built to demonstrate production-grade engineering skills.
 
 ## Stack
