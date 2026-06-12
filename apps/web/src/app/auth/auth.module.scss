@@ -94,6 +94,12 @@
   color: var(--color-accent);
 }
 
+.fieldError {
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  margin-top: 0.25rem;
+}
+
 .form {
   display: flex;
   flex-direction: column;
