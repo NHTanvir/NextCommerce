@@ -50,6 +50,13 @@ export class ReviewsService {
     });
     if (existing) throw new ConflictException('You have already reviewed this product');
 
+    const eligible = await this.hasUserReceivedProduct(userId, dto.productId);
+    if (!eligible) {
+      throw new ForbiddenException(
+        'You can only review products from a delivered order',
+      );
+    }
+
     const review = this.reviewRepo.create({ ...dto, userId });
     return this.reviewRepo.save(review);
   }
