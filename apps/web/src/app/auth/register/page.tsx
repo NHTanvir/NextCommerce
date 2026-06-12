@@ -1,35 +1,45 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch } from '@/store/hooks';
 import { setCredentials } from '@/store/slices/auth.slice';
 import { useRegisterMutation } from '@/store/api/auth.api';
+import { registerSchema, type RegisterInput } from '@/lib/schemas/auth';
 import styles from '../auth.module.scss';
 
 export default function RegisterPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [register, { isLoading }] = useRegisterMutation();
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
-  const [error, setError] = useState('');
+  const [serverError, setServerError] = useState('');
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-    if (form.password.length < 8) {
-      setError('Password must be at least 8 characters');
-      return;
-    }
+  const {
+    register: rhfRegister,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterInput>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { name: '', email: '', password: '', confirmPassword: '' },
+  });
+
+  async function onSubmit(values: RegisterInput) {
+    setServerError('');
     try {
-      const result = await register(form).unwrap();
+      const result = await register({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      }).unwrap();
       dispatch(setCredentials(result));
       localStorage.setItem('nc_token', result.token);
       localStorage.setItem('nc_user', JSON.stringify(result.user));
       router.push('/');
     } catch (err: any) {
-      setError(err?.data?.message ?? 'Registration failed. Please try again.');
+      setServerError(err?.data?.message ?? 'Registration failed. Please try again.');
     }
   }
 
@@ -54,45 +64,28 @@ export default function RegisterPage() {
 
         <div className={styles.divider}><span>or</span></div>
 
-        {error && <div className={styles.errorBox}>{error}</div>}
+        {serverError && <div className={styles.errorBox}>{serverError}</div>}
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
           <div className={styles.field}>
             <label className={styles.label}>Full Name</label>
-            <input
-              type="text"
-              autoComplete="name"
-              required
-              className={styles.input}
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="Jane Smith"
-            />
+            <input type="text" autoComplete="name" className={styles.input} placeholder="Jane Smith" {...rhfRegister('name')} />
+            {errors.name && <span className={styles.fieldError}>{errors.name.message}</span>}
           </div>
           <div className={styles.field}>
             <label className={styles.label}>Email</label>
-            <input
-              type="email"
-              autoComplete="email"
-              required
-              className={styles.input}
-              value={form.email}
-              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              placeholder="you@example.com"
-            />
+            <input type="email" autoComplete="email" className={styles.input} placeholder="you@example.com" {...rhfRegister('email')} />
+            {errors.email && <span className={styles.fieldError}>{errors.email.message}</span>}
           </div>
           <div className={styles.field}>
             <label className={styles.label}>Password</label>
-            <input
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              className={styles.input}
-              value={form.password}
-              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-              placeholder="Min 8 characters"
-            />
+            <input type="password" autoComplete="new-password" className={styles.input} placeholder="Min 8 characters" {...rhfRegister('password')} />
+            {errors.password && <span className={styles.fieldError}>{errors.password.message}</span>}
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Confirm Password</label>
+            <input type="password" autoComplete="new-password" className={styles.input} placeholder="Re-enter password" {...rhfRegister('confirmPassword')} />
+            {errors.confirmPassword && <span className={styles.fieldError}>{errors.confirmPassword.message}</span>}
           </div>
           <button type="submit" className={`btn btn--primary btn--lg ${styles.submitBtn}`} disabled={isLoading}>
             {isLoading ? 'Creating account…' : 'Create Account'}
