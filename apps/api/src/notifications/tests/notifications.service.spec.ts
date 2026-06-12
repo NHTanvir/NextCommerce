@@ -123,24 +123,27 @@ describe('NotificationsService', () => {
   });
 
   describe('markAsRead', () => {
-    it('calls update with isRead=true scoped to user', async () => {
+    it('calls update with isRead=true and readAt timestamp scoped to user', async () => {
       mockRepo.update.mockResolvedValue({});
 
       await service.markAsRead('n-1', 'user-1');
 
-      expect(mockRepo.update).toHaveBeenCalledWith({ id: 'n-1', userId: 'user-1' }, { isRead: true });
+      expect(mockRepo.update).toHaveBeenCalledWith(
+        { id: 'n-1', userId: 'user-1' },
+        expect.objectContaining({ isRead: true, readAt: expect.any(Date) }),
+      );
     });
   });
 
   describe('markAllAsRead', () => {
-    it('marks all unread notifications for user', async () => {
+    it('marks all unread notifications for user and stamps readAt', async () => {
       mockRepo.update.mockResolvedValue({});
 
       await service.markAllAsRead('user-1');
 
       expect(mockRepo.update).toHaveBeenCalledWith(
         { userId: 'user-1', isRead: false },
-        { isRead: true },
+        expect.objectContaining({ isRead: true, readAt: expect.any(Date) }),
       );
     });
   });

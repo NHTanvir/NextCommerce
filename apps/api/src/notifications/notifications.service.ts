@@ -10,6 +10,7 @@ export interface CreateNotificationDto {
   title: string;
   body: string;
   actionUrl?: string;
+  payload?: Record<string, unknown>;
 }
 
 @Injectable()
@@ -27,6 +28,7 @@ export class NotificationsService {
       title: dto.title,
       body: dto.body,
       actionUrl: dto.actionUrl ?? null,
+      payload: dto.payload ?? null,
       isRead: false,
     });
     const saved = await this.repo.save(notification);
@@ -59,11 +61,14 @@ export class NotificationsService {
   }
 
   async markAsRead(id: string, userId: string): Promise<void> {
-    await this.repo.update({ id, userId }, { isRead: true });
+    await this.repo.update({ id, userId }, { isRead: true, readAt: new Date() });
   }
 
   async markAllAsRead(userId: string): Promise<void> {
-    await this.repo.update({ userId, isRead: false }, { isRead: true });
+    await this.repo.update(
+      { userId, isRead: false },
+      { isRead: true, readAt: new Date() },
+    );
   }
 
   async getUnreadCount(userId: string): Promise<number> {
@@ -85,6 +90,7 @@ export class NotificationsService {
       title: 'Order Confirmed',
       body: `Your order #${orderNumber} has been placed successfully.`,
       actionUrl: `/account/orders/${orderId}`,
+      payload: { orderId, orderNumber },
     });
   }
 
@@ -101,6 +107,7 @@ export class NotificationsService {
       title: 'Order Shipped',
       body: `Order #${orderNumber} is on its way!${trackingInfo}`,
       actionUrl: `/account/orders/${orderId}`,
+      payload: { orderId, orderNumber, trackingNumber: trackingNumber ?? null },
     });
   }
 
