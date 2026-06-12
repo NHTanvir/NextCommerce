@@ -61,11 +61,14 @@ export class NotificationsService {
   }
 
   async markAsRead(id: string, userId: string): Promise<void> {
-    await this.repo.update({ id, userId }, { isRead: true });
+    await this.repo.update({ id, userId }, { isRead: true, readAt: new Date() });
   }
 
   async markAllAsRead(userId: string): Promise<void> {
-    await this.repo.update({ userId, isRead: false }, { isRead: true });
+    await this.repo.update(
+      { userId, isRead: false },
+      { isRead: true, readAt: new Date() },
+    );
   }
 
   async getUnreadCount(userId: string): Promise<number> {
