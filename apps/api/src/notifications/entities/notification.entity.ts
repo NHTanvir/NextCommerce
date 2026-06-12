@@ -38,8 +38,14 @@ export class Notification {
   @Column({ nullable: true, length: 500 })
   actionUrl: string | null;
 
+  @Column({ type: 'json', nullable: true })
+  payload: Record<string, unknown> | null;
+
   @Column({ default: false })
   isRead: boolean;
+
+  @Column({ type: 'datetime', nullable: true })
+  readAt: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;
