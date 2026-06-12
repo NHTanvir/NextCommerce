@@ -38,4 +38,14 @@ describe('NotificationsBus', () => {
     expect(a).toHaveLength(1);
     expect(b).toHaveLength(1);
   });
+
+  it('unsubscribe function detaches the listener', () => {
+    const received: NotificationEvent[] = [];
+    const off = bus.on((e) => received.push(e));
+    bus.emit(event('u-1'));
+    off();
+    bus.emit(event('u-2'));
+    expect(received).toHaveLength(1);
+    expect(received[0].userId).toBe('u-1');
+  });
 });
