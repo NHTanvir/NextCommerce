@@ -10,6 +10,7 @@ export interface CreateNotificationDto {
   title: string;
   body: string;
   actionUrl?: string;
+  payload?: Record<string, unknown>;
 }
 
 @Injectable()
@@ -27,6 +28,7 @@ export class NotificationsService {
       title: dto.title,
       body: dto.body,
       actionUrl: dto.actionUrl ?? null,
+      payload: dto.payload ?? null,
       isRead: false,
     });
     const saved = await this.repo.save(notification);
