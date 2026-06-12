@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as amqplib from 'amqplib';
 import type { OrderPlacedEvent, OrderPaidEvent, OrderShippedEvent } from '@nextcommerce/shared';
 import { EmailService } from './email.service';
+import { MetricsCounter } from '../metrics/metrics.counter';
 
 const EXCHANGE = 'nextcommerce.events';
 
@@ -15,6 +16,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly config: ConfigService,
     private readonly emailService: EmailService,
+    private readonly metrics: MetricsCounter,
   ) {}
 
   async onModuleInit() {
@@ -32,9 +34,11 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
         try {
           const event = JSON.parse(msg.content.toString());
           this.handleEvent(event);
+          this.metrics.incConsumed();
           this.channel!.ack(msg);
         } catch (err) {
           this.logger.error({ err }, 'Failed to process message');
+          this.metrics.incFailed();
           this.channel!.nack(msg, false, false);
         }
       });
