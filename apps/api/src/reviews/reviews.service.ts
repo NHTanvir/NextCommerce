@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Review } from './entities/review.entity';
 import { ReviewVote } from './entities/review-vote.entity';
+import { Order } from '../orders/entities/order.entity';
+import { OrderItem } from '../orders/entities/order-item.entity';
 import { IsString, IsInt, Min, Max, MinLength } from 'class-validator';
 
 export class CreateReviewDto {
@@ -25,7 +27,22 @@ export class ReviewsService {
   constructor(
     @InjectRepository(Review) private readonly reviewRepo: Repository<Review>,
     @InjectRepository(ReviewVote) private readonly voteRepo: Repository<ReviewVote>,
+    @InjectRepository(Order) private readonly orderRepo: Repository<Order>,
+    @InjectRepository(OrderItem) private readonly orderItemRepo: Repository<OrderItem>,
   ) {}
+
+  private async hasUserReceivedProduct(userId: string, productId: string): Promise<boolean> {
+    const row = await this.orderItemRepo
+      .createQueryBuilder('oi')
+      .innerJoin('oi.order', 'o')
+      .innerJoin('oi.variant', 'pv')
+      .where('o.userId = :userId', { userId })
+      .andWhere('o.status = :status', { status: 'delivered' })
+      .andWhere('pv.productId = :productId', { productId })
+      .limit(1)
+      .getRawOne();
+    return !!row;
+  }
 
   async create(userId: string, dto: CreateReviewDto): Promise<Review> {
     const existing = await this.reviewRepo.findOne({
