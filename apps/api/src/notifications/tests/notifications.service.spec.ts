@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotificationsService } from '../notifications.service';
 import { Notification } from '../entities/notification.entity';
+import { NotificationsBus } from '../notifications.bus';
 
 const mockRepo = {
   create: jest.fn(),
@@ -11,6 +12,8 @@ const mockRepo = {
   update: jest.fn(),
   delete: jest.fn(),
 };
+
+const mockBus = { emit: jest.fn(), on: jest.fn() };
 
 function makeNotification(overrides: Partial<Notification> = {}): Notification {
   return {
@@ -34,6 +37,7 @@ describe('NotificationsService', () => {
       providers: [
         NotificationsService,
         { provide: getRepositoryToken(Notification), useValue: mockRepo },
+        { provide: NotificationsBus, useValue: mockBus },
       ],
     }).compile();
 

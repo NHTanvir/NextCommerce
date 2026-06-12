@@ -7,13 +7,16 @@ import {
   Param,
   Query,
   Body,
+  Sse,
   UseGuards,
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { Observable } from 'rxjs';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
+import { NotificationsBus } from './notifications.bus';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -26,7 +29,23 @@ import { NotificationType } from './entities/notification.entity';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class NotificationsController {
-  constructor(private readonly notificationsService: NotificationsService) {}
+  constructor(
+    private readonly notificationsService: NotificationsService,
+    private readonly bus: NotificationsBus,
+  ) {}
+
+  @Sse('stream')
+  @ApiOperation({ summary: 'Server-Sent Events stream of new notifications for current user' })
+  stream(@CurrentUser() user: UserPayload): Observable<{ data: unknown }> {
+    return new Observable((subscriber) => {
+      const unsubscribe = this.bus.on((event) => {
+        if (event.userId === user.sub) {
+          subscriber.next({ data: event.notification });
+        }
+      });
+      return unsubscribe;
+    });
+  }
 
   @Get()
   @ApiOperation({ summary: 'Get notifications for current user' })

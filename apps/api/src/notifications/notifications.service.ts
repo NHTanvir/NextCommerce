@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification, NotificationType } from './entities/notification.entity';
+import { NotificationsBus } from './notifications.bus';
 
 export interface CreateNotificationDto {
   userId: string;
@@ -16,6 +17,7 @@ export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private readonly repo: Repository<Notification>,
+    private readonly bus: NotificationsBus,
   ) {}
 
   async create(dto: CreateNotificationDto): Promise<Notification> {
@@ -27,7 +29,19 @@ export class NotificationsService {
       actionUrl: dto.actionUrl ?? null,
       isRead: false,
     });
-    return this.repo.save(notification);
+    const saved = await this.repo.save(notification);
+    this.bus.emit({
+      userId: saved.userId,
+      notification: {
+        id: saved.id,
+        type: saved.type,
+        title: saved.title,
+        body: saved.body,
+        actionUrl: saved.actionUrl,
+        createdAt: saved.createdAt,
+      },
+    });
+    return saved;
   }
 
   async findForUser(
