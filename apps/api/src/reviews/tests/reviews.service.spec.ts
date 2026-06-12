@@ -3,6 +3,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { ReviewsService, CreateReviewDto } from '../reviews.service';
 import { Review } from '../entities/review.entity';
+import { ReviewVote } from '../entities/review-vote.entity';
+import { Order } from '../../orders/entities/order.entity';
+import { OrderItem } from '../../orders/entities/order-item.entity';
 
 const mockRepo = {
   findOne: jest.fn(),
@@ -13,6 +16,11 @@ const mockRepo = {
   remove: jest.fn(),
   createQueryBuilder: jest.fn(),
 };
+
+const mockVoteRepo = { findOne: jest.fn(), create: jest.fn(), save: jest.fn(), update: jest.fn(), count: jest.fn() };
+const mockOrderRepo = { findOne: jest.fn() };
+const eligibleQb = { innerJoin: jest.fn().mockReturnThis(), where: jest.fn().mockReturnThis(), andWhere: jest.fn().mockReturnThis(), limit: jest.fn().mockReturnThis(), getRawOne: jest.fn() };
+const mockOrderItemRepo = { createQueryBuilder: jest.fn(() => eligibleQb) };
 
 const reviewDto: CreateReviewDto = {
   productId: 'prod-1',
@@ -29,6 +37,9 @@ describe('ReviewsService', () => {
       providers: [
         ReviewsService,
         { provide: getRepositoryToken(Review), useValue: mockRepo },
+        { provide: getRepositoryToken(ReviewVote), useValue: mockVoteRepo },
+        { provide: getRepositoryToken(Order), useValue: mockOrderRepo },
+        { provide: getRepositoryToken(OrderItem), useValue: mockOrderItemRepo },
       ],
     }).compile();
 
@@ -37,9 +48,10 @@ describe('ReviewsService', () => {
   });
 
   describe('create', () => {
-    it('creates a review for a new user-product pair', async () => {
+    it('creates a review for a new user-product pair after delivery check passes', async () => {
       const savedReview = { id: 'r1', ...reviewDto, userId: 'user-1' };
       mockRepo.findOne.mockResolvedValue(null);
+      eligibleQb.getRawOne.mockResolvedValue({ '1': 1 });
       mockRepo.create.mockReturnValue(savedReview);
       mockRepo.save.mockResolvedValue(savedReview);
 
@@ -53,6 +65,14 @@ describe('ReviewsService', () => {
       mockRepo.findOne.mockResolvedValue({ id: 'r1', productId: 'prod-1', userId: 'user-1' });
 
       await expect(service.create('user-1', reviewDto)).rejects.toThrow(ConflictException);
+      expect(mockRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('throws ForbiddenException when user has not received a delivered order for the product', async () => {
+      mockRepo.findOne.mockResolvedValue(null);
+      eligibleQb.getRawOne.mockResolvedValue(undefined);
+
+      await expect(service.create('user-1', reviewDto)).rejects.toThrow(ForbiddenException);
       expect(mockRepo.save).not.toHaveBeenCalled();
     });
   });
