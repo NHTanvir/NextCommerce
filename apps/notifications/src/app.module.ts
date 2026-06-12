@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { NotificationsModule } from './notifications/notifications.module';
+import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { NotificationsModule } from './notifications/notifications.module';
         transport: process.env.NODE_ENV !== 'production' ? { target: 'pino-pretty' } : undefined,
       },
     }),
+    MetricsModule,
     NotificationsModule,
   ],
 })
