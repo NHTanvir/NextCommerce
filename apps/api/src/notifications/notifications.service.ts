@@ -90,6 +90,7 @@ export class NotificationsService {
       title: 'Order Confirmed',
       body: `Your order #${orderNumber} has been placed successfully.`,
       actionUrl: `/account/orders/${orderId}`,
+      payload: { orderId, orderNumber },
     });
   }
 
@@ -106,6 +107,7 @@ export class NotificationsService {
       title: 'Order Shipped',
       body: `Order #${orderNumber} is on its way!${trackingInfo}`,
       actionUrl: `/account/orders/${orderId}`,
+      payload: { orderId, orderNumber, trackingNumber: trackingNumber ?? null },
     });
   }
 
