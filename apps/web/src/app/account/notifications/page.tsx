@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   useGetNotificationsQuery,
   useMarkAsReadMutation,
@@ -9,6 +9,7 @@ import {
   useDeleteAllNotificationsMutation,
   type NotificationType,
 } from '@/store/api/notifications.api';
+import { useNotificationStream } from '@/hooks/useNotificationStream';
 import styles from './notifications.module.scss';
 
 const TYPE_ICONS: Record<NotificationType, string> = {
@@ -32,6 +33,13 @@ type FilterTab = 'all' | 'unread';
 
 export default function AccountNotificationsPage() {
   const [filter, setFilter] = useState<FilterTab>('all');
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    setToken(typeof window !== 'undefined' ? localStorage.getItem('nc_token') : null);
+  }, []);
+
+  useNotificationStream(token);
 
   const { data, isLoading } = useGetNotificationsQuery({ limit: 100 });
   const [markAsRead] = useMarkAsReadMutation();
