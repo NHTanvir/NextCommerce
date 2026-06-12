@@ -1,31 +1,41 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch } from '@/store/hooks';
 import { setCredentials } from '@/store/slices/auth.slice';
 import { useLoginMutation } from '@/store/api/auth.api';
+import { loginSchema, type LoginInput } from '@/lib/schemas/auth';
 import styles from '../auth.module.scss';
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [login, { isLoading }] = useLoginMutation();
-  const [form, setForm] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [serverError, setServerError] = useState('');
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  });
+
+  async function onSubmit(values: LoginInput) {
+    setServerError('');
     try {
-      const result = await login(form).unwrap();
+      const result = await login(values).unwrap();
       dispatch(setCredentials(result));
       localStorage.setItem('nc_token', result.token);
       localStorage.setItem('nc_user', JSON.stringify(result.user));
       router.push('/');
     } catch (err: any) {
-      setError(err?.data?.message ?? 'Invalid email or password');
+      setServerError(err?.data?.message ?? 'Invalid email or password');
     }
   }
 
@@ -50,32 +60,30 @@ export default function LoginPage() {
 
         <div className={styles.divider}><span>or</span></div>
 
-        {error && <div className={styles.errorBox}>{error}</div>}
+        {serverError && <div className={styles.errorBox}>{serverError}</div>}
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
           <div className={styles.field}>
             <label className={styles.label}>Email</label>
             <input
               type="email"
               autoComplete="email"
-              required
               className={styles.input}
-              value={form.email}
-              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
               placeholder="you@example.com"
+              {...register('email')}
             />
+            {errors.email && <span className={styles.fieldError}>{errors.email.message}</span>}
           </div>
           <div className={styles.field}>
             <label className={styles.label}>Password</label>
             <input
               type="password"
               autoComplete="current-password"
-              required
               className={styles.input}
-              value={form.password}
-              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
               placeholder="••••••••"
+              {...register('password')}
             />
+            {errors.password && <span className={styles.fieldError}>{errors.password.message}</span>}
           </div>
           <button type="submit" className={`btn btn--primary btn--lg ${styles.submitBtn}`} disabled={isLoading}>
             {isLoading ? 'Signing in…' : 'Sign In'}
