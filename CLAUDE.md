@@ -61,9 +61,11 @@ docker compose up -d
   - E2e directory excluded from Vitest collection via `exclude: ['**/e2e/**']`
 - **Web e2e**: Playwright (`apps/web/e2e/`) — all API calls stubbed with `page.route`, no live NestJS needed
 - **API tests**: Jest + Supertest (`apps/api/src/**/*.spec.ts` unit, `apps/api/test/*.e2e-spec.ts` integration)
-  - 63/81 suites green (554 tests); 18 suites have pre-existing assertion bugs (wrong property names in auth.service, catalog.service, orders.service specs — not compilation errors)
+  - 81/81 suites green (614 tests); all previously failing suites fixed (wrong import paths, missing providers, wrong method names, async/sync mismatches)
   - `isolatedModules: true` in ts-jest — type-checking is done by `tsc --noEmit` in CI, not during test runs
   - Use `jest.resetAllMocks()` (not `clearAllMocks`) inside nested `describe` blocks when tests rely on `mockResolvedValueOnce` — `clearAllMocks` does NOT drain implementation queues
+  - `jest.mock('amqplib', ...)` factory must be inline (`() => ({ connect: jest.fn() })`) to avoid TDZ errors — declare mock objects after the import, wire them in `beforeEach`
+  - Interceptors that need to return errors must use `throwError(() => new XxxException())` from rxjs, not synchronous `throw`
 - Use `vi.*` for Vitest timer fakes (not `jest.*`)
 
 ## Redux store shape
@@ -101,6 +103,10 @@ RTK Query base URL: `http://localhost:3001/api`
 | #50    | feat/vitest-rtl-components     | Vitest config + RTL tests for ProductCard, CartDrawer, LoginForm (83 web tests green)                                         |
 | #52    | fix/api-test-infrastructure    | Add @types/jest + isolatedModules; 63 API suites now passing (up from 0); mergeAnonymousCart unit tests                       |
 | #54    | feat/redis-e2e-ci-polish       | Redis module wired into AppModule; Supertest purchase-flow e2e; Husky pre-commit hook; CI test-shared job; README SLO section |
+| —      | fix/api-test-suite             | Fixed 18 failing API suites: import paths, missing providers, method names, async bugs → 81/81 green, 614 tests               |
+| —      | feat/catalog-color-size-filter | `color` + `size` query params in `ProductQueryDto`; QueryBuilder variant join in `CatalogService.findAll`                     |
+| —      | feat/checkout-hook-form        | Checkout address step rewritten with React Hook Form + Zod; per-field inline validation errors                                |
+| —      | docs/readme-field-nation       | README "How This Maps to Field Nation's Stack" prose callout section                                                          |
 
 ## Mobile cart API (`apps/mobile/src/api/cart.ts`)
 
