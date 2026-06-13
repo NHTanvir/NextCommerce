@@ -20,6 +20,19 @@ A full-stack e-commerce platform for premium footwear, built to demonstrate prod
 | Orchestration | Kubernetes — Deployment, Service, HPA, Ingress, StatefulSet   |
 | CI            | GitHub Actions — lint, type-check, test, Docker build         |
 
+## How This Maps to Field Nation's Stack
+
+Field Nation's JD calls for a backend engineer comfortable with **NestJS, TypeScript, MySQL, Docker, Kubernetes, and event-driven architecture**. Every requirement has a direct, runnable implementation here — not just a mention:
+
+- **NestJS + TypeScript** — `apps/api` is a full NestJS 10 monolith with strict TS, 30+ feature modules, JWT + Google OAuth, role-based guards, ValidationPipe, custom interceptors, and 81 passing unit-test suites.
+- **MySQL** — TypeORM entities with MySQL 8; migrations; `synchronize: true` in dev so `docker compose up` just works.
+- **React + Redux** — `apps/web` is Next.js 14 App Router with RTK Query for all data fetching, Redux Toolkit for cart/auth/wishlist state, and React Hook Form + Zod on checkout and login forms.
+- **React Native (plus)** — `apps/mobile` is a real Expo app wired to the same API, including add-to-cart with anonymous token flow.
+- **Docker + Kubernetes** — multi-stage Dockerfiles for every service; full k8s manifests with HPA that scales the API 2→8 pods at 70% CPU.
+- **RabbitMQ (plus)** — `apps/notifications` consumes `order.*` events via fanout exchange; the API publishes on every order state change.
+- **Observability (plus)** — structured Pino logs, `GET /api/metrics` (Prometheus), `checkout_duration_seconds` histogram with a documented p95 < 500 ms SLO.
+- **Redis caching** — `RedisService` wraps ioredis with a `getOrSet` helper; product list responses are cached with graceful fallback when Redis is unavailable.
+
 ## Field Nation JD Mapping
 
 | Requirement      | Implementation                                                         |
