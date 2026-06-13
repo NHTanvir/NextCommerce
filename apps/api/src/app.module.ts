@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
+import { RedisModule } from './redis/redis.module';
 import { HealthModule } from './health/health.module';
 import { MetricsModule } from './metrics/metrics.module';
 import { AuthModule } from './auth/auth.module';
@@ -65,6 +66,7 @@ import { ProductSpecsModule } from './product-specs/product-specs.module';
       }),
     }),
 
+    RedisModule,
     HealthModule,
     MetricsModule,
     AuthModule,
