@@ -147,6 +147,91 @@ kubectl apply -f infra/k8s/namespace.yaml
 kubectl apply -f infra/k8s/
 ```
 
+## Deploying to EKS
+
+A condensed walkthrough for getting the stack onto Amazon EKS — the same path you'd take in a real AWS environment.
+
+### Prerequisites
+
+```bash
+# AWS CLI v2 + eksctl + kubectl + helm
+aws configure           # IAM user with EKS + ECR permissions
+eksctl version          # ≥ 0.170
+```
+
+### 1 — Create the cluster
+
+```bash
+eksctl create cluster \
+  --name nextcommerce \
+  --region ap-southeast-1 \
+  --nodegroup-name standard \
+  --node-type t3.medium \
+  --nodes 2 --nodes-min 2 --nodes-max 6 \
+  --managed
+```
+
+This provisions a VPC with public + private subnets, an OIDC provider (needed for IRSA), and a managed node group.
+
+### 2 — Push images to ECR
+
+```bash
+AWS_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+REGION=ap-southeast-1
+REPO_PREFIX=$AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/nextcommerce
+
+aws ecr create-repository --repository-name nextcommerce/api    --region $REGION
+aws ecr create-repository --repository-name nextcommerce/web    --region $REGION
+
+aws ecr get-login-password --region $REGION \
+  | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com
+
+docker build -t $REPO_PREFIX/api:latest apps/api
+docker build -t $REPO_PREFIX/web:latest apps/web
+docker push $REPO_PREFIX/api:latest
+docker push $REPO_PREFIX/web:latest
+```
+
+Update `image:` in `infra/k8s/api-deployment.yaml` and `infra/k8s/web-deployment.yaml` to the ECR URIs above.
+
+### 3 — Apply manifests
+
+```bash
+kubectl apply -f infra/k8s/namespace.yaml
+kubectl apply -f infra/k8s/secrets.yaml      # populate DATABASE_URL, RABBITMQ_URL, JWT_SECRET first
+kubectl apply -f infra/k8s/configmap.yaml
+kubectl apply -f infra/k8s/                  # remaining manifests (Deployments, Services, HPA, Ingress)
+```
+
+### 4 — Install the AWS Load Balancer Controller (Ingress)
+
+```bash
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=nextcommerce \
+  --set serviceAccountName=aws-load-balancer-controller
+```
+
+The `infra/k8s/ingress.yaml` uses `kubernetes.io/ingress.class: alb` and creates an Internet-facing ALB that routes `/api/*` to the api Service and `/*` to the web Service.
+
+### 5 — Verify
+
+```bash
+kubectl get pods -n nextcommerce          # all Running
+kubectl get ingress -n nextcommerce       # ADDRESS column shows the ALB DNS name
+curl http://<ALB_DNS>/api/health/live     # {"status":"ok"}
+```
+
+HPA (`infra/k8s/api-hpa.yaml`) scales the API from 2 → 8 pods at 70 % CPU; test it with a load generator:
+
+```bash
+kubectl run -it --rm load --image=busybox --restart=Never -- \
+  sh -c "while true; do wget -q -O- http://api:3001/api/products; done"
+kubectl get hpa -n nextcommerce -w
+```
+
 ## Observability & SLOs
 
 | Signal             | Implementation                                                 | Location                     |
