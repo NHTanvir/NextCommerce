@@ -143,7 +143,9 @@ describe('CartService', () => {
 
     it('throws NotFoundException if item not found', async () => {
       mockItemRepo.findOne.mockResolvedValue(null);
-      await expect(service.updateItem('cart-1', 'bad-item', { quantity: 1 })).rejects.toThrow(NotFoundException);
+      await expect(service.updateItem('cart-1', 'bad-item', { quantity: 1 })).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -160,6 +162,78 @@ describe('CartService', () => {
       mockItemRepo.delete.mockResolvedValue({});
       await service.clearCart('cart-1');
       expect(mockItemRepo.delete).toHaveBeenCalledWith({ cartId: 'cart-1' });
+    });
+  });
+
+  describe('mergeAnonymousCart', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('returns a new user cart when anonymous token is not found', async () => {
+      mockCartRepo.findOne
+        .mockResolvedValueOnce(null) // no anon cart
+        .mockResolvedValueOnce(null) // no user cart in getOrCreate
+        .mockResolvedValueOnce(baseCart); // created user cart
+      mockCartRepo.create.mockReturnValue(baseCart);
+      mockCartRepo.save.mockResolvedValue(baseCart);
+
+      const result = await service.mergeAnonymousCart('user-1', 'unknown-token');
+      expect(result).toEqual(baseCart);
+    });
+
+    it('transfers ownership of anon cart when user has no cart', async () => {
+      const anonCart = {
+        ...baseCart,
+        id: 'cart-anon',
+        userId: null,
+        anonymousToken: 'tok-123',
+        items: [],
+      };
+      mockCartRepo.findOne
+        .mockResolvedValueOnce(anonCart) // anon cart found
+        .mockResolvedValueOnce(null) // no user cart exists
+        .mockResolvedValueOnce({ ...anonCart, userId: 'user-1', anonymousToken: null }); // after update
+      mockCartRepo.update.mockResolvedValue({});
+
+      const result = await service.mergeAnonymousCart('user-1', 'tok-123');
+      expect(mockCartRepo.update).toHaveBeenCalledWith(
+        'cart-anon',
+        expect.objectContaining({ userId: 'user-1', anonymousToken: null }),
+      );
+      expect(result.userId).toBe('user-1');
+    });
+
+    it('merges anon cart items into existing user cart and deletes anon cart', async () => {
+      const anonItem = { id: 'item-a', cartId: 'cart-anon', variantId: 'v1', quantity: 2 };
+      const anonCart = {
+        ...baseCart,
+        id: 'cart-anon',
+        userId: null,
+        anonymousToken: 'tok-123',
+        items: [anonItem],
+      };
+      const userCart = {
+        ...baseCart,
+        id: 'cart-user',
+        userId: 'user-1',
+        anonymousToken: null,
+        items: [],
+      };
+
+      mockCartRepo.findOne
+        .mockResolvedValueOnce(anonCart) // anon cart
+        .mockResolvedValueOnce(userCart) // existing user cart
+        .mockResolvedValueOnce(userCart); // final return
+      mockItemRepo.findOne.mockResolvedValue(null); // item not in user cart yet
+      mockItemRepo.create.mockReturnValue(anonItem);
+      mockItemRepo.save.mockResolvedValue(anonItem);
+      mockCartRepo.delete.mockResolvedValue({});
+
+      await service.mergeAnonymousCart('user-1', 'tok-123');
+
+      expect(mockItemRepo.save).toHaveBeenCalled();
+      expect(mockCartRepo.delete).toHaveBeenCalledWith('cart-anon');
     });
   });
 });

@@ -6,6 +6,7 @@
     "baseUrl": ".",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
     "paths": {
       "@nextcommerce/shared": ["../../packages/shared/src"]
     }
