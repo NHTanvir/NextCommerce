@@ -15,6 +15,7 @@ import type { NativeStackNavigationProp, NativeStackRouteProp } from '@react-nav
 import type { ProductDto } from '@nextcommerce/shared';
 import { fetchProduct } from '@/api/catalog';
 import { fetchProductReviews } from '@/api/reviews';
+import { addToCart } from '@/api/cart';
 import { trackRecentlyViewed } from '@/screens/RecentlyViewedScreen';
 import type { ShopStackParamList } from '@/navigation/types';
 
@@ -93,12 +94,18 @@ export function ProductDetailScreen() {
   const uniqueSizes = [...new Set(product.variants?.map((v) => v.size) ?? [])].sort((a, b) => a - b);
   const uniqueColors = [...new Set(product.variants?.map((v) => v.color) ?? [])];
 
-  function handleAddToCart() {
+  async function handleAddToCart() {
     if (!selectedVariantId) {
       Alert.alert('Select Size', 'Please select a size before adding to cart.');
       return;
     }
-    Alert.alert('Added to Cart', `${product!.title} added successfully!`);
+    try {
+      await addToCart({ variantId: selectedVariantId, quantity: qty });
+      Alert.alert('Added to Cart', `${product!.title} added successfully!`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to add to cart';
+      Alert.alert('Error', message);
+    }
   }
 
   async function handleShare() {
