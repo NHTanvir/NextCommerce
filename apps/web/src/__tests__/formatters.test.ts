@@ -15,7 +15,7 @@ describe('formatPrice', () => {
 
 describe('formatOrderId', () => {
   it('takes last 8 chars and uppercases', () => {
-    expect(formatOrderId('abc123def456')).toBe('#DEF456');
+    expect(formatOrderId('abc123def456')).toBe('#23DEF456');
     // Only last 8
     const id = 'a'.repeat(20);
     expect(formatOrderId(id)).toBe('#AAAAAAAA');

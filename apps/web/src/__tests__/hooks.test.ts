@@ -1,7 +1,8 @@
 import { renderHook, act } from '@testing-library/react';
+import { vi } from 'vitest';
 import { useDebounce } from '../hooks/useDebounce';
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 describe('useDebounce', () => {
   it('returns initial value immediately', () => {
@@ -15,7 +16,7 @@ describe('useDebounce', () => {
     });
     rerender({ value: 'ab' });
     expect(result.current).toBe('a');
-    act(() => { jest.advanceTimersByTime(300); });
+    act(() => { vi.advanceTimersByTime(300); });
     expect(result.current).toBe('ab');
   });
 
@@ -24,12 +25,12 @@ describe('useDebounce', () => {
       initialProps: { value: '' },
     });
     rerender({ value: 'a' });
-    act(() => { jest.advanceTimersByTime(100); });
+    act(() => { vi.advanceTimersByTime(100); });
     rerender({ value: 'ab' });
-    act(() => { jest.advanceTimersByTime(100); });
+    act(() => { vi.advanceTimersByTime(100); });
     rerender({ value: 'abc' });
     expect(result.current).toBe('');
-    act(() => { jest.advanceTimersByTime(300); });
+    act(() => { vi.advanceTimersByTime(300); });
     expect(result.current).toBe('abc');
   });
 });
