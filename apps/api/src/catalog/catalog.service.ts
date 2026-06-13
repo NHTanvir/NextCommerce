@@ -18,7 +18,34 @@ export class CatalogService {
   ) {}
 
   async findAll(query: ProductQueryDto): Promise<ProductListResponse> {
-    const { page, limit, categoryId, brand, search, minPrice, maxPrice } = query;
+    const { page, limit, categoryId, brand, search, color, size, minPrice, maxPrice } = query;
+
+    if (color || size) {
+      const qb = this.productRepo
+        .createQueryBuilder('p')
+        .leftJoinAndSelect('p.category', 'category')
+        .innerJoinAndSelect('p.variants', 'v')
+        .where('p.isActive = true');
+
+      if (categoryId) qb.andWhere('p.categoryId = :categoryId', { categoryId });
+      if (brand) qb.andWhere('p.brand = :brand', { brand });
+      if (search) qb.andWhere('p.title LIKE :search', { search: `%${search}%` });
+      if (minPrice !== undefined) qb.andWhere('p.basePriceCents >= :minPrice', { minPrice });
+      if (maxPrice !== undefined) qb.andWhere('p.basePriceCents <= :maxPrice', { maxPrice });
+      if (color) qb.andWhere('v.color = :color', { color });
+      if (size) qb.andWhere('v.size = :size', { size });
+
+      const all = await qb.orderBy('p.createdAt', 'DESC').getMany();
+      const total = all.length;
+      const data = all.slice((page - 1) * limit, page * limit);
+      return {
+        data: data.map((p) => CatalogService.toDto(p)),
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      };
+    }
 
     const where: FindOptionsWhere<Product> = { isActive: true };
     if (categoryId) where.categoryId = categoryId;
