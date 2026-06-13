@@ -45,6 +45,72 @@
     ]
   },
   {
+    "title": "Cloud Surge 9",
+    "slug": "cloud-surge-9",
+    "brand": "On",
+    "description": "Swiss-engineered CloudTec midsole delivers explosive takeoff for tempo runs.",
+    "category": "running",
+    "images": [{ "url": "https://images.unsplash.com/photo-1465453869711-7e174808ace9?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Frost/Cobalt", "sku": "CS9-FC-9", "stockQty": 11, "priceCents": 16999 },
+      { "size": 10, "color": "Frost/Cobalt", "sku": "CS9-FC-10", "stockQty": 8, "priceCents": 16999 },
+      { "size": 11, "color": "All Black", "sku": "CS9-AB-11", "stockQty": 6, "priceCents": 16999 }
+    ]
+  },
+  {
+    "title": "Gel Nimbus 27",
+    "slug": "gel-nimbus-27",
+    "brand": "ASICS",
+    "description": "Maximum cushioning daily trainer with FF Blast Plus Eco midsole.",
+    "category": "running",
+    "images": [{ "url": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600" }],
+    "variants": [
+      { "size": 8, "color": "Pure Silver", "sku": "GN27-PS-8", "stockQty": 9, "priceCents": 15999 },
+      { "size": 9, "color": "Pure Silver", "sku": "GN27-PS-9", "stockQty": 12, "priceCents": 15999 },
+      { "size": 10, "color": "Pure Silver", "sku": "GN27-PS-10", "stockQty": 7, "priceCents": 15999 },
+      { "size": 10, "color": "Black/Carrier Grey", "sku": "GN27-BC-10", "stockQty": 5, "priceCents": 15999 }
+    ]
+  },
+  {
+    "title": "Endorphin Speed 4",
+    "slug": "endorphin-speed-4",
+    "brand": "Saucony",
+    "description": "Race-day trainer with PWRRUN PB foam and nylon plate for snappy turnover.",
+    "category": "running",
+    "images": [{ "url": "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Citron/Cobalt", "sku": "ES4-CC-9", "stockQty": 5, "priceCents": 17000 },
+      { "size": 10, "color": "Citron/Cobalt", "sku": "ES4-CC-10", "stockQty": 4, "priceCents": 17000 },
+      { "size": 11, "color": "Citron/Cobalt", "sku": "ES4-CC-11", "stockQty": 3, "priceCents": 17000 }
+    ]
+  },
+  {
+    "title": "Clifton 10",
+    "slug": "clifton-10",
+    "brand": "Hoka",
+    "description": "Soft, smooth ride with extended heel geometry and compression-molded EVA.",
+    "category": "running",
+    "images": [{ "url": "https://images.unsplash.com/photo-1542219550-37153d387c27?w=600" }],
+    "variants": [
+      { "size": 8.5, "color": "Vibrant Orange", "sku": "C10-VO-85", "stockQty": 8, "priceCents": 14500 },
+      { "size": 9.5, "color": "Vibrant Orange", "sku": "C10-VO-95", "stockQty": 6, "priceCents": 14500 },
+      { "size": 10.5, "color": "Black/White", "sku": "C10-BW-105", "stockQty": 9, "priceCents": 14500 }
+    ]
+  },
+  {
+    "title": "FuelCell Rebel v4",
+    "slug": "fuelcell-rebel-v4",
+    "brand": "New Balance",
+    "description": "Lightweight tempo trainer with PEBA-infused FuelCell midsole.",
+    "category": "running",
+    "images": [{ "url": "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Cosmic Pineapple", "sku": "FRV4-CP-9", "stockQty": 7, "priceCents": 14000 },
+      { "size": 10, "color": "Cosmic Pineapple", "sku": "FRV4-CP-10", "stockQty": 5, "priceCents": 14000 },
+      { "size": 11, "color": "Cosmic Pineapple", "sku": "FRV4-CP-11", "stockQty": 4, "priceCents": 14000 }
+    ]
+  },
+  {
     "title": "Court Legacy Retro",
     "slug": "court-legacy-retro",
     "brand": "Nike",
@@ -87,6 +153,75 @@
     ]
   },
   {
+    "title": "Air Force 1 '07",
+    "slug": "air-force-1-07",
+    "brand": "Nike",
+    "description": "The original basketball icon, now an everyday classic with full-length Air-Sole.",
+    "category": "lifestyle",
+    "images": [{ "url": "https://images.unsplash.com/photo-1597248881519-db089d3744a5?w=600" }],
+    "variants": [
+      { "size": 8, "color": "Triple White", "sku": "AF1-TW-8", "stockQty": 25, "priceCents": 11000 },
+      { "size": 9, "color": "Triple White", "sku": "AF1-TW-9", "stockQty": 22, "priceCents": 11000 },
+      { "size": 10, "color": "Triple White", "sku": "AF1-TW-10", "stockQty": 19, "priceCents": 11000 },
+      { "size": 11, "color": "Triple Black", "sku": "AF1-TB-11", "stockQty": 9, "priceCents": 11000 }
+    ]
+  },
+  {
+    "title": "Samba OG",
+    "slug": "samba-og",
+    "brand": "Adidas",
+    "description": "Heritage indoor soccer shoe turned everyday lifestyle staple with T-toe overlay.",
+    "category": "lifestyle",
+    "images": [{ "url": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600" }],
+    "variants": [
+      { "size": 8, "color": "Cloud White/Black", "sku": "SOG-CWB-8", "stockQty": 16, "priceCents": 10000 },
+      { "size": 9, "color": "Cloud White/Black", "sku": "SOG-CWB-9", "stockQty": 14, "priceCents": 10000 },
+      { "size": 10, "color": "Cloud White/Black", "sku": "SOG-CWB-10", "stockQty": 11, "priceCents": 10000 },
+      { "size": 9, "color": "Core Black/Gum", "sku": "SOG-CBG-9", "stockQty": 7, "priceCents": 10000 }
+    ]
+  },
+  {
+    "title": "Old Skool",
+    "slug": "old-skool",
+    "brand": "Vans",
+    "description": "Skate-born side-stripe silhouette with reinforced toe box and waffle outsole.",
+    "category": "lifestyle",
+    "images": [{ "url": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600" }],
+    "variants": [
+      { "size": 7, "color": "Black/White", "sku": "OS-BW-7", "stockQty": 13, "priceCents": 7000 },
+      { "size": 8, "color": "Black/White", "sku": "OS-BW-8", "stockQty": 17, "priceCents": 7000 },
+      { "size": 9, "color": "Black/White", "sku": "OS-BW-9", "stockQty": 21, "priceCents": 7000 },
+      { "size": 10, "color": "Black/White", "sku": "OS-BW-10", "stockQty": 12, "priceCents": 7000 }
+    ]
+  },
+  {
+    "title": "Chuck 70 Hi",
+    "slug": "chuck-70-hi",
+    "brand": "Converse",
+    "description": "Heritage canvas high-top with vintage stitching and egret toe cap.",
+    "category": "lifestyle",
+    "images": [{ "url": "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=600" }],
+    "variants": [
+      { "size": 7, "color": "Egret", "sku": "C70H-EG-7", "stockQty": 9, "priceCents": 8500 },
+      { "size": 8, "color": "Egret", "sku": "C70H-EG-8", "stockQty": 12, "priceCents": 8500 },
+      { "size": 9, "color": "Black", "sku": "C70H-BK-9", "stockQty": 15, "priceCents": 8500 },
+      { "size": 10, "color": "Black", "sku": "C70H-BK-10", "stockQty": 10, "priceCents": 8500 }
+    ]
+  },
+  {
+    "title": "Forum Low CL",
+    "slug": "forum-low-cl",
+    "brand": "Adidas",
+    "description": "Premium leather low-top with the iconic ankle strap and crepe-look sole.",
+    "category": "lifestyle",
+    "images": [{ "url": "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=600" }],
+    "variants": [
+      { "size": 8, "color": "Cloud White", "sku": "FLCL-CW-8", "stockQty": 8, "priceCents": 11000 },
+      { "size": 9, "color": "Cloud White", "sku": "FLCL-CW-9", "stockQty": 10, "priceCents": 11000 },
+      { "size": 10, "color": "Cloud White", "sku": "FLCL-CW-10", "stockQty": 6, "priceCents": 11000 }
+    ]
+  },
+  {
     "title": "LeBron NXXT Gen",
     "slug": "lebron-nxxt-gen",
     "brand": "Nike",
@@ -114,6 +249,58 @@
     ]
   },
   {
+    "title": "KD 17",
+    "slug": "kd-17",
+    "brand": "Nike",
+    "description": "Featherweight forefoot Zoom Air unit for explosive first steps and silky landings.",
+    "category": "basketball",
+    "images": [{ "url": "https://images.unsplash.com/photo-1605408499391-6368c628ef42?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Penny", "sku": "KD17-PN-9", "stockQty": 6, "priceCents": 15000 },
+      { "size": 10, "color": "Penny", "sku": "KD17-PN-10", "stockQty": 8, "priceCents": 15000 },
+      { "size": 11, "color": "Hyper Royal", "sku": "KD17-HR-11", "stockQty": 5, "priceCents": 15000 }
+    ]
+  },
+  {
+    "title": "Curry 12",
+    "slug": "curry-12",
+    "brand": "Under Armour",
+    "description": "HOVR Flow midsole and elastic FlowEdge keep guards low to the ground.",
+    "category": "basketball",
+    "images": [{ "url": "https://images.unsplash.com/photo-1577982787983-e07c6730f2d3?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Splash Party", "sku": "CRY12-SP-9", "stockQty": 5, "priceCents": 16000 },
+      { "size": 10, "color": "Splash Party", "sku": "CRY12-SP-10", "stockQty": 4, "priceCents": 16000 },
+      { "size": 10, "color": "Mouthguard Black", "sku": "CRY12-MB-10", "stockQty": 6, "priceCents": 16000 }
+    ]
+  },
+  {
+    "title": "Way of Wade All City 13",
+    "slug": "way-of-wade-all-city-13",
+    "brand": "Li-Ning",
+    "description": "Boom midsole and carbon plate built for explosive guards and quick wings.",
+    "category": "basketball",
+    "images": [{ "url": "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Flash White", "sku": "WAC13-FW-9", "stockQty": 5, "priceCents": 13500 },
+      { "size": 10, "color": "Flash White", "sku": "WAC13-FW-10", "stockQty": 4, "priceCents": 13500 },
+      { "size": 11, "color": "Flash White", "sku": "WAC13-FW-11", "stockQty": 3, "priceCents": 13500 }
+    ]
+  },
+  {
+    "title": "Sabrina 2",
+    "slug": "sabrina-2",
+    "brand": "Nike",
+    "description": "Cushlon 3.0 midsole + forefoot Zoom Air, tuned for two-way speed.",
+    "category": "basketball",
+    "images": [{ "url": "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=600" }],
+    "variants": [
+      { "size": 8, "color": "Spark", "sku": "SAB2-SP-8", "stockQty": 6, "priceCents": 13000 },
+      { "size": 9, "color": "Spark", "sku": "SAB2-SP-9", "stockQty": 7, "priceCents": 13000 },
+      { "size": 10, "color": "Cosmic", "sku": "SAB2-CO-10", "stockQty": 5, "priceCents": 13000 }
+    ]
+  },
+  {
     "title": "Pegasus Trail 5 GTX",
     "slug": "pegasus-trail-5-gtx",
     "brand": "Nike",
@@ -137,6 +324,84 @@
       { "size": 8, "color": "Blue/Yellow", "sku": "TASU-BY-8", "stockQty": 3, "priceCents": 21999 },
       { "size": 9, "color": "Blue/Yellow", "sku": "TASU-BY-9", "stockQty": 5, "priceCents": 21999 },
       { "size": 10, "color": "Blue/Yellow", "sku": "TASU-BY-10", "stockQty": 4, "priceCents": 21999 }
+    ]
+  },
+  {
+    "title": "Speedgoat 5",
+    "slug": "speedgoat-5",
+    "brand": "Hoka",
+    "description": "Vibram Megagrip outsole with 5mm lugs grips loose terrain on long days out.",
+    "category": "trail",
+    "images": [{ "url": "https://images.unsplash.com/photo-1577909844321-d6f0e6d6b87a?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Real Teal/Hyacinth", "sku": "SG5-RT-9", "stockQty": 5, "priceCents": 15500 },
+      { "size": 10, "color": "Real Teal/Hyacinth", "sku": "SG5-RT-10", "stockQty": 7, "priceCents": 15500 },
+      { "size": 11, "color": "Black/Mountain Spring", "sku": "SG5-BM-11", "stockQty": 4, "priceCents": 15500 }
+    ]
+  },
+  {
+    "title": "Lone Peak 8",
+    "slug": "lone-peak-8",
+    "brand": "Altra",
+    "description": "Zero-drop foot-shaped trail shoe with MaxTrac outsole and TrailClaw lugs.",
+    "category": "trail",
+    "images": [{ "url": "https://images.unsplash.com/photo-1559091856-3b91f54e1dbf?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Storm", "sku": "LP8-ST-9", "stockQty": 6, "priceCents": 14000 },
+      { "size": 10, "color": "Storm", "sku": "LP8-ST-10", "stockQty": 8, "priceCents": 14000 },
+      { "size": 11, "color": "Desert Dawn", "sku": "LP8-DD-11", "stockQty": 4, "priceCents": 14000 }
+    ]
+  },
+  {
+    "title": "Mafate Speed 4",
+    "slug": "mafate-speed-4",
+    "brand": "Hoka",
+    "description": "Long-haul ultra trail rocker with dual-density midsole and Vibram outsole.",
+    "category": "trail",
+    "images": [{ "url": "https://images.unsplash.com/photo-1542219550-37153d387c27?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Black/Multi", "sku": "MS4-BM-9", "stockQty": 3, "priceCents": 18500 },
+      { "size": 10, "color": "Black/Multi", "sku": "MS4-BM-10", "stockQty": 5, "priceCents": 18500 },
+      { "size": 11, "color": "Black/Multi", "sku": "MS4-BM-11", "stockQty": 4, "priceCents": 18500 }
+    ]
+  },
+  {
+    "title": "Cascadia 17 GTX",
+    "slug": "cascadia-17-gtx",
+    "brand": "Brooks",
+    "description": "GORE-TEX trail trainer with BioMoGo DNA cushioning and ballistic rock shield.",
+    "category": "trail",
+    "images": [{ "url": "https://images.unsplash.com/photo-1463100099107-aa0980c362e6?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Black/Ebony", "sku": "C17G-BE-9", "stockQty": 5, "priceCents": 16000 },
+      { "size": 10, "color": "Black/Ebony", "sku": "C17G-BE-10", "stockQty": 6, "priceCents": 16000 },
+      { "size": 11, "color": "Black/Ebony", "sku": "C17G-BE-11", "stockQty": 4, "priceCents": 16000 }
+    ]
+  },
+  {
+    "title": "Norda 001",
+    "slug": "norda-001",
+    "brand": "Norda",
+    "description": "Bio-based Dyneema upper paired with Vibram Megagrip Litebase outsole for ultras.",
+    "category": "trail",
+    "images": [{ "url": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Glacier", "sku": "ND001-GL-9", "stockQty": 2, "priceCents": 29500 },
+      { "size": 10, "color": "Glacier", "sku": "ND001-GL-10", "stockQty": 3, "priceCents": 29500 },
+      { "size": 11, "color": "Forest", "sku": "ND001-FR-11", "stockQty": 2, "priceCents": 29500 }
+    ]
+  },
+  {
+    "title": "Saucony Peregrine 14",
+    "slug": "peregrine-14",
+    "brand": "Saucony",
+    "description": "PWRTRAC outsole with 5mm lugs handles technical singletrack confidently.",
+    "category": "trail",
+    "images": [{ "url": "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=600" }],
+    "variants": [
+      { "size": 9, "color": "Spice/Bough", "sku": "PG14-SB-9", "stockQty": 6, "priceCents": 14000 },
+      { "size": 10, "color": "Spice/Bough", "sku": "PG14-SB-10", "stockQty": 8, "priceCents": 14000 },
+      { "size": 11, "color": "Black/Citron", "sku": "PG14-BC-11", "stockQty": 5, "priceCents": 14000 }
     ]
   }
 ]
