@@ -107,6 +107,9 @@ RTK Query base URL: `http://localhost:3001/api`
 | —      | feat/catalog-color-size-filter | `color` + `size` query params in `ProductQueryDto`; QueryBuilder variant join in `CatalogService.findAll`                     |
 | —      | feat/checkout-hook-form        | Checkout address step rewritten with React Hook Form + Zod; per-field inline validation errors                                |
 | —      | docs/readme-field-nation       | README "How This Maps to Field Nation's Stack" prose callout section                                                          |
+| —      | infra/k8s api-service          | Extract api-service.yaml from api-deployment.yaml; standalone Service manifest                                                |
+| —      | docs/eks-readme                | README "Deploying to EKS" section: eksctl, ECR push, kubectl apply, ALB controller, HPA load test                             |
+| —      | docs/cover-letter              | COVER_LETTER.md — JD bullet → commit/file mapping table + selected commits narrative                                          |
 
 ## Mobile cart API (`apps/mobile/src/api/cart.ts`)
 
