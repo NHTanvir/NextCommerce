@@ -110,6 +110,10 @@ RTK Query base URL: `http://localhost:3001/api`
 | —      | infra/k8s api-service          | Extract api-service.yaml from api-deployment.yaml; standalone Service manifest                                                |
 | —      | docs/eks-readme                | README "Deploying to EKS" section: eksctl, ECR push, kubectl apply, ALB controller, HPA load test                             |
 | —      | docs/cover-letter              | COVER_LETTER.md — JD bullet → commit/file mapping table + selected commits narrative                                          |
+| —      | fix/scss-pure-selectors        | Fix 49 broken routes: remove dead `table {}` block, scope privacy bare p/li/ul under `.body`, inline `@extend .skeleton`      |
+| —      | fix/web-inter-font             | `--font-sans` now uses `var(--font-inter)` so Next.js Google-font CSS variable resolves (was rendering Times New Roman)       |
+| —      | fix/brands-empty-state         | Brands empty state no longer shows `""` quotes when there's no search query                                                   |
+| —      | fix/global-error-ux            | Global `error.tsx` shows friendly text for `fetch failed`/network/timeout instead of raw error message in production          |
 
 ## Mobile cart API (`apps/mobile/src/api/cart.ts`)
 
