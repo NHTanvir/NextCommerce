@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -10,13 +13,15 @@ import { useGetShippingRatesQuery } from '@/store/api/shipping.api';
 import type { ShippingRate } from '@/store/api/shipping.api';
 import styles from './checkout.module.scss';
 
-interface AddressForm {
-  line1: string;
-  line2: string;
-  city: string;
-  country: string;
-  postalCode: string;
-}
+const addressSchema = z.object({
+  line1: z.string().min(1, 'Address line 1 is required'),
+  line2: z.string().optional(),
+  city: z.string().min(1, 'City is required'),
+  postalCode: z.string().min(1, 'Postal code is required'),
+  country: z.string().min(2, 'Country is required'),
+});
+
+type AddressForm = z.infer<typeof addressSchema>;
 
 type Step = 'address' | 'shipping' | 'review';
 
@@ -28,12 +33,22 @@ export default function CheckoutPage() {
   const anonymousToken = useAppSelector((s) => s.cart.anonymousToken);
 
   const [createOrder, { isLoading }] = useCreateOrderMutation();
-  const [address, setAddress] = useState<AddressForm>({
-    line1: '', line2: '', city: '', country: 'US', postalCode: '',
-  });
   const [step, setStep] = useState<Step>('address');
+  const [confirmedAddress, setConfirmedAddress] = useState<AddressForm | null>(null);
   const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
-  const [error, setError] = useState('');
+  const [orderError, setOrderError] = useState('');
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<AddressForm>({
+    resolver: zodResolver(addressSchema),
+    defaultValues: { country: 'US' },
+  });
+
+  const address = watch();
 
   const { data: shippingEstimate, isFetching: ratesLoading } = useGetShippingRatesQuery(
     { total, country: address.country },
@@ -46,12 +61,15 @@ export default function CheckoutPage() {
     return (
       <div className={styles.empty}>
         <h2>Your cart is empty</h2>
-        <Link href="/products" className="btn btn--primary">Shop Now</Link>
+        <Link href="/products" className="btn btn--primary">
+          Shop Now
+        </Link>
       </div>
     );
   }
 
-  function handleAddressContinue() {
+  function onAddressSubmit(data: AddressForm) {
+    setConfirmedAddress(data);
     setStep('shipping');
     setSelectedRate(null);
   }
@@ -62,20 +80,22 @@ export default function CheckoutPage() {
   }
 
   async function handlePlaceOrder() {
-    setError('');
+    if (!confirmedAddress) return;
+    setOrderError('');
     try {
       const order = await createOrder({
-        addressLine1: address.line1,
-        addressLine2: address.line2 || undefined,
-        city: address.city,
-        country: address.country,
-        postalCode: address.postalCode,
+        addressLine1: confirmedAddress.line1,
+        addressLine2: confirmedAddress.line2 || undefined,
+        city: confirmedAddress.city,
+        country: confirmedAddress.country,
+        postalCode: confirmedAddress.postalCode,
         anonymousToken: anonymousToken ?? undefined,
       }).unwrap();
       dispatch(clearCart());
       router.push(`/account/orders/${order.id}?placed=true`);
-    } catch (err: any) {
-      setError(err?.data?.message ?? 'Failed to place order. Please try again.');
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } };
+      setOrderError(e?.data?.message ?? 'Failed to place order. Please try again.');
     }
   }
 
@@ -96,11 +116,17 @@ export default function CheckoutPage() {
           const isActive = s.key === step;
           return (
             <div key={s.key} className={styles.stepItem}>
-              <div className={`${styles.stepDot} ${isActive ? styles.stepDotActive : ''} ${isDone ? styles.stepDotDone : ''}`}>
+              <div
+                className={`${styles.stepDot} ${isActive ? styles.stepDotActive : ''} ${isDone ? styles.stepDotDone : ''}`}
+              >
                 {isDone ? '✓' : i + 1}
               </div>
-              <span className={`${styles.stepLabel} ${isActive ? styles.stepLabelActive : ''}`}>{s.label}</span>
-              {i < STEPS.length - 1 && <div className={`${styles.stepLine} ${isDone ? styles.stepLineDone : ''}`} />}
+              <span className={`${styles.stepLabel} ${isActive ? styles.stepLabelActive : ''}`}>
+                {s.label}
+              </span>
+              {i < STEPS.length - 1 && (
+                <div className={`${styles.stepLine} ${isDone ? styles.stepLineDone : ''}`} />
+              )}
             </div>
           );
         })}
@@ -111,17 +137,16 @@ export default function CheckoutPage() {
           {step === 'address' && (
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>Shipping Address</h2>
-              <div className={styles.form}>
+              <form className={styles.form} onSubmit={handleSubmit(onAddressSubmit)} noValidate>
                 <div className={styles.formRow}>
                   <div className={styles.field}>
                     <label className={styles.label}>Address Line 1 *</label>
                     <input
-                      className={styles.input}
-                      required
+                      className={`${styles.input} ${errors.line1 ? styles.inputError : ''}`}
                       placeholder="123 Main St"
-                      value={address.line1}
-                      onChange={(e) => setAddress((a) => ({ ...a, line1: e.target.value }))}
+                      {...register('line1')}
                     />
+                    {errors.line1 && <p className={styles.fieldError}>{errors.line1.message}</p>}
                   </div>
                 </div>
                 <div className={styles.formRow}>
@@ -130,8 +155,7 @@ export default function CheckoutPage() {
                     <input
                       className={styles.input}
                       placeholder="Apt, Suite, etc."
-                      value={address.line2}
-                      onChange={(e) => setAddress((a) => ({ ...a, line2: e.target.value }))}
+                      {...register('line2')}
                     />
                   </div>
                 </div>
@@ -139,32 +163,28 @@ export default function CheckoutPage() {
                   <div className={styles.field}>
                     <label className={styles.label}>City *</label>
                     <input
-                      className={styles.input}
-                      required
+                      className={`${styles.input} ${errors.city ? styles.inputError : ''}`}
                       placeholder="New York"
-                      value={address.city}
-                      onChange={(e) => setAddress((a) => ({ ...a, city: e.target.value }))}
+                      {...register('city')}
                     />
+                    {errors.city && <p className={styles.fieldError}>{errors.city.message}</p>}
                   </div>
                   <div className={styles.field}>
                     <label className={styles.label}>Postal Code *</label>
                     <input
-                      className={styles.input}
-                      required
+                      className={`${styles.input} ${errors.postalCode ? styles.inputError : ''}`}
                       placeholder="10001"
-                      value={address.postalCode}
-                      onChange={(e) => setAddress((a) => ({ ...a, postalCode: e.target.value }))}
+                      {...register('postalCode')}
                     />
+                    {errors.postalCode && (
+                      <p className={styles.fieldError}>{errors.postalCode.message}</p>
+                    )}
                   </div>
                 </div>
                 <div className={styles.formRow}>
                   <div className={styles.field}>
                     <label className={styles.label}>Country *</label>
-                    <select
-                      className={styles.select}
-                      value={address.country}
-                      onChange={(e) => setAddress((a) => ({ ...a, country: e.target.value }))}
-                    >
+                    <select className={styles.select} {...register('country')}>
                       <option value="US">United States</option>
                       <option value="CA">Canada</option>
                       <option value="GB">United Kingdom</option>
@@ -174,14 +194,13 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <button
+                  type="submit"
                   className="btn btn--primary btn--lg"
                   style={{ width: '100%' }}
-                  disabled={!address.line1 || !address.city || !address.postalCode}
-                  onClick={handleAddressContinue}
                 >
                   Continue to Shipping →
                 </button>
-              </div>
+              </form>
             </div>
           )}
 
@@ -205,7 +224,9 @@ export default function CheckoutPage() {
                       onClick={() => setSelectedRate(rate)}
                     >
                       <div className={styles.rateRadio}>
-                        <div className={`${styles.rateRadioInner} ${selectedRate?.id === rate.id ? styles.rateRadioInnerFilled : ''}`} />
+                        <div
+                          className={`${styles.rateRadioInner} ${selectedRate?.id === rate.id ? styles.rateRadioInnerFilled : ''}`}
+                        />
                       </div>
                       <div className={styles.rateInfo}>
                         <div className={styles.rateName}>
@@ -239,7 +260,7 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {step === 'review' && (
+          {step === 'review' && confirmedAddress && (
             <div className={styles.section}>
               <div className={styles.reviewHeader}>
                 <h2 className={styles.sectionTitle}>Review Order</h2>
@@ -251,10 +272,14 @@ export default function CheckoutPage() {
               <div className={styles.reviewCards}>
                 <div className={styles.reviewCard}>
                   <p className={styles.reviewCardLabel}>Delivery Address</p>
-                  <p className={styles.addressLine}>{address.line1}</p>
-                  {address.line2 && <p className={styles.addressLine}>{address.line2}</p>}
-                  <p className={styles.addressLine}>{address.city}, {address.postalCode}</p>
-                  <p className={styles.addressLine}>{address.country}</p>
+                  <p className={styles.addressLine}>{confirmedAddress.line1}</p>
+                  {confirmedAddress.line2 && (
+                    <p className={styles.addressLine}>{confirmedAddress.line2}</p>
+                  )}
+                  <p className={styles.addressLine}>
+                    {confirmedAddress.city}, {confirmedAddress.postalCode}
+                  </p>
+                  <p className={styles.addressLine}>{confirmedAddress.country}</p>
                 </div>
                 {selectedRate && (
                   <div className={styles.reviewCard}>
@@ -267,10 +292,17 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              {error && <div className={styles.errorBox}>{error}</div>}
+              {orderError && <div className={styles.errorBox}>{orderError}</div>}
 
               <div className={styles.paymentNote}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <rect x="1" y="4" width="22" height="16" rx="2" />
                   <line x1="1" y1="10" x2="23" y2="10" />
                 </svg>
@@ -283,7 +315,9 @@ export default function CheckoutPage() {
                 onClick={handlePlaceOrder}
                 disabled={isLoading}
               >
-                {isLoading ? 'Placing Order…' : `Place Order · $${((total + shippingCost) / 100).toFixed(2)}`}
+                {isLoading
+                  ? 'Placing Order…'
+                  : `Place Order · $${((total + shippingCost) / 100).toFixed(2)}`}
               </button>
             </div>
           )}
@@ -297,9 +331,13 @@ export default function CheckoutPage() {
                 <li key={item.variantId} className={styles.summaryItem}>
                   <div>
                     <p className={styles.itemName}>{item.title}</p>
-                    <p className={styles.itemMeta}>Size {item.size} · {item.color} · ×{item.quantity}</p>
+                    <p className={styles.itemMeta}>
+                      Size {item.size} · {item.color} · ×{item.quantity}
+                    </p>
                   </div>
-                  <span className={styles.itemPrice}>${((item.priceCents * item.quantity) / 100).toFixed(2)}</span>
+                  <span className={styles.itemPrice}>
+                    ${((item.priceCents * item.quantity) / 100).toFixed(2)}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -314,10 +352,10 @@ export default function CheckoutPage() {
                   {step === 'address'
                     ? '—'
                     : selectedRate
-                    ? selectedRate.isFree
-                      ? 'Free'
-                      : `$${(selectedRate.priceCents / 100).toFixed(2)}`
-                    : 'Select a method'}
+                      ? selectedRate.isFree
+                        ? 'Free'
+                        : `$${(selectedRate.priceCents / 100).toFixed(2)}`
+                      : 'Select a method'}
                 </span>
               </div>
               <div className={styles.summaryTotal}>

@@ -439,3 +439,13 @@
     color: var(--color-text-muted);
   }
 }
+
+.inputError {
+  border-color: #e53e3e !important;
+}
+
+.fieldError {
+  color: #e53e3e;
+  font-size: 0.8125rem;
+  margin-top: 0.25rem;
+}
