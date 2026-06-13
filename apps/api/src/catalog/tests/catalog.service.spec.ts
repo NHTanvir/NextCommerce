@@ -43,8 +43,8 @@ describe('CatalogService', () => {
   describe('findAll', () => {
     it('paginates products with default page/limit', async () => {
       mockProductRepo.findAndCount.mockResolvedValue([[], 0]);
-      const result = await service.findAll({});
-      expect(result.items).toHaveLength(0);
+      const result = await service.findAll({ page: 1, limit: 10 });
+      expect(result.data).toHaveLength(0);
       expect(result.total).toBe(0);
       expect(result.page).toBe(1);
     });
@@ -58,10 +58,9 @@ describe('CatalogService', () => {
       expect(result).toEqual(variant);
     });
 
-    it('returns null when variant not found', async () => {
+    it('throws NotFoundException when variant not found', async () => {
       mockVariantRepo.findOne.mockResolvedValue(null);
-      const result = await service.findVariantById('nonexistent');
-      expect(result).toBeNull();
+      await expect(service.findVariantById('nonexistent')).rejects.toThrow('Variant not found');
     });
   });
 });

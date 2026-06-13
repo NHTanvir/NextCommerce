@@ -142,7 +142,7 @@ describe('BundlesService', () => {
   describe('calculateBundlePrice', () => {
     it('applies discount percentage correctly', () => {
       expect(service.calculateBundlePrice(10000, 20)).toBe(8000);
-      expect(service.calculateBundlePrice(9999, 10)).toBe(9000);
+      expect(service.calculateBundlePrice(9999, 10)).toBe(8999);
       expect(service.calculateBundlePrice(10000, 0)).toBe(10000);
     });
   });

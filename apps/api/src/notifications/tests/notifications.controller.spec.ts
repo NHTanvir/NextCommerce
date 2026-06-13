@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationsController } from '../notifications.controller';
 import { NotificationsService } from '../notifications.service';
+import { NotificationsBus } from '../notifications.bus';
 import type { UserPayload } from '@nextcommerce/shared';
 
 const user: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
@@ -24,7 +25,10 @@ describe('NotificationsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [NotificationsController],
-      providers: [{ provide: NotificationsService, useValue: mockService }],
+      providers: [
+        { provide: NotificationsService, useValue: mockService },
+        { provide: NotificationsBus, useValue: { emit: jest.fn(), subscribe: jest.fn() } },
+      ],
     }).compile();
 
     controller = module.get(NotificationsController);
@@ -76,7 +80,13 @@ describe('NotificationsController', () => {
   it('broadcast() wraps sent count in { sent }', async () => {
     const dto = { userIds: ['u-1'], type: 'order' as any, title: 'Hello', body: 'World' };
     const result = await controller.broadcast(dto);
-    expect(mockService.broadcastToUsers).toHaveBeenCalledWith(['u-1'], 'order', 'Hello', 'World', undefined);
+    expect(mockService.broadcastToUsers).toHaveBeenCalledWith(
+      ['u-1'],
+      'order',
+      'Hello',
+      'World',
+      undefined,
+    );
     expect(result).toEqual({ sent: 5 });
   });
 });

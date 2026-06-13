@@ -3,8 +3,8 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { IsBoolean, IsOptional } from 'class-validator';
 import { NotificationPreferencesService } from './notification-preferences.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import type { UserPayload } from '../auth/types/user-payload.type';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import type { UserPayload } from '@nextcommerce/shared';
 
 class UpdatePreferencesDto {
   @IsOptional() @IsBoolean() orderUpdates?: boolean;

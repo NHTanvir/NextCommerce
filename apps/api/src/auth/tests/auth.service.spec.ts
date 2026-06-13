@@ -33,7 +33,9 @@ describe('AuthService', () => {
   describe('login', () => {
     it('throws UnauthorizedException for unknown email', async () => {
       mockUsersService.findByEmail.mockResolvedValue(null);
-      await expect(service.login({ email: 'x@x.com', password: 'pw' })).rejects.toThrow(UnauthorizedException);
+      await expect(service.login({ email: 'x@x.com', password: 'pw' })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('throws UnauthorizedException for wrong password', async () => {
@@ -44,7 +46,9 @@ describe('AuthService', () => {
         role: 'customer',
         name: 'Test',
       });
-      await expect(service.login({ email: 'x@x.com', password: 'wrong' })).rejects.toThrow(UnauthorizedException);
+      await expect(service.login({ email: 'x@x.com', password: 'wrong' })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('returns token on valid credentials', async () => {
@@ -56,16 +60,26 @@ describe('AuthService', () => {
         validatePassword: jest.fn().mockResolvedValue(true),
       });
       const result = await service.login({ email: 'x@x.com', password: 'correct' });
-      expect(result.token).toBe('test.jwt.token');
+      expect(result.access_token).toBe('test.jwt.token');
       expect(result.user.email).toBe('x@x.com');
     });
   });
 
   describe('generateToken', () => {
-    it('signs payload and returns token string', () => {
-      const token = service.generateToken({ sub: 'u1', email: 'e@e.com', name: 'N', role: 'customer' });
-      expect(mockJwtService.sign).toHaveBeenCalledWith({ sub: 'u1', email: 'e@e.com', name: 'N', role: 'customer' });
-      expect(token).toBe('test.jwt.token');
+    it('signs payload and returns access_token', () => {
+      const result = service.generateToken({
+        id: 'u1',
+        email: 'e@e.com',
+        name: 'N',
+        role: 'customer',
+      } as any);
+      expect(mockJwtService.sign).toHaveBeenCalledWith({
+        sub: 'u1',
+        email: 'e@e.com',
+        name: 'N',
+        role: 'customer',
+      });
+      expect(result.access_token).toBe('test.jwt.token');
     });
   });
 });

@@ -5,7 +5,7 @@ import {
   NestInterceptor,
   ConflictException,
 } from '@nestjs/common';
-import { Observable, from, of, tap } from 'rxjs';
+import { Observable, from, of, tap, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { IdempotencyService } from './idempotency.service';
 
@@ -20,13 +20,11 @@ export class IdempotencyInterceptor implements NestInterceptor {
     const req = http.getRequest();
     const res = http.getResponse();
 
-    const key = (req.headers[HEADER] ?? req.headers[HEADER.toUpperCase()]) as
-      | string
-      | undefined;
+    const key = (req.headers[HEADER] ?? req.headers[HEADER.toUpperCase()]) as string | undefined;
     if (!key) return next.handle();
 
-    if (!/^[A-Za-z0-9_\-]{8,100}$/.test(key)) {
-      throw new ConflictException('Invalid Idempotency-Key format');
+    if (!/^[A-Za-z0-9_-]{8,100}$/.test(key)) {
+      return throwError(() => new ConflictException('Invalid Idempotency-Key format'));
     }
 
     const user = req.user as { id?: string; userId?: string; sub?: string } | undefined;
@@ -43,9 +41,7 @@ export class IdempotencyInterceptor implements NestInterceptor {
         return next.handle().pipe(
           tap((body) => {
             const statusCode = res.statusCode ?? 200;
-            this.service
-              .store({ key, userId, route, statusCode, body })
-              .catch(() => undefined);
+            this.service.store({ key, userId, route, statusCode, body }).catch(() => undefined);
           }),
         );
       }),

@@ -30,7 +30,7 @@ describe('Custom Pipes', () => {
     });
 
     it('throws for float string', () => {
-      expect(() => pipe.transform('3.14')).toBe(3);
+      expect(() => pipe.transform('3.14')).toThrow(BadRequestException);
     });
   });
 

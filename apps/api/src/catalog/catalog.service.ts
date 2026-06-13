@@ -36,7 +36,7 @@ export class CatalogService {
     });
 
     return {
-      data: data.map((p) => this.toDto(p)),
+      data: data.map((p) => CatalogService.toDto(p)),
       total,
       page,
       limit,
@@ -50,7 +50,7 @@ export class CatalogService {
       relations: ['category', 'variants'],
     });
     if (!product) throw new NotFoundException('Product not found');
-    return this.toDto(product);
+    return CatalogService.toDto(product);
   }
 
   async findVariantById(id: string): Promise<ProductVariant> {
@@ -71,7 +71,12 @@ export class CatalogService {
     minDiscountPct = 0,
     limit = 20,
     page = 1,
-  ): Promise<{ data: ReturnType<typeof this.toDto>[]; total: number; page: number; totalPages: number }> {
+  ): Promise<{
+    data: ReturnType<typeof CatalogService.toDto>[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
     const qb = this.productRepo
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.category', 'category')
@@ -96,7 +101,7 @@ export class CatalogService {
     const slice = withPct.slice((page - 1) * limit, page * limit);
 
     return {
-      data: slice.map(({ product }) => this.toDto(product)),
+      data: slice.map(({ product }) => CatalogService.toDto(product)),
       total,
       page,
       totalPages: Math.ceil(total / limit),
@@ -229,13 +234,15 @@ export class CatalogService {
       })
       .leftJoinAndSelect('p.category', 'category')
       .leftJoinAndSelect('p.variants', 'variants')
-      .orderBy('CASE WHEN p.categoryId = :catId AND p.brand = :brand THEN 0 WHEN p.brand = :brand THEN 1 ELSE 2 END')
+      .orderBy(
+        'CASE WHEN p.categoryId = :catId AND p.brand = :brand THEN 0 WHEN p.brand = :brand THEN 1 ELSE 2 END',
+      )
       .setParameter('catId', product.categoryId)
       .setParameter('brand', product.brand)
       .take(limit)
       .getMany();
 
-    return results.map((p) => this.toDto(p));
+    return results.map((p) => CatalogService.toDto(p));
   }
 
   async getTopSellers(limit = 8) {
@@ -247,7 +254,7 @@ export class CatalogService {
       .orderBy('p.createdAt', 'DESC')
       .take(limit)
       .getMany();
-    return products.map((p) => this.toDto(p));
+    return products.map((p) => CatalogService.toDto(p));
   }
 
   async getVariantsForProduct(productId: string) {
@@ -257,26 +264,32 @@ export class CatalogService {
     });
   }
 
-  async addVariant(productId: string, data: {
-    size: number;
-    color: string;
-    sku: string;
-    stockQty: number;
-    priceCents: number;
-  }) {
+  async addVariant(
+    productId: string,
+    data: {
+      size: number;
+      color: string;
+      sku: string;
+      stockQty: number;
+      priceCents: number;
+    },
+  ) {
     const product = await this.productRepo.findOne({ where: { id: productId } });
     if (!product) throw new NotFoundException('Product not found');
     const variant = this.variantRepo.create({ ...data, productId });
     return this.variantRepo.save(variant);
   }
 
-  async updateVariant(variantId: string, data: Partial<{
-    size: number;
-    color: string;
-    sku: string;
-    stockQty: number;
-    priceCents: number;
-  }>) {
+  async updateVariant(
+    variantId: string,
+    data: Partial<{
+      size: number;
+      color: string;
+      sku: string;
+      stockQty: number;
+      priceCents: number;
+    }>,
+  ) {
     const variant = await this.variantRepo.findOne({ where: { id: variantId } });
     if (!variant) throw new NotFoundException('Variant not found');
     await this.variantRepo.update(variantId, data);
@@ -314,7 +327,7 @@ export class CatalogService {
       .take(limit)
       .getMany();
 
-    return products.map((p) => this.toDto(p));
+    return products.map((p) => CatalogService.toDto(p));
   }
 
   async getFeatured(limit = 12) {
@@ -343,7 +356,7 @@ export class CatalogService {
       products.push(...fallback.filter((p) => !existingIds.has(p.id)));
     }
 
-    return products.map((p) => this.toDto(p));
+    return products.map((p) => CatalogService.toDto(p));
   }
 
   async searchSuggestions(q: string, limit = 8) {
@@ -401,19 +414,17 @@ export class CatalogService {
         .groupBy('p.id')
         .having('COALESCE(SUM(v.stockQty), 0) = 0')
         .getCount(),
-      this.productRepo
-        .createQueryBuilder('p')
-        .where('p.categoryId IS NULL')
-        .getCount(),
+      this.productRepo.createQueryBuilder('p').where('p.categoryId IS NULL').getCount(),
     ]);
 
     return { total, active, noImages, noDescription, noVariants, outOfStock, missingCategory };
   }
 
-  private toDto(p: Product) {
-    const discountPct = p.salePriceCents && p.salePriceCents < p.basePriceCents
-      ? Math.round(((p.basePriceCents - p.salePriceCents) / p.basePriceCents) * 100)
-      : 0;
+  static toDto(p: Product) {
+    const discountPct =
+      p.salePriceCents && p.salePriceCents < p.basePriceCents
+        ? Math.round(((p.basePriceCents - p.salePriceCents) / p.basePriceCents) * 100)
+        : 0;
 
     return {
       id: p.id,
@@ -426,7 +437,8 @@ export class CatalogService {
       discountPct,
       categoryId: p.categoryId,
       categoryName: p.category?.name,
-      images: p.images,
+      category: p.category ?? null,
+      images: p.images ?? [],
       variants: (p.variants || []).map((v) => ({
         id: v.id,
         size: Number(v.size),

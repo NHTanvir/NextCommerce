@@ -8,8 +8,8 @@ describe('Order state machine integration', () => {
 
   it('follows happy path: pending→paid→processing→shipped→delivered', () => {
     expect(canTransition('pending', 'paid')).toBe(true);
-    expect(canTransition('paid', 'processing')).toBe(true);
-    expect(canTransition('processing', 'shipped')).toBe(true);
+    expect(canTransition('paid', 'fulfilled')).toBe(true);
+    expect(canTransition('fulfilled', 'shipped')).toBe(true);
     expect(canTransition('shipped', 'delivered')).toBe(true);
   });
 
@@ -27,7 +27,15 @@ describe('Order state machine integration', () => {
 
   it('blocks any transition from terminal states', () => {
     const terminals: OrderStatus[] = ['delivered', 'cancelled', 'refunded'];
-    const allStatuses: OrderStatus[] = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'];
+    const allStatuses: OrderStatus[] = [
+      'pending',
+      'paid',
+      'processing',
+      'shipped',
+      'delivered',
+      'cancelled',
+      'refunded',
+    ];
     for (const terminal of terminals) {
       for (const target of allStatuses) {
         expect(canTransition(terminal, target)).toBe(false);

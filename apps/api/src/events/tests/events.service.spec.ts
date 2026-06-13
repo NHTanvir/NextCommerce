@@ -1,6 +1,11 @@
-import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventsService } from '../events.service';
+
+jest.mock('amqplib', () => ({
+  connect: jest.fn(),
+}));
+
+import * as amqp from 'amqplib';
 
 const mockChannel = {
   publish: jest.fn(),
@@ -13,19 +18,15 @@ const mockConnection = {
   close: jest.fn().mockResolvedValue(undefined),
 };
 
-jest.mock('amqplib', () => ({
-  connect: jest.fn().mockResolvedValue(mockConnection),
-}));
-
-import * as amqp from 'amqplib';
-
 describe('EventsService', () => {
   let service: EventsService;
-  let configService: ConfigService;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    configService = { get: jest.fn().mockReturnValue('amqp://localhost') } as unknown as ConfigService;
+    (amqp.connect as jest.Mock).mockResolvedValue(mockConnection);
+    const configService = {
+      get: jest.fn().mockReturnValue('amqp://localhost'),
+    } as unknown as ConfigService;
     service = new EventsService(configService);
     jest.spyOn(service['logger'], 'log').mockImplementation(() => {});
     jest.spyOn(service['logger'], 'warn').mockImplementation(() => {});
@@ -35,7 +36,9 @@ describe('EventsService', () => {
     it('connects to RabbitMQ and asserts exchange', async () => {
       await service.onModuleInit();
       expect(amqp.connect).toHaveBeenCalledWith('amqp://localhost');
-      expect(mockChannel.assertExchange).toHaveBeenCalledWith('nextcommerce.events', 'topic', { durable: true });
+      expect(mockChannel.assertExchange).toHaveBeenCalledWith('nextcommerce.events', 'topic', {
+        durable: true,
+      });
     });
 
     it('falls back gracefully when RabbitMQ is unavailable', async () => {

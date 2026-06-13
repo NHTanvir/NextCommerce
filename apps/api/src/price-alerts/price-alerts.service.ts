@@ -76,7 +76,7 @@ export class PriceAlertsService {
     await this.repo.update(alertId, { lastTriggeredAt: new Date(), isActive: false });
   }
 
-  async shouldTrigger(alert: PriceAlert, currentPriceCents: number): boolean {
+  shouldTrigger(alert: PriceAlert, currentPriceCents: number): boolean {
     if (!alert.isActive) return false;
     if (alert.targetPriceCents === null) return true;
     return currentPriceCents <= alert.targetPriceCents;

@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CatalogController } from '../catalog.controller';
 import { CatalogService } from '../catalog.service';
+import { CatalogImportService } from '../catalog-import.service';
+import { RecommendationsService } from '../recommendations.service';
 import { ProductQueryDto } from '../dto/product-query.dto';
 import { CreateProductDto } from '../dto/create-product.dto';
 
@@ -18,7 +20,17 @@ describe('CatalogController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CatalogController],
-      providers: [{ provide: CatalogService, useValue: mockService }],
+      providers: [
+        { provide: CatalogService, useValue: mockService },
+        {
+          provide: CatalogImportService,
+          useValue: { importFromCsv: jest.fn(), importFromJson: jest.fn() },
+        },
+        {
+          provide: RecommendationsService,
+          useValue: { findSimilar: jest.fn(), findFrequentlyBought: jest.fn() },
+        },
+      ],
     }).compile();
 
     controller = module.get<CatalogController>(CatalogController);
@@ -39,16 +51,30 @@ describe('CatalogController', () => {
 
     it('passes search filter through', async () => {
       const query: ProductQueryDto = { page: 1, limit: 10, search: 'nike' };
-      mockService.findAll.mockResolvedValue({ data: [], total: 0, page: 1, limit: 10, totalPages: 0 });
+      mockService.findAll.mockResolvedValue({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 10,
+        totalPages: 0,
+      });
       await controller.findAll(query);
       expect(mockService.findAll).toHaveBeenCalledWith(expect.objectContaining({ search: 'nike' }));
     });
 
     it('passes category filter through', async () => {
       const query: ProductQueryDto = { page: 1, limit: 10, categoryId: 'cat-1' };
-      mockService.findAll.mockResolvedValue({ data: [], total: 0, page: 1, limit: 10, totalPages: 0 });
+      mockService.findAll.mockResolvedValue({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 10,
+        totalPages: 0,
+      });
       await controller.findAll(query);
-      expect(mockService.findAll).toHaveBeenCalledWith(expect.objectContaining({ categoryId: 'cat-1' }));
+      expect(mockService.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({ categoryId: 'cat-1' }),
+      );
     });
   });
 

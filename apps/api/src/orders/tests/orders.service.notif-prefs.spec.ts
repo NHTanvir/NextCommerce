@@ -53,7 +53,7 @@ describe('OrdersService notification preferences', () => {
   }
 
   it('skips shipped notification when user opted out of orderUpdates', async () => {
-    setOrder('processing');
+    setOrder('fulfilled');
     shouldSendEmail.mockReturnValue(false);
 
     await service.updateStatus('o-1', 'shipped', 'admin-1', '1Z-TRACK', 'UPS');
@@ -63,16 +63,11 @@ describe('OrdersService notification preferences', () => {
   });
 
   it('sends shipped notification when user opted in', async () => {
-    setOrder('processing');
+    setOrder('fulfilled');
     shouldSendEmail.mockReturnValue(true);
 
     await service.updateStatus('o-1', 'shipped', 'admin-1', '1Z-TRACK', 'UPS');
 
-    expect(notifyShipped).toHaveBeenCalledWith(
-      'u-1',
-      'o-1',
-      expect.any(String),
-      '1Z-TRACK',
-    );
+    expect(notifyShipped).toHaveBeenCalledWith('u-1', 'o-1', expect.any(String), '1Z-TRACK');
   });
 });

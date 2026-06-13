@@ -9,6 +9,7 @@ import { CartService } from '../../cart/cart.service';
 import { CatalogService } from '../../catalog/catalog.service';
 import { EventsService } from '../../events/events.service';
 import { NotificationsService } from '../../notifications/notifications.service';
+import { NotificationPreferencesService } from '../../notification-preferences/notification-preferences.service';
 import { MetricsService } from '../../metrics/metrics.service';
 
 describe('OrdersService checkout latency metric', () => {
@@ -27,6 +28,7 @@ describe('OrdersService checkout latency metric', () => {
         { provide: CatalogService, useValue: {} },
         { provide: EventsService, useValue: { publish: jest.fn() } },
         { provide: NotificationsService, useValue: {} },
+        { provide: NotificationPreferencesService, useValue: { shouldSendEmail: jest.fn() } },
         { provide: MetricsService, useValue: { observeCheckout } },
         { provide: DataSource, useValue: {} },
       ],
