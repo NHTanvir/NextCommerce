@@ -60,7 +60,10 @@ docker compose up -d
   - Test files: `apps/web/src/__tests__/*.test.{ts,tsx}`
   - E2e directory excluded from Vitest collection via `exclude: ['**/e2e/**']`
 - **Web e2e**: Playwright (`apps/web/e2e/`) — all API calls stubbed with `page.route`, no live NestJS needed
-- **API tests**: Jest + Supertest (`apps/api/test/`)
+- **API tests**: Jest + Supertest (`apps/api/src/**/*.spec.ts` unit, `apps/api/test/*.e2e-spec.ts` integration)
+  - 63/81 suites green (554 tests); 18 suites have pre-existing assertion bugs (wrong property names in auth.service, catalog.service, orders.service specs — not compilation errors)
+  - `isolatedModules: true` in ts-jest — type-checking is done by `tsc --noEmit` in CI, not during test runs
+  - Use `jest.resetAllMocks()` (not `clearAllMocks`) inside nested `describe` blocks when tests rely on `mockResolvedValueOnce` — `clearAllMocks` does NOT drain implementation queues
 - Use `vi.*` for Vitest timer fakes (not `jest.*`)
 
 ## Redux store shape
