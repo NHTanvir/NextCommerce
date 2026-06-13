@@ -102,20 +102,22 @@ export default function BrandsPage() {
 
         {!isLoading && filtered.length === 0 && (
           <div className={styles.empty}>
-            <p>No brands match "{search}"</p>
+            <p>{search ? `No brands match "${search}"` : 'No brands available yet'}</p>
           </div>
         )}
 
-        {!isLoading && !search && letters.map((letter) => (
-          <section key={letter} id={`brand-${letter}`} className={styles.group}>
-            <h2 className={styles.groupLetter}>{letter}</h2>
-            <div className={styles.brandGrid}>
-              {alphabetical.get(letter)!.map(({ brand, productCount }) => (
-                <BrandCard key={brand} brand={brand} productCount={productCount} />
-              ))}
-            </div>
-          </section>
-        ))}
+        {!isLoading &&
+          !search &&
+          letters.map((letter) => (
+            <section key={letter} id={`brand-${letter}`} className={styles.group}>
+              <h2 className={styles.groupLetter}>{letter}</h2>
+              <div className={styles.brandGrid}>
+                {alphabetical.get(letter)!.map(({ brand, productCount }) => (
+                  <BrandCard key={brand} brand={brand} productCount={productCount} />
+                ))}
+              </div>
+            </section>
+          ))}
 
         {!isLoading && search && (
           <div className={styles.brandGrid}>
@@ -131,10 +133,7 @@ export default function BrandsPage() {
 
 function BrandCard({ brand, productCount }: { brand: string; productCount: number }) {
   return (
-    <Link
-      href={`/products?brand=${encodeURIComponent(brand)}`}
-      className={styles.brandCard}
-    >
+    <Link href={`/products?brand=${encodeURIComponent(brand)}`} className={styles.brandCard}>
       <span className={styles.brandEmoji}>{getBrandEmoji(brand)}</span>
       <span className={styles.brandName}>{brand}</span>
       <span className={styles.brandCount}>{productCount} products</span>
