@@ -36,10 +36,7 @@ export class SearchService {
       this.searchCategories(q, 5),
     ]);
 
-    const results: SearchResultItem[] = [
-      ...categories,
-      ...products,
-    ].slice(0, limit);
+    const results: SearchResultItem[] = [...categories, ...products].slice(0, limit);
 
     return { query: q, total: results.length, results };
   }
@@ -47,14 +44,9 @@ export class SearchService {
   private async searchProducts(q: string, limit: number): Promise<SearchResultItem[]> {
     const rows = await this.productRepo
       .createQueryBuilder('p')
-      .select([
-        'p.id', 'p.slug', 'p.title', 'p.brand', 'p.basePriceCents', 'p.images',
-      ])
+      .select(['p.id', 'p.slug', 'p.title', 'p.brand', 'p.basePriceCents', 'p.images'])
       .where('p.isActive = 1')
-      .andWhere(
-        '(p.title LIKE :q OR p.brand LIKE :q OR p.description LIKE :q)',
-        { q: `%${q}%` },
-      )
+      .andWhere('(p.title LIKE :q OR p.brand LIKE :q OR p.description LIKE :q)', { q: `%${q}%` })
       .orderBy('p.basePriceCents', 'ASC')
       .take(limit)
       .getMany();
@@ -83,7 +75,6 @@ export class SearchService {
       id: c.id,
       title: c.name,
       slug: c.slug,
-      imageUrl: c.imageUrl ?? undefined,
     }));
   }
 
