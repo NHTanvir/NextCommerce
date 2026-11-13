@@ -202,7 +202,7 @@
   white-space: nowrap;
   transition: border-color 0.2s, color 0.2s;
 
-  &:hover { border-color: #e94560; color: #e94560; }
+  &:hover { border-color: var(--color-accent); color: var(--color-accent); }
 }
 
 .tipBox {

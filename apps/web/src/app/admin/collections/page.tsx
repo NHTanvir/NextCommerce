@@ -50,7 +50,10 @@ export default function AdminCollectionsPage() {
   };
 
   const generateSlug = (name: string) =>
-    name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
 
   return (
     <div className={styles.page}>
@@ -71,15 +74,35 @@ export default function AdminCollectionsPage() {
             { label: 'Active', value: stats.active, color: '#3fb950' },
             { label: 'Inactive', value: stats.inactive, color: '#8b949e' },
             { label: 'With Discount', value: stats.withDiscount, color: '#f59e0b' },
-            { label: 'Expiring Soon', value: stats.expiringSoon, color: '#e94560' },
+            { label: 'Expiring Soon', value: stats.expiringSoon, color: 'var(--color-accent)' },
           ].map((s) => (
-            <div key={s.label} style={{
-              flex: 1, minWidth: 100, background: 'var(--color-surface)',
-              border: `1px solid ${s.color}30`, borderRadius: '0.75rem',
-              padding: '0.875rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem',
-            }}>
+            <div
+              key={s.label}
+              style={{
+                flex: 1,
+                minWidth: 100,
+                background: 'var(--color-surface)',
+                border: `1px solid ${s.color}30`,
+                borderRadius: '0.75rem',
+                padding: '0.875rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+            >
               <span style={{ fontSize: '1.5rem', fontWeight: 800, color: s.color }}>{s.value}</span>
-              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: 'var(--color-text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {s.label}
+              </span>
             </div>
           ))}
         </div>
@@ -95,7 +118,13 @@ export default function AdminCollectionsPage() {
                 className={styles.input}
                 required
                 value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value, slug: generateSlug(e.target.value) }))}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    name: e.target.value,
+                    slug: generateSlug(e.target.value),
+                  }))
+                }
               />
             </div>
             <div className={styles.field}>
@@ -123,7 +152,9 @@ export default function AdminCollectionsPage() {
                 min={0}
                 max={80}
                 value={form.discountPercent}
-                onChange={(e) => setForm((f) => ({ ...f, discountPercent: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, discountPercent: Number(e.target.value) }))
+                }
               />
             </div>
             <div className={styles.field}>
@@ -167,9 +198,7 @@ export default function AdminCollectionsPage() {
                 )}
               </div>
 
-              {c.description && (
-                <p className={styles.cardDesc}>{c.description}</p>
-              )}
+              {c.description && <p className={styles.cardDesc}>{c.description}</p>}
 
               <div className={styles.cardMeta}>
                 <span className={styles.productCount}>{c.productIds.length} products</span>
@@ -187,10 +216,7 @@ export default function AdminCollectionsPage() {
                 >
                   {c.isActive ? 'Deactivate' : 'Activate'}
                 </button>
-                <button
-                  className={styles.deleteBtn}
-                  onClick={() => handleDelete(c.id, c.name)}
-                >
+                <button className={styles.deleteBtn} onClick={() => handleDelete(c.id, c.name)}>
                   Delete
                 </button>
               </div>

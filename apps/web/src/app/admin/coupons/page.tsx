@@ -46,7 +46,13 @@ export default function AdminCouponsPage() {
         ...(bulkForm.expiresAt ? { expiresAt: new Date(bulkForm.expiresAt).toISOString() } : {}),
       }).unwrap();
       setShowBulkForm(false);
-      setBulkForm({ count: '10', prefix: '', discountType: 'percentage', discountValue: '10', expiresAt: '' });
+      setBulkForm({
+        count: '10',
+        prefix: '',
+        discountType: 'percentage',
+        discountValue: '10',
+        expiresAt: '',
+      });
     } catch {
       // ignore
     }
@@ -63,7 +69,13 @@ export default function AdminCouponsPage() {
         ...(form.expiresAt ? { expiresAt: new Date(form.expiresAt).toISOString() } : {}),
       }).unwrap();
       setShowForm(false);
-      setForm({ code: '', discountType: 'percentage', discountValue: '', maxUsageCount: '', expiresAt: '' });
+      setForm({
+        code: '',
+        discountType: 'percentage',
+        discountValue: '',
+        maxUsageCount: '',
+        expiresAt: '',
+      });
     } catch {
       // ignore
     }
@@ -74,10 +86,22 @@ export default function AdminCouponsPage() {
       <div className={styles.header}>
         <h1 className={styles.title}>Coupons ({coupons.length})</h1>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button className="btn btn-secondary" onClick={() => { setShowBulkForm(true); setShowForm(false); }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => {
+              setShowBulkForm(true);
+              setShowForm(false);
+            }}
+          >
             Bulk Generate
           </button>
-          <button className="btn btn-primary" onClick={() => { setShowForm(true); setShowBulkForm(false); }}>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              setShowForm(true);
+              setShowBulkForm(false);
+            }}
+          >
             + New Coupon
           </button>
         </div>
@@ -89,20 +113,36 @@ export default function AdminCouponsPage() {
           {[
             { label: 'Total', value: stats.total, color: '#8b949e' },
             { label: 'Active', value: stats.active, color: '#3fb950' },
-            { label: 'Expired', value: stats.expired, color: '#e94560' },
+            { label: 'Expired', value: stats.expired, color: 'var(--color-accent)' },
             { label: 'Redemptions', value: stats.totalRedemptions, color: '#58a6ff' },
           ].map(({ label, value, color }) => (
             <div
               key={label}
               style={{
-                flex: 1, minWidth: 100, background: 'var(--color-surface)',
-                border: `1px solid ${color}30`, borderRadius: '0.75rem',
-                padding: '1rem', display: 'flex', flexDirection: 'column',
-                alignItems: 'center', gap: '0.25rem',
+                flex: 1,
+                minWidth: 100,
+                background: 'var(--color-surface)',
+                border: `1px solid ${color}30`,
+                borderRadius: '0.75rem',
+                padding: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.25rem',
               }}
             >
               <span style={{ fontSize: '1.75rem', fontWeight: 800, color }}>{value}</span>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: 'var(--color-text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {label}
+              </span>
             </div>
           ))}
         </div>
@@ -139,7 +179,12 @@ export default function AdminCouponsPage() {
               <select
                 className={styles.input}
                 value={bulkForm.discountType}
-                onChange={(e) => setBulkForm((f) => ({ ...f, discountType: e.target.value as 'percentage' | 'fixed' }))}
+                onChange={(e) =>
+                  setBulkForm((f) => ({
+                    ...f,
+                    discountType: e.target.value as 'percentage' | 'fixed',
+                  }))
+                }
               >
                 <option value="percentage">Percentage (%)</option>
                 <option value="fixed">Fixed ($)</option>
@@ -166,7 +211,13 @@ export default function AdminCouponsPage() {
             </div>
           </div>
           <div className={styles.formActions}>
-            <button type="button" className="btn btn-secondary" onClick={() => setShowBulkForm(false)}>Cancel</button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setShowBulkForm(false)}
+            >
+              Cancel
+            </button>
             <button type="submit" className="btn btn-primary" disabled={bulkSubmitting}>
               {bulkSubmitting ? 'Generating…' : `Generate ${bulkForm.count} Codes`}
             </button>
@@ -193,7 +244,9 @@ export default function AdminCouponsPage() {
               <select
                 className={styles.input}
                 value={form.discountType}
-                onChange={(e) => setForm((f) => ({ ...f, discountType: e.target.value as 'percentage' | 'fixed' }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, discountType: e.target.value as 'percentage' | 'fixed' }))
+                }
               >
                 <option value="percentage">Percentage (%)</option>
                 <option value="fixed">Fixed ($)</option>
@@ -231,7 +284,9 @@ export default function AdminCouponsPage() {
             </div>
           </div>
           <div className={styles.formActions}>
-            <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancel</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>
+              Cancel
+            </button>
             <button type="submit" className="btn btn-primary" disabled={submitting}>
               {submitting ? 'Creating...' : 'Create'}
             </button>
@@ -241,7 +296,9 @@ export default function AdminCouponsPage() {
 
       <div className={styles.tableWrap}>
         {isLoading ? (
-          <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading…</p>
+          <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+            Loading…
+          </p>
         ) : (
           <table className={styles.table}>
             <thead>
@@ -263,7 +320,9 @@ export default function AdminCouponsPage() {
                       ? `${c.discountValue}%`
                       : formatPrice(c.discountValue)}
                   </td>
-                  <td>{c.usageCount} / {c.maxUsageCount ?? '∞'}</td>
+                  <td>
+                    {c.usageCount} / {c.maxUsageCount ?? '∞'}
+                  </td>
                   <td>{c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'Never'}</td>
                   <td>
                     <span className={`badge ${c.isActive ? 'badge-success' : 'badge-error'}`}>

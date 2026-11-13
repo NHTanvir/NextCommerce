@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import styles from './newsletter.module.scss';
+import Link from 'next/link';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
@@ -87,7 +88,8 @@ export default function NewsletterPage() {
         <div className={styles.heroIcon}>📧</div>
         <h1 className={styles.title}>Stay in the Loop</h1>
         <p className={styles.subtitle}>
-          Join 50,000+ sneaker fans who get exclusive deals, early access, and new arrivals straight to their inbox.
+          Join 50,000+ sneaker fans who get exclusive deals, early access, and new arrivals straight
+          to their inbox.
         </p>
       </div>
 
@@ -98,7 +100,9 @@ export default function NewsletterPage() {
 
             <form onSubmit={handleSubscribe} className={styles.form}>
               <div className={styles.fieldGroup}>
-                <label className={styles.label} htmlFor="nl-name">Name (optional)</label>
+                <label className={styles.label} htmlFor="nl-name">
+                  Name (optional)
+                </label>
                 <input
                   id="nl-name"
                   type="text"
@@ -110,7 +114,9 @@ export default function NewsletterPage() {
               </div>
 
               <div className={styles.fieldGroup}>
-                <label className={styles.label} htmlFor="nl-email">Email address *</label>
+                <label className={styles.label} htmlFor="nl-email">
+                  Email address *
+                </label>
                 <input
                   id="nl-email"
                   type="email"
@@ -151,21 +157,24 @@ export default function NewsletterPage() {
 
               {error && <p className={styles.error}>{error}</p>}
 
-              <button type="submit" className={styles.submitBtn} disabled={loading || !email.trim()}>
+              <button
+                type="submit"
+                className={styles.submitBtn}
+                disabled={loading || !email.trim()}
+              >
                 {loading ? 'Subscribing…' : 'Subscribe Now'}
               </button>
 
               <p className={styles.privacyNote}>
                 By subscribing you agree to our{' '}
-                <a href="/privacy" className={styles.privacyLink}>Privacy Policy</a>.
-                You can unsubscribe at any time.
+                <Link href="/privacy" className={styles.privacyLink}>
+                  Privacy Policy
+                </Link>
+                . You can unsubscribe at any time.
               </p>
             </form>
 
-            <button
-              className={styles.unsubLink}
-              onClick={() => setStep('unsubscribe')}
-            >
+            <button className={styles.unsubLink} onClick={() => setStep('unsubscribe')}>
               Want to unsubscribe instead?
             </button>
           </div>
@@ -176,15 +185,24 @@ export default function NewsletterPage() {
             <div className={styles.successIcon}>🎉</div>
             <h2 className={styles.successTitle}>You&apos;re subscribed!</h2>
             <p className={styles.successText}>
-              Welcome to the NextCommerce newsletter, {name || 'friend'}! Check your inbox for a confirmation email.
+              Welcome to the NextCommerce newsletter, {name || 'friend'}! Check your inbox for a
+              confirmation email.
             </p>
             <p className={styles.successSub}>
               You&apos;ll hear from us with updates on{' '}
-              {[...prefs].map((p) => PREFERENCES.find((pref) => pref.id === p)?.label).filter(Boolean).join(', ')}.
+              {[...prefs]
+                .map((p) => PREFERENCES.find((pref) => pref.id === p)?.label)
+                .filter(Boolean)
+                .join(', ')}
+              .
             </p>
             <div className={styles.successActions}>
-              <a href="/products" className={styles.ctaBtn}>Start Shopping</a>
-              <a href="/" className={styles.ghostBtn}>Go to Homepage</a>
+              <Link href="/products" className={styles.ctaBtn}>
+                Start Shopping
+              </Link>
+              <Link href="/" className={styles.ghostBtn}>
+                Go to Homepage
+              </Link>
             </div>
           </div>
         )}
@@ -197,7 +215,9 @@ export default function NewsletterPage() {
             </p>
             <form onSubmit={handleUnsubscribe} className={styles.form}>
               <div className={styles.fieldGroup}>
-                <label className={styles.label} htmlFor="unsub-email">Email address</label>
+                <label className={styles.label} htmlFor="unsub-email">
+                  Email address
+                </label>
                 <input
                   id="unsub-email"
                   type="email"
@@ -208,14 +228,15 @@ export default function NewsletterPage() {
                   onChange={(e) => setUnsubEmail(e.target.value)}
                 />
               </div>
-              <button type="submit" className={`${styles.submitBtn} ${styles.submitBtnDanger}`} disabled={loading}>
+              <button
+                type="submit"
+                className={`${styles.submitBtn} ${styles.submitBtnDanger}`}
+                disabled={loading}
+              >
                 {loading ? 'Processing…' : 'Unsubscribe'}
               </button>
             </form>
-            <button
-              className={styles.unsubLink}
-              onClick={() => setStep('form')}
-            >
+            <button className={styles.unsubLink} onClick={() => setStep('form')}>
               ← Back to subscribe
             </button>
           </div>
@@ -226,11 +247,18 @@ export default function NewsletterPage() {
             <div className={styles.successIcon}>👋</div>
             <h2 className={styles.successTitle}>Successfully unsubscribed</h2>
             <p className={styles.successText}>
-              You&apos;ve been removed from our mailing list. We won&apos;t send you any further emails.
+              You&apos;ve been removed from our mailing list. We won&apos;t send you any further
+              emails.
             </p>
             <p className={styles.successSub}>
               Changed your mind? You can{' '}
-              <button className={styles.resubBtn} onClick={() => { setStep('form'); setUnsubEmail(''); }}>
+              <button
+                className={styles.resubBtn}
+                onClick={() => {
+                  setStep('form');
+                  setUnsubEmail('');
+                }}
+              >
                 subscribe again
               </button>{' '}
               at any time.
@@ -244,9 +272,17 @@ export default function NewsletterPage() {
             <h3 className={styles.perksTitle}>Why subscribe?</h3>
             <div className={styles.perksGrid}>
               {[
-                { icon: '🎟️', title: 'Exclusive Deals', desc: 'Subscriber-only coupon codes and flash sales' },
+                {
+                  icon: '🎟️',
+                  title: 'Exclusive Deals',
+                  desc: 'Subscriber-only coupon codes and flash sales',
+                },
                 { icon: '🚀', title: 'Early Access', desc: 'Shop new releases before anyone else' },
-                { icon: '🎁', title: 'Birthday Offer', desc: 'A special gift just for your birthday month' },
+                {
+                  icon: '🎁',
+                  title: 'Birthday Offer',
+                  desc: 'A special gift just for your birthday month',
+                },
                 { icon: '📰', title: 'Weekly Digest', desc: 'Curated picks and style inspiration' },
               ].map((perk) => (
                 <div key={perk.title} className={styles.perkItem}>

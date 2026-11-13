@@ -56,7 +56,9 @@ export default function AdminQnaPage() {
       <div className={styles.topBar}>
         <div>
           <h1 className={styles.heading}>Q&amp;A Management</h1>
-          <p className={styles.sub}>{total} total question{total !== 1 ? 's' : ''}</p>
+          <p className={styles.sub}>
+            {total} total question{total !== 1 ? 's' : ''}
+          </p>
         </div>
       </div>
 
@@ -66,7 +68,7 @@ export default function AdminQnaPage() {
             { label: 'Total Questions', value: qnaStats.totalQuestions, color: '#8b949e' },
             { label: 'Answered', value: qnaStats.answered, color: '#3fb950' },
             { label: 'Unanswered', value: qnaStats.unanswered, color: '#f59e0b' },
-            { label: 'Hidden', value: qnaStats.hidden, color: '#e94560' },
+            { label: 'Hidden', value: qnaStats.hidden, color: 'var(--color-accent)' },
             { label: 'Total Answers', value: qnaStats.totalAnswers, color: '#58a6ff' },
           ].map(({ label, value, color }) => (
             <div
@@ -84,8 +86,22 @@ export default function AdminQnaPage() {
                 gap: '0.25rem',
               }}
             >
-              <span style={{ fontSize: '1.75rem', fontWeight: 800, color, letterSpacing: '-0.03em' }}>{value}</span>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+              <span
+                style={{ fontSize: '1.75rem', fontWeight: 800, color, letterSpacing: '-0.03em' }}
+              >
+                {value}
+              </span>
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: 'var(--color-text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {label}
+              </span>
             </div>
           ))}
         </div>
@@ -115,7 +131,9 @@ export default function AdminQnaPage() {
                         <span className={styles.dot}>·</span>
                         <span className={styles.date}>
                           {new Date(q.createdAt).toLocaleDateString('en-US', {
-                            month: 'short', day: 'numeric', year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
                           })}
                         </span>
                         {q.isHidden && <span className={styles.hiddenBadge}>Hidden</span>}
@@ -130,17 +148,11 @@ export default function AdminQnaPage() {
                     >
                       {expandedId === q.id ? 'Collapse' : `Answers (${q.answers.length})`}
                     </button>
-                    <button
-                      className={styles.replyActionBtn}
-                      onClick={() => startReply(q.id)}
-                    >
+                    <button className={styles.replyActionBtn} onClick={() => startReply(q.id)}>
                       Answer
                     </button>
                     {!q.isHidden && (
-                      <button
-                        className={styles.hideBtn}
-                        onClick={() => handleHide(q.id)}
-                      >
+                      <button className={styles.hideBtn} onClick={() => handleHide(q.id)}>
                         Hide
                       </button>
                     )}
@@ -158,16 +170,20 @@ export default function AdminQnaPage() {
                     {q.answers.length > 0 && (
                       <div className={styles.answerList}>
                         {q.answers.map((a) => (
-                          <div key={a.id} className={`${styles.answerRow} ${a.isAdminAnswer ? styles.adminAnswer : ''}`}>
-                            <span className={styles.aIcon}>
-                              {a.isAdminAnswer ? '★' : 'A'}
-                            </span>
+                          <div
+                            key={a.id}
+                            className={`${styles.answerRow} ${a.isAdminAnswer ? styles.adminAnswer : ''}`}
+                          >
+                            <span className={styles.aIcon}>{a.isAdminAnswer ? '★' : 'A'}</span>
                             <div className={styles.aContent}>
-                              {a.isAdminAnswer && <span className={styles.officialBadge}>Official</span>}
+                              {a.isAdminAnswer && (
+                                <span className={styles.officialBadge}>Official</span>
+                              )}
                               <p className={styles.aBody}>{a.body}</p>
                               <span className={styles.aDate}>
                                 {new Date(a.createdAt).toLocaleDateString('en-US', {
-                                  month: 'short', day: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
                                 })}
                               </span>
                             </div>
@@ -196,7 +212,10 @@ export default function AdminQnaPage() {
                           </button>
                           <button
                             className="btn btn--ghost btn--sm"
-                            onClick={() => { setReplyingTo(null); setReplyBody(''); }}
+                            onClick={() => {
+                              setReplyingTo(null);
+                              setReplyBody('');
+                            }}
                           >
                             Cancel
                           </button>
@@ -218,7 +237,9 @@ export default function AdminQnaPage() {
               >
                 ← Prev
               </button>
-              <span className={styles.pageInfo}>Page {page} of {totalPages}</span>
+              <span className={styles.pageInfo}>
+                Page {page} of {totalPages}
+              </span>
               <button
                 className={styles.pageBtn}
                 disabled={page >= totalPages}

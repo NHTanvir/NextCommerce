@@ -14,7 +14,7 @@ const STATUS_COLORS: Record<string, string> = {
   processing: '#8957e5',
   shipped: '#3fb950',
   delivered: '#3fb950',
-  cancelled: '#e94560',
+  cancelled: 'var(--color-accent)',
   refunded: '#8b949e',
 };
 
@@ -48,7 +48,10 @@ export default function OrdersPage() {
   }, [orders, filter]);
 
   const totalSpent = useMemo(
-    () => orders.filter((o) => o.status !== 'cancelled' && o.status !== 'refunded').reduce((s, o) => s + o.totalCents, 0),
+    () =>
+      orders
+        .filter((o) => o.status !== 'cancelled' && o.status !== 'refunded')
+        .reduce((s, o) => s + o.totalCents, 0),
     [orders],
   );
 
@@ -69,11 +72,15 @@ export default function OrdersPage() {
             <span className={styles.statLabel}>Total</span>
           </div>
           <div className={styles.statItem}>
-            <span className={styles.statNum} style={{ color: '#f59e0b' }}>{activeCount}</span>
+            <span className={styles.statNum} style={{ color: '#f59e0b' }}>
+              {activeCount}
+            </span>
             <span className={styles.statLabel}>Active</span>
           </div>
           <div className={styles.statItem}>
-            <span className={styles.statNum} style={{ color: '#3fb950' }}>{deliveredCount}</span>
+            <span className={styles.statNum} style={{ color: '#3fb950' }}>
+              {deliveredCount}
+            </span>
             <span className={styles.statLabel}>Delivered</span>
           </div>
           <div className={styles.statItem}>
@@ -110,7 +117,11 @@ export default function OrdersPage() {
         <div className={styles.empty}>
           <span>📦</span>
           <p>{filter ? `No ${filter} orders` : 'No orders yet'}</p>
-          {!filter && <Link href="/products" className="btn btn--primary">Start Shopping</Link>}
+          {!filter && (
+            <Link href="/products" className="btn btn--primary">
+              Start Shopping
+            </Link>
+          )}
           {filter && (
             <button className="btn btn--ghost btn--sm" onClick={() => setFilter('')}>
               View all orders
@@ -138,12 +149,12 @@ export default function OrdersPage() {
               <div className={styles.orderInfo}>
                 <span className={styles.orderDate}>
                   {new Date(order.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric', month: 'short', day: 'numeric',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
                   })}
                 </span>
-                <span className={styles.orderTotal}>
-                  ${(order.totalCents / 100).toFixed(2)}
-                </span>
+                <span className={styles.orderTotal}>${(order.totalCents / 100).toFixed(2)}</span>
               </div>
               {(order.items?.length ?? 0) > 0 && (
                 <div className={styles.orderItems}>

@@ -22,9 +22,13 @@ function StatCard({
 }) {
   return (
     <div className={styles.statCard}>
-      <div className={styles.statIcon} style={{ color }}>{icon}</div>
+      <div className={styles.statIcon} style={{ color }}>
+        {icon}
+      </div>
       <div className={styles.statBody}>
-        <p className={styles.statVal} style={{ color }}>{value}</p>
+        <p className={styles.statVal} style={{ color }}>
+          {value}
+        </p>
         <p className={styles.statLabel}>{label}</p>
         {sub && <p className={styles.statSub}>{sub}</p>}
       </div>
@@ -39,9 +43,12 @@ export default function AccountStatsPage() {
   const { data: loyalty } = useGetLoyaltyBalanceQuery();
   const { data: referrals } = useGetReferralStatsQuery();
 
-  const totalSpent = summary?.totalSpentCents ?? orders.reduce((sum, o) => sum + (o.totalCents ?? 0), 0);
-  const deliveredCount = summary?.deliveredCount ?? orders.filter((o) => o.status === 'delivered').length;
-  const avgOrderValue = summary?.avgOrderValueCents ?? (orders.length > 0 ? totalSpent / orders.length : 0);
+  const totalSpent =
+    summary?.totalSpentCents ?? orders.reduce((sum, o) => sum + (o.totalCents ?? 0), 0);
+  const deliveredCount =
+    summary?.deliveredCount ?? orders.filter((o) => o.status === 'delivered').length;
+  const avgOrderValue =
+    summary?.avgOrderValueCents ?? (orders.length > 0 ? totalSpent / orders.length : 0);
   const totalOrders = summary?.totalOrders ?? orders.length;
 
   const memberSince = me?.createdAt
@@ -57,7 +64,7 @@ export default function AccountStatsPage() {
     delivered: '#3fb950',
     shipped: '#58a6ff',
     paid: '#8957e5',
-    cancelled: '#e94560',
+    cancelled: 'var(--color-accent)',
     refunded: '#f59e0b',
     pending: '#d29922',
   };
@@ -66,7 +73,9 @@ export default function AccountStatsPage() {
     <div className={`container ${styles.page}`}>
       <div className={styles.header}>
         <div>
-          <Link href="/account/orders" className={styles.backLink}>← My Account</Link>
+          <Link href="/account/orders" className={styles.backLink}>
+            ← My Account
+          </Link>
           <h1 className={styles.title}>My Stats</h1>
           <p className={styles.sub}>Member since {memberSince}</p>
         </div>
@@ -86,7 +95,7 @@ export default function AccountStatsPage() {
           label="Total Spent"
           value={`$${(totalSpent / 100).toFixed(2)}`}
           sub={`avg $${(avgOrderValue / 100).toFixed(2)} per order`}
-          color="#e94560"
+          color="var(--color-accent)"
         />
         <StatCard
           icon="⭐"
@@ -136,7 +145,9 @@ export default function AccountStatsPage() {
             <div className={styles.loyaltyHeader}>
               <div>
                 <span className={styles.tierBadge}>{loyalty.tier}</span>
-                <p className={styles.loyaltyPoints}>{loyalty.points.toLocaleString()} pts available</p>
+                <p className={styles.loyaltyPoints}>
+                  {loyalty.points.toLocaleString()} pts available
+                </p>
               </div>
               <p className={styles.lifetimePoints}>
                 {loyalty.lifetimePoints.toLocaleString()} lifetime pts

@@ -54,7 +54,7 @@
 }
 
 .catTabActive {
-  background: rgba(233, 69, 96, 0.12);
+  background: rgba(var(--color-accent-rgb), 0.12);
   border-color: var(--color-accent);
   color: var(--color-accent);
   font-weight: 600;
@@ -134,7 +134,7 @@
 
 .thHighlight {
   color: var(--color-accent) !important;
-  background: rgba(233, 69, 96, 0.06) !important;
+  background: rgba(var(--color-accent-rgb), 0.06) !important;
 }
 
 .td {
@@ -145,7 +145,7 @@
 }
 
 .tdHighlight {
-  background: rgba(233, 69, 96, 0.05);
+  background: rgba(var(--color-accent-rgb), 0.05);
   color: var(--color-text);
 }
 
@@ -153,7 +153,7 @@
 .table tbody tr:hover td { background: rgba(255,255,255,0.02); }
 
 .rowHighlight td {
-  background: rgba(233, 69, 96, 0.12) !important;
+  background: rgba(var(--color-accent-rgb), 0.12) !important;
   color: var(--color-text) !important;
   font-weight: 600;
 }

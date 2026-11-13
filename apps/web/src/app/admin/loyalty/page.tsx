@@ -81,19 +81,61 @@ export default function AdminLoyaltyPage() {
       {loyaltyStats && (
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           {[
-            { label: 'Accounts', value: loyaltyStats.totalAccounts.toLocaleString(), color: '#58a6ff' },
-            { label: 'In Circulation', value: loyaltyStats.totalPointsInCirculation.toLocaleString(), color: '#3fb950' },
-            { label: 'Lifetime Pts', value: loyaltyStats.totalLifetimePoints.toLocaleString(), color: '#f59e0b' },
-            { label: 'Redemptions', value: loyaltyStats.totalRedemptions.toLocaleString(), color: '#a371f7' },
-            { label: 'Pts Redeemed', value: loyaltyStats.totalPointsRedeemed.toLocaleString(), color: '#e94560' },
+            {
+              label: 'Accounts',
+              value: loyaltyStats.totalAccounts.toLocaleString(),
+              color: '#58a6ff',
+            },
+            {
+              label: 'In Circulation',
+              value: loyaltyStats.totalPointsInCirculation.toLocaleString(),
+              color: '#3fb950',
+            },
+            {
+              label: 'Lifetime Pts',
+              value: loyaltyStats.totalLifetimePoints.toLocaleString(),
+              color: '#f59e0b',
+            },
+            {
+              label: 'Redemptions',
+              value: loyaltyStats.totalRedemptions.toLocaleString(),
+              color: '#a371f7',
+            },
+            {
+              label: 'Pts Redeemed',
+              value: loyaltyStats.totalPointsRedeemed.toLocaleString(),
+              color: 'var(--color-accent)',
+            },
           ].map((s) => (
-            <div key={s.label} style={{
-              flex: 1, minWidth: 100, background: 'var(--color-surface)',
-              border: `1px solid ${s.color}30`, borderRadius: '0.75rem',
-              padding: '0.875rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem',
-            }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: s.color }}>{s.value}</span>
-              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
+            <div
+              key={s.label}
+              style={{
+                flex: 1,
+                minWidth: 100,
+                background: 'var(--color-surface)',
+                border: `1px solid ${s.color}30`,
+                borderRadius: '0.75rem',
+                padding: '0.875rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+            >
+              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: s.color }}>
+                {s.value}
+              </span>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: 'var(--color-text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {s.label}
+              </span>
             </div>
           ))}
         </div>
@@ -113,7 +155,9 @@ export default function AdminLoyaltyPage() {
 
       <div className={styles.tableWrap}>
         {isLoading ? (
-          <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading…</p>
+          <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+            Loading…
+          </p>
         ) : (
           <table className={styles.table}>
             <thead>
@@ -135,7 +179,10 @@ export default function AdminLoyaltyPage() {
                   <td>
                     <span
                       className={styles.tierBadge}
-                      style={{ color: TIER_COLORS[acc.tier], borderColor: TIER_COLORS[acc.tier] + '40' }}
+                      style={{
+                        color: TIER_COLORS[acc.tier],
+                        borderColor: TIER_COLORS[acc.tier] + '40',
+                      }}
                     >
                       {TIER_EMOJI[acc.tier]} {acc.tier}
                     </span>
@@ -144,7 +191,9 @@ export default function AdminLoyaltyPage() {
                   <td className={styles.lifetime}>{acc.lifetimePoints.toLocaleString()}</td>
                   <td className={styles.date}>
                     {new Date(acc.updatedAt).toLocaleDateString('en-US', {
-                      month: 'short', day: 'numeric', year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
                     })}
                   </td>
                   <td>
@@ -168,7 +217,9 @@ export default function AdminLoyaltyPage() {
           >
             ← Prev
           </button>
-          <span className={styles.pageInfo}>Page {page} of {totalPages}</span>
+          <span className={styles.pageInfo}>
+            Page {page} of {totalPages}
+          </span>
           <button
             className={styles.pageBtn}
             disabled={page >= totalPages || isLoading}
@@ -184,8 +235,8 @@ export default function AdminLoyaltyPage() {
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h3 className={styles.modalTitle}>Award Points</h3>
             <p className={styles.modalSub}>
-              User: <span className={styles.mono}>{awardModal.userId.slice(-12)}</span>
-              {' '}· Current: {awardModal.points.toLocaleString()} pts
+              User: <span className={styles.mono}>{awardModal.userId.slice(-12)}</span> · Current:{' '}
+              {awardModal.points.toLocaleString()} pts
             </p>
             {awardMsg ? (
               <div className={styles.msgBox}>{awardMsg}</div>
@@ -212,7 +263,9 @@ export default function AdminLoyaltyPage() {
                   />
                 </div>
                 <div className={styles.modalActions}>
-                  <button className="btn btn--ghost" onClick={() => setAwardModal(null)}>Cancel</button>
+                  <button className="btn btn--ghost" onClick={() => setAwardModal(null)}>
+                    Cancel
+                  </button>
                   <button
                     className="btn btn--primary"
                     onClick={handleAward}

@@ -12,7 +12,7 @@ const STATUS_COLORS: Record<string, string> = {
   paid: '#8957e5',
   processing: '#f59e0b',
   pending: '#d29922',
-  cancelled: '#e94560',
+  cancelled: 'var(--color-accent)',
   refunded: '#8b949e',
 };
 
@@ -43,12 +43,42 @@ export default function AdminDashboard() {
 
   const STATS = summary
     ? [
-        { label: 'Total Revenue', value: formatCents(summary.totalRevenueCents), icon: '💰', color: '#e94560' },
-        { label: 'Total Orders', value: summary.totalOrders.toLocaleString(), icon: '📦', color: '#3b82f6' },
-        { label: 'Customers', value: summary.totalCustomers.toLocaleString(), icon: '👥', color: '#10b981' },
-        { label: 'Avg Order Value', value: formatCents(summary.avgOrderValueCents), icon: '🛒', color: '#f59e0b' },
-        { label: 'Pending Orders', value: summary.pendingOrders.toLocaleString(), icon: '⏳', color: '#8b5cf6' },
-        { label: 'Active Products', value: String(products?.total ?? '—'), icon: '🏷️', color: '#06b6d4' },
+        {
+          label: 'Total Revenue',
+          value: formatCents(summary.totalRevenueCents),
+          icon: '💰',
+          color: 'var(--color-accent)',
+        },
+        {
+          label: 'Total Orders',
+          value: summary.totalOrders.toLocaleString(),
+          icon: '📦',
+          color: '#3b82f6',
+        },
+        {
+          label: 'Customers',
+          value: summary.totalCustomers.toLocaleString(),
+          icon: '👥',
+          color: '#10b981',
+        },
+        {
+          label: 'Avg Order Value',
+          value: formatCents(summary.avgOrderValueCents),
+          icon: '🛒',
+          color: '#f59e0b',
+        },
+        {
+          label: 'Pending Orders',
+          value: summary.pendingOrders.toLocaleString(),
+          icon: '⏳',
+          color: '#8b5cf6',
+        },
+        {
+          label: 'Active Products',
+          value: String(products?.total ?? '—'),
+          icon: '🏷️',
+          color: '#06b6d4',
+        },
       ]
     : [];
 
@@ -57,7 +87,11 @@ export default function AdminDashboard() {
       <div className={styles.dashHeader}>
         <h1 className={styles.pageTitle}>Dashboard</h1>
         <span className={styles.dashDate}>
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+          {new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+          })}
         </span>
       </div>
 
@@ -65,11 +99,16 @@ export default function AdminDashboard() {
       <div className={styles.statsGrid}>
         {STATS.map((s) => (
           <div key={s.label} className={styles.statCard}>
-            <div className={styles.statIconWrap} style={{ color: s.color, background: s.color + '18' }}>
+            <div
+              className={styles.statIconWrap}
+              style={{ color: s.color, background: s.color + '18' }}
+            >
               {s.icon}
             </div>
             <div className={styles.statBody}>
-              <span className={styles.statValue} style={{ color: s.color }}>{s.value}</span>
+              <span className={styles.statValue} style={{ color: s.color }}>
+                {s.value}
+              </span>
               <span className={styles.statLabel}>{s.label}</span>
             </div>
           </div>
@@ -93,7 +132,9 @@ export default function AdminDashboard() {
       <div className={styles.section}>
         <div className={styles.sectionHead}>
           <h2 className={styles.sectionTitle}>Recent Orders</h2>
-          <Link href="/admin/orders" className="btn btn--ghost btn--sm">View all →</Link>
+          <Link href="/admin/orders" className="btn btn--ghost btn--sm">
+            View all →
+          </Link>
         </div>
         <div className={styles.tableWrap}>
           <table className={styles.table}>
@@ -115,7 +156,8 @@ export default function AdminDashboard() {
                   </td>
                   <td className={styles.dateCell}>
                     {new Date(order.createdAt).toLocaleDateString('en-US', {
-                      month: 'short', day: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
                     })}
                   </td>
                   <td>
@@ -134,7 +176,9 @@ export default function AdminDashboard() {
               ))}
               {(!orders || orders.length === 0) && (
                 <tr>
-                  <td colSpan={4} className={styles.emptyCell}>No orders yet.</td>
+                  <td colSpan={4} className={styles.emptyCell}>
+                    No orders yet.
+                  </td>
                 </tr>
               )}
             </tbody>

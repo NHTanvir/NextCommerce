@@ -26,7 +26,7 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-accent) 0%, #c73652 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
   display: flex;
   align-items: center;
   justify-content: center;

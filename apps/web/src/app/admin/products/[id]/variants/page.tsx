@@ -298,7 +298,7 @@ export default function AdminVariantsPage() {
                             fontWeight: 700,
                             color:
                               v.stockQty === 0
-                                ? '#e94560'
+                                ? 'var(--color-accent)'
                                 : v.stockQty <= 3
                                   ? '#f59e0b'
                                   : 'var(--color-text)',
@@ -316,7 +316,10 @@ export default function AdminVariantsPage() {
                           <button
                             className="btn btn--outline btn--sm"
                             onClick={() => handleDelete(v.id)}
-                            style={{ color: '#e94560', borderColor: '#e9456040' }}
+                            style={{
+                              color: 'var(--color-accent)',
+                              borderColor: 'rgba(var(--color-accent-rgb), 0.25)',
+                            }}
                           >
                             Delete
                           </button>

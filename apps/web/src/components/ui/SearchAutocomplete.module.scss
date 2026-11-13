@@ -85,7 +85,7 @@
 
   &:hover,
   &.active {
-    background: rgba(233, 69, 96, 0.08);
+    background: rgba(var(--color-accent-rgb), 0.08);
     color: var(--color-accent);
   }
 }

@@ -40,11 +40,23 @@ export default function AdminAnalyticsPage() {
 
   const SUMMARY_CARDS = summary
     ? [
-        { label: 'Total Revenue', value: formatCents(summary.totalRevenueCents), color: '#e94560' },
+        {
+          label: 'Total Revenue',
+          value: formatCents(summary.totalRevenueCents),
+          color: 'var(--color-accent)',
+        },
         { label: 'Total Orders', value: summary.totalOrders.toLocaleString(), color: '#3b82f6' },
         { label: 'Customers', value: summary.totalCustomers.toLocaleString(), color: '#10b981' },
-        { label: 'Avg Order Value', value: formatCents(summary.avgOrderValueCents), color: '#f59e0b' },
-        { label: 'Pending Orders', value: summary.pendingOrders.toLocaleString(), color: '#8b5cf6' },
+        {
+          label: 'Avg Order Value',
+          value: formatCents(summary.avgOrderValueCents),
+          color: '#f59e0b',
+        },
+        {
+          label: 'Pending Orders',
+          value: summary.pendingOrders.toLocaleString(),
+          color: '#8b5cf6',
+        },
       ]
     : [];
 
@@ -121,7 +133,9 @@ export default function AdminAnalyticsPage() {
             ))}
             {topProducts.length === 0 && (
               <tr>
-                <td colSpan={4} className={styles.empty}>No data available.</td>
+                <td colSpan={4} className={styles.empty}>
+                  No data available.
+                </td>
               </tr>
             )}
           </tbody>
@@ -220,7 +234,10 @@ export default function AdminAnalyticsPage() {
                     title={`${p.date}: ${formatCents(p.avgOrderValueCents)}`}
                   />
                   <span className={styles.barLabel}>
-                    {new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    {new Date(p.date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
                   </span>
                 </div>
               ));
@@ -235,11 +252,41 @@ export default function AdminAnalyticsPage() {
           <h2 className={styles.sectionTitle}>Customer Segments</h2>
           <div className={styles.segmentGrid}>
             {[
-              { key: 'vip', label: 'VIP', desc: '5+ orders, $500+ spend', color: '#f59e0b', icon: '👑' },
-              { key: 'loyal', label: 'Loyal', desc: '3+ orders, active 30d', color: '#3fb950', icon: '⭐' },
-              { key: 'regular', label: 'Regular', desc: 'Active in last 30 days', color: '#58a6ff', icon: '👤' },
-              { key: 'atRisk', label: 'At Risk', desc: 'Inactive 30–90 days', color: '#f59e0b', icon: '⚠️' },
-              { key: 'lapsed', label: 'Lapsed', desc: 'Inactive 90–180 days', color: '#e94560', icon: '❌' },
+              {
+                key: 'vip',
+                label: 'VIP',
+                desc: '5+ orders, $500+ spend',
+                color: '#f59e0b',
+                icon: '👑',
+              },
+              {
+                key: 'loyal',
+                label: 'Loyal',
+                desc: '3+ orders, active 30d',
+                color: '#3fb950',
+                icon: '⭐',
+              },
+              {
+                key: 'regular',
+                label: 'Regular',
+                desc: 'Active in last 30 days',
+                color: '#58a6ff',
+                icon: '👤',
+              },
+              {
+                key: 'atRisk',
+                label: 'At Risk',
+                desc: 'Inactive 30–90 days',
+                color: '#f59e0b',
+                icon: '⚠️',
+              },
+              {
+                key: 'lapsed',
+                label: 'Lapsed',
+                desc: 'Inactive 90–180 days',
+                color: 'var(--color-accent)',
+                icon: '❌',
+              },
             ].map(({ key, label, desc, color, icon }) => (
               <div key={key} className={styles.segmentCard}>
                 <span className={styles.segmentIcon}>{icon}</span>
@@ -289,7 +336,11 @@ export default function AdminAnalyticsPage() {
                   <td className={styles.revenue}>{formatCents(c.totalSpentCents)}</td>
                   <td className={styles.date}>
                     {c.lastOrderAt
-                      ? new Date(c.lastOrderAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                      ? new Date(c.lastOrderAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })
                       : '—'}
                   </td>
                 </tr>

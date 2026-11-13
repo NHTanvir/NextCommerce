@@ -8,11 +8,11 @@ const ACTION_COLORS: Record<string, string> = {
   'user.login': '#58a6ff',
   'user.register': '#3fb950',
   'user.logout': '#8b949e',
-  'order.create': '#e94560',
+  'order.create': 'var(--color-accent)',
   'order.status_change': '#f59e0b',
   'product.create': '#3fb950',
   'product.update': '#58a6ff',
-  'product.delete': '#e94560',
+  'product.delete': 'var(--color-accent)',
   'coupon.create': '#8957e5',
   'coupon.redeem': '#f59e0b',
   'inventory.adjust': '#ffa657',
@@ -66,13 +66,33 @@ export default function AdminAuditPage() {
             { label: 'Total Events', value: auditStats.total.toLocaleString(), color: '#58a6ff' },
             { label: 'Last 24h', value: auditStats.last24h.toLocaleString(), color: '#3fb950' },
           ].map((s) => (
-            <div key={s.label} style={{
-              flex: '0 1 auto', minWidth: 120, background: 'var(--color-surface)',
-              border: `1px solid ${s.color}30`, borderRadius: '0.75rem',
-              padding: '0.875rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem',
-            }}>
+            <div
+              key={s.label}
+              style={{
+                flex: '0 1 auto',
+                minWidth: 120,
+                background: 'var(--color-surface)',
+                border: `1px solid ${s.color}30`,
+                borderRadius: '0.75rem',
+                padding: '0.875rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+            >
               <span style={{ fontSize: '1.5rem', fontWeight: 800, color: s.color }}>{s.value}</span>
-              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: 'var(--color-text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {s.label}
+              </span>
             </div>
           ))}
         </div>
@@ -87,7 +107,9 @@ export default function AdminAuditPage() {
             onChange={(e) => setAction(e.target.value)}
           >
             {ACTION_FILTER_OPTIONS.map((a) => (
-              <option key={a} value={a}>{a === 'all' ? 'All Actions' : a}</option>
+              <option key={a} value={a}>
+                {a === 'all' ? 'All Actions' : a}
+              </option>
             ))}
           </select>
         </div>
@@ -99,7 +121,9 @@ export default function AdminAuditPage() {
             onChange={(e) => setLimit(Number(e.target.value))}
           >
             {[50, 100, 200, 500].map((n) => (
-              <option key={n} value={n}>{n} entries</option>
+              <option key={n} value={n}>
+                {n} entries
+              </option>
             ))}
           </select>
         </div>
@@ -119,9 +143,17 @@ export default function AdminAuditPage() {
           </thead>
           <tbody>
             {isLoading && logs.length === 0 ? (
-              <tr><td colSpan={6} className={styles.loading}>Loading…</td></tr>
+              <tr>
+                <td colSpan={6} className={styles.loading}>
+                  Loading…
+                </td>
+              </tr>
             ) : logs.length === 0 ? (
-              <tr><td colSpan={6} className={styles.empty}>No audit logs found.</td></tr>
+              <tr>
+                <td colSpan={6} className={styles.empty}>
+                  No audit logs found.
+                </td>
+              </tr>
             ) : (
               logs.map((log) => (
                 <>
@@ -143,8 +175,12 @@ export default function AdminAuditPage() {
                     </td>
                     <td className={styles.mono}>{log.userId ? log.userId.slice(-8) : '—'}</td>
                     <td className={styles.resource}>
-                      {log.resourceType && <span className={styles.resourceType}>{log.resourceType}</span>}
-                      {log.resourceId && <span className={styles.mono}> {log.resourceId.slice(-8)}</span>}
+                      {log.resourceType && (
+                        <span className={styles.resourceType}>{log.resourceType}</span>
+                      )}
+                      {log.resourceId && (
+                        <span className={styles.mono}> {log.resourceId.slice(-8)}</span>
+                      )}
                       {!log.resourceType && !log.resourceId && '—'}
                     </td>
                     <td className={styles.ip}>{log.ipAddress ?? '—'}</td>

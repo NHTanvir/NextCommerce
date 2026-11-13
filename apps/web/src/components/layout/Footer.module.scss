@@ -5,7 +5,7 @@
 }
 
 .newsletter {
-  padding-block: 2.5rem;
+  padding-block: clamp(2rem, 5vw, 3.5rem);
   border-bottom: 1px solid var(--color-border);
 }
 

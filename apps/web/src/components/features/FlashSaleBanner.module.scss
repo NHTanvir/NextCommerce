@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: linear-gradient(90deg, #e94560, #c0392b);
+  background: linear-gradient(90deg, var(--color-accent), #c0392b);
   color: #fff;
   padding: 0.5rem 1rem;
   display: flex;

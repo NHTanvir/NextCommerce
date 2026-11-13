@@ -7,6 +7,7 @@ import {
   useUnsubscribeBackInStockMutation,
 } from '@/store/api/back-in-stock.api';
 import styles from './BackInStockButton.module.scss';
+import Link from 'next/link';
 
 interface Props {
   variantId: string;
@@ -26,7 +27,7 @@ export function BackInStockButton({ variantId, productId }: Props) {
   if (!user) {
     return (
       <p className={styles.loginPrompt}>
-        <a href="/auth/login">Sign in</a> to get notified when this item is back in stock.
+        <Link href="/auth/login">Sign in</Link> to get notified when this item is back in stock.
       </p>
     );
   }

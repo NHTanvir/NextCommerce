@@ -119,7 +119,7 @@
 .current .progressDot {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  box-shadow: 0 0 8px rgba(233, 69, 96, 0.5);
+  box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.5);
 }
 
 .current .progressLabel {

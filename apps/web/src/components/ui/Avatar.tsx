@@ -18,7 +18,7 @@ function getInitials(name: string): string {
 }
 
 function getColor(name: string): string {
-  const colors = ['#e94560', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'];
+  const colors = ['var(--color-accent)', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'];
   const idx = name.charCodeAt(0) % colors.length;
   return colors[idx];
 }
@@ -35,16 +35,11 @@ export function Avatar({ name = 'User', src, size = 'md', status }: AvatarProps)
       {src ? (
         <img src={src} alt={name} className={styles.image} />
       ) : (
-        <div
-          className={styles.initials}
-          style={{ background: getColor(name) }}
-        >
+        <div className={styles.initials} style={{ background: getColor(name) }}>
           {getInitials(name)}
         </div>
       )}
-      {status && (
-        <span className={`${styles.status} ${styles[status]}`} aria-hidden="true" />
-      )}
+      {status && <span className={`${styles.status} ${styles[status]}`} aria-hidden="true" />}
     </div>
   );
 }

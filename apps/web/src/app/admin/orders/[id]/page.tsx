@@ -2,11 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import {
-  useGetOrderQuery,
-  useUpdateOrderStatusMutation,
-} from '@/store/api/orders.api';
+import { useParams } from 'next/navigation';
+import { useGetOrderQuery, useUpdateOrderStatusMutation } from '@/store/api/orders.api';
 import type { OrderStatus } from '@nextcommerce/shared';
 import { ORDER_STATUS_TRANSITIONS } from '@nextcommerce/shared';
 import styles from './order-detail-admin.module.scss';
@@ -18,15 +15,14 @@ const STATUS_COLORS: Record<string, string> = {
   fulfilled: '#3fb950',
   shipped: '#3fb950',
   delivered: '#3fb950',
-  cancelled: '#e94560',
-  refunded: '#e94560',
+  cancelled: 'var(--color-accent)',
+  refunded: 'var(--color-accent)',
 };
 
 const CARRIERS = ['UPS', 'FedEx', 'USPS', 'DHL', 'OnTrac'];
 
 export default function AdminOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const { data: order, isLoading } = useGetOrderQuery(id);
   const [updateStatus, { isLoading: updating }] = useUpdateOrderStatusMutation();
 
@@ -48,7 +44,9 @@ export default function AdminOrderDetailPage() {
     return (
       <div className={styles.page}>
         <h2>Order not found</h2>
-        <Link href="/admin/orders" className="btn btn--outline">← Back</Link>
+        <Link href="/admin/orders" className="btn btn--outline">
+          ← Back
+        </Link>
       </div>
     );
   }
@@ -79,7 +77,9 @@ export default function AdminOrderDetailPage() {
   return (
     <div className={styles.page}>
       <div className={styles.topBar}>
-        <Link href="/admin/orders" className={styles.backLink}>← Orders</Link>
+        <Link href="/admin/orders" className={styles.backLink}>
+          ← Orders
+        </Link>
         <h1 className={styles.heading}>
           Order <span className={styles.mono}>#{id.slice(-8).toUpperCase()}</span>
         </h1>
@@ -154,7 +154,9 @@ export default function AdminOrderDetailPage() {
                   >
                     <option value="">Select…</option>
                     {nextStatuses.map((s) => (
-                      <option key={s} value={s}>{s}</option>
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -170,7 +172,9 @@ export default function AdminOrderDetailPage() {
                       >
                         <option value="">Select carrier</option>
                         {CARRIERS.map((c) => (
-                          <option key={c} value={c}>{c}</option>
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -204,15 +208,20 @@ export default function AdminOrderDetailPage() {
             <h2 className={styles.cardTitle}>Customer</h2>
             <p className={styles.infoRow}>
               <span className={styles.infoKey}>User ID</span>
-              <span className={styles.mono} style={{ fontSize: '0.75rem' }}>{order.userId}</span>
+              <span className={styles.mono} style={{ fontSize: '0.75rem' }}>
+                {order.userId}
+              </span>
             </p>
             <p className={styles.infoRow}>
               <span className={styles.infoKey}>Placed At</span>
               <span>
-                {new Date((order as any).placedAt ?? (order as any).createdAt).toLocaleString('en-US', {
-                  dateStyle: 'medium',
-                  timeStyle: 'short',
-                })}
+                {new Date((order as any).placedAt ?? (order as any).createdAt).toLocaleString(
+                  'en-US',
+                  {
+                    dateStyle: 'medium',
+                    timeStyle: 'short',
+                  },
+                )}
               </span>
             </p>
             <p className={styles.infoRow}>

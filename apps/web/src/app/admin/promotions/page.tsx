@@ -78,17 +78,37 @@ export default function AdminPromotionsPage() {
           {[
             { label: 'Total', value: stats.total, color: '#58a6ff' },
             { label: 'Active', value: stats.active, color: '#3fb950' },
-            { label: 'Expired', value: stats.expired, color: '#e94560' },
+            { label: 'Expired', value: stats.expired, color: 'var(--color-accent)' },
             { label: 'Redemptions', value: stats.totalRedemptions, color: '#f59e0b' },
             { label: 'Top Promo', value: stats.topPromotion ?? '—', color: '#a371f7' },
           ].map((s) => (
-            <div key={s.label} style={{
-              flex: 1, minWidth: 110, background: 'var(--color-surface)',
-              border: `1px solid ${s.color}30`, borderRadius: '0.75rem',
-              padding: '0.875rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem',
-            }}>
+            <div
+              key={s.label}
+              style={{
+                flex: 1,
+                minWidth: 110,
+                background: 'var(--color-surface)',
+                border: `1px solid ${s.color}30`,
+                borderRadius: '0.75rem',
+                padding: '0.875rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+            >
               <span style={{ fontSize: '1.4rem', fontWeight: 800, color: s.color }}>{s.value}</span>
-              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: 'var(--color-text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {s.label}
+              </span>
             </div>
           ))}
         </div>
@@ -102,52 +122,99 @@ export default function AdminPromotionsPage() {
           <div className={styles.grid}>
             <div className={styles.field}>
               <label>Name</label>
-              <input className={styles.input} required value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <input
+                className={styles.input}
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
             </div>
             <div className={styles.field}>
               <label>Discount Type</label>
-              <select className={styles.input} value={form.discountType}
-                onChange={(e) => setForm({ ...form, discountType: e.target.value as 'percentage' | 'fixed' })}>
+              <select
+                className={styles.input}
+                value={form.discountType}
+                onChange={(e) =>
+                  setForm({ ...form, discountType: e.target.value as 'percentage' | 'fixed' })
+                }
+              >
                 <option value="percentage">Percentage (%)</option>
                 <option value="fixed">Fixed ($)</option>
               </select>
             </div>
             <div className={styles.field}>
               <label>Discount Value</label>
-              <input className={styles.input} type="number" min="0.01" step="0.01" required
+              <input
+                className={styles.input}
+                type="number"
+                min="0.01"
+                step="0.01"
+                required
                 value={form.discountValue}
-                onChange={(e) => setForm({ ...form, discountValue: Number(e.target.value) })} />
+                onChange={(e) => setForm({ ...form, discountValue: Number(e.target.value) })}
+              />
             </div>
             <div className={styles.field}>
               <label>Minimum Order ($)</label>
-              <input className={styles.input} type="number" min="0" step="0.01" placeholder="No minimum"
+              <input
+                className={styles.input}
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="No minimum"
                 value={form.minimumOrderAmount ?? ''}
-                onChange={(e) => setForm({ ...form, minimumOrderAmount: e.target.value ? Number(e.target.value) : undefined })} />
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    minimumOrderAmount: e.target.value ? Number(e.target.value) : undefined,
+                  })
+                }
+              />
             </div>
             <div className={styles.field}>
               <label>Usage Limit</label>
-              <input className={styles.input} type="number" min="1" placeholder="Unlimited"
+              <input
+                className={styles.input}
+                type="number"
+                min="1"
+                placeholder="Unlimited"
                 value={form.usageLimit ?? ''}
-                onChange={(e) => setForm({ ...form, usageLimit: e.target.value ? Number(e.target.value) : undefined })} />
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    usageLimit: e.target.value ? Number(e.target.value) : undefined,
+                  })
+                }
+              />
             </div>
             <div className={styles.field}>
               <label>Starts At</label>
-              <input className={styles.input} type="datetime-local" required
+              <input
+                className={styles.input}
+                type="datetime-local"
+                required
                 value={form.startsAt}
-                onChange={(e) => setForm({ ...form, startsAt: e.target.value })} />
+                onChange={(e) => setForm({ ...form, startsAt: e.target.value })}
+              />
             </div>
             <div className={styles.field}>
               <label>Ends At</label>
-              <input className={styles.input} type="datetime-local" required
+              <input
+                className={styles.input}
+                type="datetime-local"
+                required
                 value={form.endsAt}
-                onChange={(e) => setForm({ ...form, endsAt: e.target.value })} />
+                onChange={(e) => setForm({ ...form, endsAt: e.target.value })}
+              />
             </div>
             <div className={styles.field} style={{ gridColumn: '1 / -1' }}>
               <label>Description</label>
-              <input className={styles.input} placeholder="Optional description"
+              <input
+                className={styles.input}
+                placeholder="Optional description"
                 value={form.description ?? ''}
-                onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+              />
             </div>
           </div>
           <button type="submit" className="btn btn--primary" disabled={creating}>
@@ -177,7 +244,8 @@ export default function AdminPromotionsPage() {
             <tbody>
               {promotions.map((p) => {
                 const now = new Date();
-                const active = p.isActive && new Date(p.startsAt) <= now && new Date(p.endsAt) >= now;
+                const active =
+                  p.isActive && new Date(p.startsAt) <= now && new Date(p.endsAt) >= now;
                 return (
                   <tr key={p.id}>
                     <td>
@@ -185,7 +253,9 @@ export default function AdminPromotionsPage() {
                       {p.description && <div className={styles.desc}>{p.description}</div>}
                     </td>
                     <td className={styles.discount}>
-                      {p.discountType === 'percentage' ? `${p.discountValue}%` : `$${p.discountValue}`}
+                      {p.discountType === 'percentage'
+                        ? `${p.discountValue}%`
+                        : `$${p.discountValue}`}
                     </td>
                     <td>{p.minimumOrderAmount ? `$${p.minimumOrderAmount}` : '—'}</td>
                     <td>{p.usageLimit ? `${p.usageCount}/${p.usageLimit}` : p.usageCount}</td>
@@ -201,13 +271,16 @@ export default function AdminPromotionsPage() {
                     </td>
                     <td className={styles.actions}>
                       {p.isActive && (
-                        <button className="btn btn--ghost btn--sm" onClick={() => handleDeactivate(p.id)}>
+                        <button
+                          className="btn btn--ghost btn--sm"
+                          onClick={() => handleDeactivate(p.id)}
+                        >
                           Deactivate
                         </button>
                       )}
                       <button
                         className="btn btn--ghost btn--sm"
-                        style={{ color: '#e94560' }}
+                        style={{ color: 'var(--color-accent)' }}
                         onClick={() => handleDelete(p.id)}
                       >
                         Delete

@@ -10,21 +10,22 @@ export const metadata: Metadata = {
 const PRESS_FEATURES = [
   {
     outlet: 'TechCrunch',
-    title: 'NextCommerce raises $40M Series B to power the next generation of digital-native retail',
+    title:
+      'NextCommerce raises $40M Series B to power the next generation of digital-native retail',
     date: 'March 2025',
     url: '#',
     category: 'Funding',
   },
   {
     outlet: 'Forbes',
-    title: 'The Sneaker Startup That\'s Rewriting the Rules of Online Commerce',
+    title: "The Sneaker Startup That's Rewriting the Rules of Online Commerce",
     date: 'January 2025',
     url: '#',
     category: 'Feature',
   },
   {
     outlet: 'The Verge',
-    title: 'NextCommerce\'s new AI recommendation engine knows what you want before you do',
+    title: "NextCommerce's new AI recommendation engine knows what you want before you do",
     date: 'November 2024',
     url: '#',
     category: 'Product',
@@ -38,14 +39,14 @@ const PRESS_FEATURES = [
   },
   {
     outlet: 'Business Insider',
-    title: 'NextCommerce hits 1 million customers: The startup that\'s winning on trust',
+    title: "NextCommerce hits 1 million customers: The startup that's winning on trust",
     date: 'August 2024',
     url: '#',
     category: 'Milestone',
   },
   {
     outlet: 'Retail Dive',
-    title: 'Customer loyalty programs still work — NextCommerce\'s data proves it',
+    title: "Customer loyalty programs still work — NextCommerce's data proves it",
     date: 'June 2024',
     url: '#',
     category: 'Research',
@@ -54,7 +55,7 @@ const PRESS_FEATURES = [
 
 const CATEGORY_COLORS: Record<string, string> = {
   Funding: '#58a6ff',
-  Feature: '#e94560',
+  Feature: 'var(--color-accent)',
   Product: '#8957e5',
   Operations: '#f59e0b',
   Milestone: '#3fb950',
@@ -85,7 +86,13 @@ export default function PressPage() {
         <h2 className={styles.sectionTitle}>Recent Coverage</h2>
         <div className={styles.pressGrid}>
           {PRESS_FEATURES.map((item) => (
-            <a key={item.title} href={item.url} className={styles.pressCard} target="_blank" rel="noopener noreferrer">
+            <a
+              key={item.title}
+              href={item.url}
+              className={styles.pressCard}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <div className={styles.pressCardTop}>
                 <span
                   className={styles.pressBadge}
@@ -128,8 +135,8 @@ export default function PressPage() {
         <div className={styles.kitContent}>
           <h2 className={styles.kitTitle}>Media Kit</h2>
           <p className={styles.kitSub}>
-            Download our official brand assets, executive headshots, product screenshots,
-            and company fact sheet.
+            Download our official brand assets, executive headshots, product screenshots, and
+            company fact sheet.
           </p>
           <div className={styles.kitItems}>
             <div className={styles.kitItem}>
@@ -138,7 +145,9 @@ export default function PressPage() {
                 <p className={styles.kitItemLabel}>Logo Pack</p>
                 <p className={styles.kitItemDesc}>SVG + PNG, dark and light variants</p>
               </div>
-              <a href="#" className={styles.downloadBtn}>Download</a>
+              <a href="#" className={styles.downloadBtn}>
+                Download
+              </a>
             </div>
             <div className={styles.kitItem}>
               <span className={styles.kitItemIcon}>📸</span>
@@ -146,7 +155,9 @@ export default function PressPage() {
                 <p className={styles.kitItemLabel}>Press Photos</p>
                 <p className={styles.kitItemDesc}>Team headshots, office, product images</p>
               </div>
-              <a href="#" className={styles.downloadBtn}>Download</a>
+              <a href="#" className={styles.downloadBtn}>
+                Download
+              </a>
             </div>
             <div className={styles.kitItem}>
               <span className={styles.kitItemIcon}>📄</span>
@@ -154,7 +165,9 @@ export default function PressPage() {
                 <p className={styles.kitItemLabel}>Fact Sheet</p>
                 <p className={styles.kitItemDesc}>Company overview, key stats, milestones</p>
               </div>
-              <a href="#" className={styles.downloadBtn}>Download</a>
+              <a href="#" className={styles.downloadBtn}>
+                Download
+              </a>
             </div>
           </div>
         </div>
@@ -164,7 +177,8 @@ export default function PressPage() {
       <section className={styles.contactSection}>
         <h2 className={styles.contactTitle}>Press Inquiries</h2>
         <p className={styles.contactSub}>
-          For media requests, interview inquiries, and fact-checking, please contact our communications team.
+          For media requests, interview inquiries, and fact-checking, please contact our
+          communications team.
         </p>
         <div className={styles.contactCards}>
           <div className={styles.contactCard}>
@@ -178,7 +192,9 @@ export default function PressPage() {
             <p className={styles.contactCardValue}>Within 24 hours, Mon–Fri</p>
           </div>
         </div>
-        <Link href="/about" className={styles.aboutLink}>← Read our story</Link>
+        <Link href="/about" className={styles.aboutLink}>
+          ← Read our story
+        </Link>
       </section>
     </main>
   );

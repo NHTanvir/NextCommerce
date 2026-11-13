@@ -44,7 +44,13 @@ export default function AdminGiftCardsPage() {
         expiresAt: issueForm.expiresAt || undefined,
       }).unwrap();
       setShowIssue(false);
-      setIssueForm({ amountCents: 5000, recipientEmail: '', recipientName: '', message: '', expiresAt: '' });
+      setIssueForm({
+        amountCents: 5000,
+        recipientEmail: '',
+        recipientName: '',
+        message: '',
+        expiresAt: '',
+      });
     } catch {
       // ignore
     }
@@ -68,35 +74,63 @@ export default function AdminGiftCardsPage() {
       {/* Summary */}
       <div className={styles.statsGrid} style={{ gridTemplateColumns: 'repeat(5,1fr)' }}>
         <div className={styles.statCard}>
-          <div className={styles.statIconWrap} style={{ color: '#e94560', background: '#e9456018' }}>🎁</div>
+          <div
+            className={styles.statIconWrap}
+            style={{
+              color: 'var(--color-accent)',
+              background: 'rgba(var(--color-accent-rgb), 0.09)',
+            }}
+          >
+            🎁
+          </div>
           <div className={styles.statBody}>
             <span className={styles.statValue}>{totalCards}</span>
             <span className={styles.statLabel}>Total Issued</span>
           </div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statIconWrap} style={{ color: '#10b981', background: '#10b98118' }}>✅</div>
+          <div
+            className={styles.statIconWrap}
+            style={{ color: '#10b981', background: '#10b98118' }}
+          >
+            ✅
+          </div>
           <div className={styles.statBody}>
             <span className={styles.statValue}>{activeCards}</span>
             <span className={styles.statLabel}>Active</span>
           </div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statIconWrap} style={{ color: '#3b82f6', background: '#3b82f618' }}>💳</div>
+          <div
+            className={styles.statIconWrap}
+            style={{ color: '#3b82f6', background: '#3b82f618' }}
+          >
+            💳
+          </div>
           <div className={styles.statBody}>
             <span className={styles.statValue}>{fmt(totalValue)}</span>
             <span className={styles.statLabel}>Total Issued Value</span>
           </div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statIconWrap} style={{ color: '#10b981', background: '#10b98118' }}>💰</div>
+          <div
+            className={styles.statIconWrap}
+            style={{ color: '#10b981', background: '#10b98118' }}
+          >
+            💰
+          </div>
           <div className={styles.statBody}>
             <span className={styles.statValue}>{fmt(totalRemaining)}</span>
             <span className={styles.statLabel}>Remaining Balance</span>
           </div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statIconWrap} style={{ color: '#f59e0b', background: '#f59e0b18' }}>🏷️</div>
+          <div
+            className={styles.statIconWrap}
+            style={{ color: '#f59e0b', background: '#f59e0b18' }}
+          >
+            🏷️
+          </div>
           <div className={styles.statBody}>
             <span className={styles.statValue}>{fmt(totalRedeemed)}</span>
             <span className={styles.statLabel}>Total Redeemed</span>
@@ -109,11 +143,24 @@ export default function AdminGiftCardsPage() {
         <div className={styles.tableWrap} style={{ padding: '1.5rem' }}>
           <div className={styles.tableHeader} style={{ padding: '0 0 1rem 0', border: 'none' }}>
             <h2 className={styles.tableTitle}>Issue New Gift Card</h2>
-            <button className="btn btn--ghost btn--sm" onClick={() => setShowIssue(false)}>✕ Cancel</button>
+            <button className="btn btn--ghost btn--sm" onClick={() => setShowIssue(false)}>
+              ✕ Cancel
+            </button>
           </div>
-          <form onSubmit={handleIssue} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: 480 }}>
+          <form
+            onSubmit={handleIssue}
+            style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: 480 }}
+          >
             <div>
-              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.375rem', color: 'var(--color-text-muted)' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.8125rem',
+                  fontWeight: 600,
+                  marginBottom: '0.375rem',
+                  color: 'var(--color-text-muted)',
+                }}
+              >
                 Amount
               </label>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -126,8 +173,12 @@ export default function AdminGiftCardsPage() {
                       padding: '0.375rem 0.875rem',
                       borderRadius: 'var(--radius-md)',
                       border: `1px solid ${issueForm.amountCents === a ? 'var(--color-accent)' : 'var(--color-border)'}`,
-                      background: issueForm.amountCents === a ? 'rgba(233,69,96,0.1)' : 'var(--color-bg-card)',
-                      color: issueForm.amountCents === a ? 'var(--color-accent)' : 'var(--color-text)',
+                      background:
+                        issueForm.amountCents === a
+                          ? 'rgba(var(--color-accent-rgb),0.1)'
+                          : 'var(--color-bg-card)',
+                      color:
+                        issueForm.amountCents === a ? 'var(--color-accent)' : 'var(--color-text)',
                       fontWeight: 600,
                       cursor: 'pointer',
                       fontSize: '0.875rem',
@@ -140,8 +191,18 @@ export default function AdminGiftCardsPage() {
             </div>
             {(['recipientEmail', 'recipientName', 'message'] as const).map((field) => (
               <div key={field}>
-                <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.375rem', color: 'var(--color-text-muted)', textTransform: 'capitalize' }}>
-                  {field.replace(/([A-Z])/g, ' $1')} <span style={{ opacity: 0.5 }}>(optional)</span>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '0.8125rem',
+                    fontWeight: 600,
+                    marginBottom: '0.375rem',
+                    color: 'var(--color-text-muted)',
+                    textTransform: 'capitalize',
+                  }}
+                >
+                  {field.replace(/([A-Z])/g, ' $1')}{' '}
+                  <span style={{ opacity: 0.5 }}>(optional)</span>
                 </label>
                 <input
                   type={field === 'recipientEmail' ? 'email' : 'text'}
@@ -160,7 +221,15 @@ export default function AdminGiftCardsPage() {
               </div>
             ))}
             <div>
-              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.375rem', color: 'var(--color-text-muted)' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.8125rem',
+                  fontWeight: 600,
+                  marginBottom: '0.375rem',
+                  color: 'var(--color-text-muted)',
+                }}
+              >
                 Expiry Date <span style={{ opacity: 0.5 }}>(optional)</span>
               </label>
               <input
@@ -177,7 +246,12 @@ export default function AdminGiftCardsPage() {
                 }}
               />
             </div>
-            <button type="submit" className="btn btn--primary" disabled={issuing} style={{ width: 'fit-content' }}>
+            <button
+              type="submit"
+              className="btn btn--primary"
+              disabled={issuing}
+              style={{ width: 'fit-content' }}
+            >
               {issuing ? 'Issuing…' : `Issue ${fmt(issueForm.amountCents)} Gift Card`}
             </button>
           </form>
@@ -207,75 +281,120 @@ export default function AdminGiftCardsPage() {
           </thead>
           <tbody>
             {loading && (
-              <tr><td colSpan={8} className={styles.emptyCell}>Loading…</td></tr>
-            )}
-            {!loading && data?.data.map((card) => (
-              <tr key={card.id}>
-                <td>
-                  <code style={{ fontSize: '0.8125rem', color: 'var(--color-accent)', fontFamily: 'monospace' }}>
-                    {card.code}
-                  </code>
-                </td>
-                <td style={{ color: 'var(--color-text-muted)' }}>
-                  {card.recipientEmail ?? '—'}
-                  {card.recipientName && (
-                    <div style={{ fontSize: '0.75rem' }}>{card.recipientName}</div>
-                  )}
-                </td>
-                <td>{fmt(card.initialAmountCents)}</td>
-                <td style={{ fontWeight: 700 }}>{fmt(card.remainingAmountCents)}</td>
-                <td>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      padding: '0.15rem 0.625rem',
-                      borderRadius: 100,
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: card.isActive ? '#10b981' : '#8b949e',
-                      background: card.isActive ? '#10b98120' : '#8b949e20',
-                    }}
-                  >
-                    {card.isActive ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-                <td className={styles.dateCell}>
-                  {card.expiresAt
-                    ? new Date(card.expiresAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    : 'Never'}
-                </td>
-                <td className={styles.dateCell}>
-                  {new Date(card.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </td>
-                <td>
-                  <button
-                    onClick={() => deleteCard(card.id)}
-                    style={{
-                      padding: '0.25rem 0.625rem',
-                      borderRadius: 'var(--radius-sm)',
-                      border: '1px solid rgba(233,69,96,0.3)',
-                      background: 'transparent',
-                      color: 'var(--color-accent)',
-                      fontSize: '0.75rem',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Revoke
-                  </button>
+              <tr>
+                <td colSpan={8} className={styles.emptyCell}>
+                  Loading…
                 </td>
               </tr>
-            ))}
-            {!loading && (!data?.data.length) && (
-              <tr><td colSpan={8} className={styles.emptyCell}>No gift cards issued yet.</td></tr>
+            )}
+            {!loading &&
+              data?.data.map((card) => (
+                <tr key={card.id}>
+                  <td>
+                    <code
+                      style={{
+                        fontSize: '0.8125rem',
+                        color: 'var(--color-accent)',
+                        fontFamily: 'monospace',
+                      }}
+                    >
+                      {card.code}
+                    </code>
+                  </td>
+                  <td style={{ color: 'var(--color-text-muted)' }}>
+                    {card.recipientEmail ?? '—'}
+                    {card.recipientName && (
+                      <div style={{ fontSize: '0.75rem' }}>{card.recipientName}</div>
+                    )}
+                  </td>
+                  <td>{fmt(card.initialAmountCents)}</td>
+                  <td style={{ fontWeight: 700 }}>{fmt(card.remainingAmountCents)}</td>
+                  <td>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '0.15rem 0.625rem',
+                        borderRadius: 100,
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: card.isActive ? '#10b981' : '#8b949e',
+                        background: card.isActive ? '#10b98120' : '#8b949e20',
+                      }}
+                    >
+                      {card.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className={styles.dateCell}>
+                    {card.expiresAt
+                      ? new Date(card.expiresAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })
+                      : 'Never'}
+                  </td>
+                  <td className={styles.dateCell}>
+                    {new Date(card.createdAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => deleteCard(card.id)}
+                      style={{
+                        padding: '0.25rem 0.625rem',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid rgba(var(--color-accent-rgb),0.3)',
+                        background: 'transparent',
+                        color: 'var(--color-accent)',
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Revoke
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            {!loading && !data?.data.length && (
+              <tr>
+                <td colSpan={8} className={styles.emptyCell}>
+                  No gift cards issued yet.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
 
         {data && data.totalPages > 1 && (
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', padding: '1rem 1.25rem', borderTop: '1px solid var(--color-border)' }}>
-            <button className="btn btn--ghost btn--sm" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>Page {page} of {data.totalPages}</span>
-            <button className="btn btn--ghost btn--sm" disabled={page === data.totalPages} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.75rem',
+              alignItems: 'center',
+              padding: '1rem 1.25rem',
+              borderTop: '1px solid var(--color-border)',
+            }}
+          >
+            <button
+              className="btn btn--ghost btn--sm"
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              ← Prev
+            </button>
+            <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
+              Page {page} of {data.totalPages}
+            </span>
+            <button
+              className="btn btn--ghost btn--sm"
+              disabled={page === data.totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next →
+            </button>
           </div>
         )}
       </div>

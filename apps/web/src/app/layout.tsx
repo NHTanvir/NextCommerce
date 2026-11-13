@@ -5,6 +5,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/features/cart/CartDrawer';
 import { CompareBar } from '@/components/ui/CompareBar';
+import { RouteProgress } from '@/components/ui/RouteProgress';
 import './globals.scss';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={inter.variable}>
       <body>
         <Providers>
+          <RouteProgress />
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Navbar />
             <main style={{ flex: 1 }}>{children}</main>

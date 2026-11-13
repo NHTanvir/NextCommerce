@@ -74,7 +74,7 @@
 
 .tabActive {
   border-color: var(--color-accent);
-  background: rgba(233, 69, 96, 0.1);
+  background: rgba(var(--color-accent-rgb), 0.1);
   color: var(--color-accent);
   font-weight: 600;
 }
@@ -106,7 +106,7 @@
   cursor: pointer;
 
   &:hover {
-    border-color: rgba(233, 69, 96, 0.3);
+    border-color: rgba(var(--color-accent-rgb), 0.3);
     box-shadow: var(--shadow-sm);
   }
 }

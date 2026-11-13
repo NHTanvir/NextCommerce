@@ -98,7 +98,7 @@
 
 .amountBtnActive {
   border-color: var(--color-accent);
-  background: rgba(233, 69, 96, 0.1);
+  background: rgba(var(--color-accent-rgb), 0.1);
   color: var(--color-accent);
 }
 
@@ -254,8 +254,8 @@
 }
 
 .balanceInvalid {
-  background: rgba(233, 69, 96, 0.08);
-  border: 1px solid rgba(233, 69, 96, 0.3);
+  background: rgba(var(--color-accent-rgb), 0.08);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.3);
 }
 
 .balanceAmount {
