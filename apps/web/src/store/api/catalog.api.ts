@@ -67,17 +67,20 @@ export const catalogApi = apiSlice.injectEndpoints({
       providesTags: (_r, _e, id) => [{ type: 'Product' as const, id }],
     }),
 
-    updateProduct: build.mutation<ProductDto, { id: string } & Partial<{
-      title: string;
-      description: string;
-      brand: string;
-      slug: string;
-      basePriceCents: number;
-      salePriceCents: number;
-      categoryId: string;
-      isActive: boolean;
-      images: Array<{ url: string; alt: string }>;
-    }>>({
+    updateProduct: build.mutation<
+      ProductDto,
+      { id: string } & Partial<{
+        title: string;
+        description: string;
+        brand: string;
+        slug: string;
+        basePriceCents: number;
+        salePriceCents: number;
+        categoryId: string;
+        isActive: boolean;
+        images: Array<{ url: string; alt: string }>;
+      }>
+    >({
       query: ({ id, ...body }) => ({
         url: `/catalog/products/${id}`,
         method: 'PATCH',
@@ -100,38 +103,73 @@ export const catalogApi = apiSlice.injectEndpoints({
       ],
     }),
 
-    createProduct: build.mutation<ProductDto, {
-      title: string;
-      description: string;
-      brand: string;
-      slug: string;
-      basePriceCents: number;
-      categoryId: string;
-      isActive: boolean;
-      images: Array<{ url: string; alt: string }>;
-      variants: unknown[];
-    }>({
+    createProduct: build.mutation<
+      ProductDto,
+      {
+        title: string;
+        description: string;
+        brand: string;
+        slug: string;
+        basePriceCents: number;
+        categoryId: string;
+        isActive: boolean;
+        images: Array<{ url: string; alt: string }>;
+        variants: unknown[];
+      }
+    >({
       query: (body) => ({ url: '/catalog/products', method: 'POST', body }),
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
 
-    getProductVariants: build.query<Array<{
-      id: string; size: number; color: string; sku: string; stockQty: number; priceCents: number;
-    }>, string>({
+    getProductVariants: build.query<
+      Array<{
+        id: string;
+        size: number;
+        color: string;
+        sku: string;
+        stockQty: number;
+        priceCents: number;
+      }>,
+      string
+    >({
       query: (productId) => `/catalog/products/${productId}/variants`,
-      providesTags: (_r, _e, productId) => [{ type: 'Product' as const, id: `variants-${productId}` }],
+      providesTags: (_r, _e, productId) => [
+        { type: 'Product' as const, id: `variants-${productId}` },
+      ],
     }),
 
-    createVariant: build.mutation<unknown, {
-      productId: string; size: number; color: string; sku: string; stockQty: number; priceCents: number;
-    }>({
-      query: ({ productId, ...body }) => ({ url: `/catalog/products/${productId}/variants`, method: 'POST', body }),
-      invalidatesTags: (_r, _e, { productId }) => [{ type: 'Product' as const, id: `variants-${productId}` }],
+    createVariant: build.mutation<
+      unknown,
+      {
+        productId: string;
+        size: number;
+        color: string;
+        sku: string;
+        stockQty: number;
+        priceCents: number;
+      }
+    >({
+      query: ({ productId, ...body }) => ({
+        url: `/catalog/products/${productId}/variants`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (_r, _e, { productId }) => [
+        { type: 'Product' as const, id: `variants-${productId}` },
+      ],
     }),
 
-    updateVariant: build.mutation<unknown, {
-      id: string; size: number; color: string; sku: string; stockQty: number; priceCents: number;
-    }>({
+    updateVariant: build.mutation<
+      unknown,
+      {
+        id: string;
+        size: number;
+        color: string;
+        sku: string;
+        stockQty: number;
+        priceCents: number;
+      }
+    >({
       query: ({ id, ...body }) => ({ url: `/catalog/variants/${id}`, method: 'PATCH', body }),
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
@@ -147,7 +185,12 @@ export const catalogApi = apiSlice.injectEndpoints({
     }),
 
     getDeals: build.query<
-      { data: Array<ProductDto & { salePriceCents: number | null; discountPct: number }>; total: number; page: number; totalPages: number },
+      {
+        data: Array<ProductDto & { salePriceCents: number | null; discountPct: number }>;
+        total: number;
+        page: number;
+        totalPages: number;
+      },
       { minDiscount?: number; limit?: number; page?: number }
     >({
       query: ({ minDiscount = 0, limit = 20, page = 1 } = {}) => ({
@@ -158,9 +201,9 @@ export const catalogApi = apiSlice.injectEndpoints({
     }),
 
     getNewArrivals: build.query<ProductDto[], { days?: number; limit?: number } | void>({
-      query: (params = {}) => ({
+      query: (params) => ({
         url: '/catalog/new-arrivals',
-        params,
+        params: params || {},
       }),
       providesTags: [{ type: 'Product', id: 'new-arrivals' }],
     }),
@@ -174,18 +217,22 @@ export const catalogApi = apiSlice.injectEndpoints({
       Array<{ id: string; slug: string; title: string; brand: string; priceCents: number }>,
       { q: string; limit?: number }
     >({
-      query: ({ q, limit = 8 }) => `/catalog/search/suggestions?q=${encodeURIComponent(q)}&limit=${limit}`,
+      query: ({ q, limit = 8 }) =>
+        `/catalog/search/suggestions?q=${encodeURIComponent(q)}&limit=${limit}`,
     }),
 
-    getCatalogHealth: build.query<{
-      total: number;
-      active: number;
-      noImages: number;
-      noDescription: number;
-      noVariants: number;
-      outOfStock: number;
-      missingCategory: number;
-    }, void>({
+    getCatalogHealth: build.query<
+      {
+        total: number;
+        active: number;
+        noImages: number;
+        noDescription: number;
+        noVariants: number;
+        outOfStock: number;
+        missingCategory: number;
+      },
+      void
+    >({
       query: () => '/catalog/health',
     }),
 
@@ -198,11 +245,18 @@ export const catalogApi = apiSlice.injectEndpoints({
       { updated: number },
       Array<{ productId: string; basePriceCents: number }>
     >({
-      query: (updates) => ({ url: '/catalog/products/bulk-price', method: 'PATCH', body: { updates } }),
+      query: (updates) => ({
+        url: '/catalog/products/bulk-price',
+        method: 'PATCH',
+        body: { updates },
+      }),
       invalidatesTags: ['Product'],
     }),
 
-    bulkActivateProducts: build.mutation<{ updated: number }, { productIds: string[]; isActive: boolean }>({
+    bulkActivateProducts: build.mutation<
+      { updated: number },
+      { productIds: string[]; isActive: boolean }
+    >({
       query: (body) => ({ url: '/catalog/products/bulk-activate', method: 'PATCH', body }),
       invalidatesTags: ['Product'],
     }),
