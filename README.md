@@ -77,6 +77,36 @@ Field Nation's JD calls for a backend engineer comfortable with **NestJS, TypeSc
                               └───────────────────────┘
 ```
 
+## Live demo
+
+**Storefront:** https://nextcommerce.naymulhasantanvir10.workers.dev
+
+The Next.js front end is deployed to Cloudflare Workers with
+[OpenNext](https://opennext.js.org/cloudflare). What is deployed is the
+storefront only, and it is honest about that: a Worker cannot open a TCP
+connection to MySQL, RabbitMQ or Redis, so the NestJS API is not part of the
+demo. In its place `infra/demo-api` serves the catalog read endpoints —
+the same JSON shapes `CatalogService.toDto` returns — out of
+`infra/seed/products.json`.
+
+So browsing, filtering, search, product pages, collections, deals and the
+cart all work; sign-in, checkout and the admin panel do not, because they
+need the real API. Run that locally with `docker compose up` (below).
+
+```bash
+# storefront → https://nextcommerce.<subdomain>.workers.dev
+pnpm --filter @nextcommerce/shared build
+cd apps/web
+CF_WORKERS_BUILD=1 NEXT_PUBLIC_API_URL=<demo-api-url> pnpm cf:build
+pnpm cf:deploy
+
+# demo catalog API
+cd infra/demo-api && pnpm deploy
+```
+
+`CF_WORKERS_BUILD=1` is what turns off Next's image optimizer (no sharp on
+Workers) and the lint/typecheck build gates, which run as their own CI jobs.
+
 ## Quick Start
 
 ```bash
