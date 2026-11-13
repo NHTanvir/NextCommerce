@@ -25,4 +25,9 @@ export interface OrderShippedEvent {
   orderId: string;
   userId: string;
   shippedAt: string;
+  // Both sides already use these: the API publishes them on every
+  // order.shipped, and the notifications consumer puts them in the email.
+  // Only the contract did not say so.
+  trackingNumber?: string | null;
+  carrier?: string | null;
 }
