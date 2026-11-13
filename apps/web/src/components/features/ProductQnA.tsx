@@ -9,6 +9,7 @@ import {
   useDeleteQuestionMutation,
 } from '@/store/api/qna.api';
 import styles from './ProductQnA.module.scss';
+import Link from 'next/link';
 
 interface Props {
   productId: string;
@@ -51,9 +52,7 @@ export function ProductQnA({ productId }: Props) {
     <section className={styles.section}>
       <h3 className={styles.title}>
         Questions & Answers
-        {questions.length > 0 && (
-          <span className={styles.count}>{questions.length}</span>
-        )}
+        {questions.length > 0 && <span className={styles.count}>{questions.length}</span>}
       </h3>
 
       {isLoading && <p className={styles.loading}>Loading questions…</p>}
@@ -72,13 +71,13 @@ export function ProductQnA({ productId }: Props) {
                 <p className={styles.questionBody}>{q.body}</p>
                 <div className={styles.questionActions}>
                   <span className={styles.questionDate}>
-                    {new Date(q.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    {new Date(q.createdAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
                   </span>
                   {canDelete && (
-                    <button
-                      className={styles.deleteBtn}
-                      onClick={() => handleDelete(q.id)}
-                    >
+                    <button className={styles.deleteBtn} onClick={() => handleDelete(q.id)}>
                       ✕
                     </button>
                   )}
@@ -86,15 +85,19 @@ export function ProductQnA({ productId }: Props) {
               </div>
 
               {q.answers.map((a) => (
-                <div key={a.id} className={`${styles.answer} ${a.isAdminAnswer ? styles.answerAdmin : ''}`}>
-                  <span className={styles.answerIcon}>
-                    {a.isAdminAnswer ? '🏷️' : 'A'}
-                  </span>
+                <div
+                  key={a.id}
+                  className={`${styles.answer} ${a.isAdminAnswer ? styles.answerAdmin : ''}`}
+                >
+                  <span className={styles.answerIcon}>{a.isAdminAnswer ? '🏷️' : 'A'}</span>
                   <div className={styles.answerContent}>
                     {a.isAdminAnswer && <span className={styles.adminBadge}>Official Answer</span>}
                     <p className={styles.answerBody}>{a.body}</p>
                     <span className={styles.answerDate}>
-                      {new Date(a.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {new Date(a.createdAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
                     </span>
                   </div>
                 </div>
@@ -122,17 +125,17 @@ export function ProductQnA({ productId }: Props) {
                         </button>
                         <button
                           className="btn btn--ghost btn--sm"
-                          onClick={() => { setReplyTo(null); setReplyBody(''); }}
+                          onClick={() => {
+                            setReplyTo(null);
+                            setReplyBody('');
+                          }}
                         >
                           Cancel
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <button
-                      className={styles.replyBtn}
-                      onClick={() => setReplyTo(q.id)}
-                    >
+                    <button className={styles.replyBtn} onClick={() => setReplyTo(q.id)}>
                       + Answer this question
                     </button>
                   )}
@@ -166,7 +169,7 @@ export function ProductQnA({ productId }: Props) {
         </form>
       ) : (
         <p className={styles.loginPrompt}>
-          <a href="/auth/login">Sign in</a> to ask or answer questions.
+          <Link href="/auth/login">Sign in</Link> to ask or answer questions.
         </p>
       )}
     </section>
