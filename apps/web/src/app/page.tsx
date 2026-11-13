@@ -214,18 +214,18 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------- Brand marquee ---------- */}
+      {/* ---------- Brands ---------- */}
       {brands.length > 0 && (
-        <section className={styles.marquee} aria-label="Brands we stock">
-          <div className={styles.marqueeTrack}>
-            {[0, 1].map((copy) => (
-              <ul key={copy} className={styles.marqueeRow} aria-hidden={copy === 1}>
-                {brands.map((b) => (
-                  <li key={b}>
-                    <Link href={`/products?brand=${encodeURIComponent(b)}`}>{b}</Link>
-                  </li>
-                ))}
-              </ul>
+        <section className={styles.brands} aria-label="Brands we stock">
+          <div className={`container ${styles.brandRow}`}>
+            {brands.slice(0, 12).map((b) => (
+              <Link
+                key={b}
+                href={`/products?brand=${encodeURIComponent(b)}`}
+                className={styles.brand}
+              >
+                {b}
+              </Link>
             ))}
           </div>
         </section>

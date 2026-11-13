@@ -250,48 +250,34 @@
   object-fit: cover;
 }
 
-/* -------------------------------------------------------- brand marquee */
+/* --------------------------------------------------------------- brands */
 
-.marquee {
-  overflow: hidden;
+// A plain row, not a marquee: the names are links a visitor may want to
+// click, and a moving target is a poor one.
+.brands {
   border-bottom: 1px solid var(--color-border);
   background: var(--color-bg-secondary);
-  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
 
-.marqueeTrack {
+.brandRow {
   display: flex;
-  width: max-content;
-  animation: slide 38s linear infinite;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 2.5rem;
+  padding-block: 1.25rem;
+}
+
+.brand {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-text-muted);
+  transition: color var(--transition);
 
   &:hover {
-    animation-play-state: paused;
+    color: var(--color-accent);
   }
-}
-
-.marqueeRow {
-  display: flex;
-  align-items: center;
-  gap: 3.5rem;
-  padding: 1.125rem 1.75rem;
-
-  li a {
-    font-size: 1.0625rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    color: var(--color-text-muted);
-    white-space: nowrap;
-    transition: color var(--transition);
-
-    &:hover {
-      color: var(--color-accent);
-    }
-  }
-}
-
-@keyframes slide {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
 }
 
 /* ------------------------------------------------------------- sections */
