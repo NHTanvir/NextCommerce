@@ -155,7 +155,7 @@ export default function AdminDashboard() {
                     </Link>
                   </td>
                   <td className={styles.dateCell}>
-                    {new Date(order.createdAt).toLocaleDateString('en-US', {
+                    {new Date(order.placedAt).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
                     })}
@@ -174,7 +174,7 @@ export default function AdminDashboard() {
                   <td className={styles.totalCell}>${(order.totalCents / 100).toFixed(2)}</td>
                 </tr>
               ))}
-              {(!orders || orders.length === 0) && (
+              {(!ordersPage?.data || ordersPage.data.length === 0) && (
                 <tr>
                   <td colSpan={4} className={styles.emptyCell}>
                     No orders yet.
