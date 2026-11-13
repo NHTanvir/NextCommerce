@@ -9,6 +9,7 @@ import {
   useDeleteReviewMutation,
 } from '@/store/api/reviews.api';
 import styles from './ProductReviews.module.scss';
+import Link from 'next/link';
 
 interface Props {
   productId: string;
@@ -16,7 +17,7 @@ interface Props {
 
 function StarRating({ value, onChange }: { value: number; onChange?: (v: number) => void }) {
   const [hovered, setHovered] = useState(0);
-  const display = onChange ? (hovered || value) : value;
+  const display = onChange ? hovered || value : value;
   return (
     <div className={styles.stars} aria-label={`${value} stars`}>
       {[1, 2, 3, 4, 5].map((n) => (
@@ -73,9 +74,7 @@ export function ProductReviews({ productId }: Props) {
   const [submitted, setSubmitted] = useState(false);
 
   const avgRating =
-    reviews.length > 0
-      ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
-      : 0;
+    reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,13 +190,11 @@ export function ProductReviews({ productId }: Props) {
         </form>
       )}
 
-      {submitted && (
-        <p className={styles.successMsg}>Thanks for your review!</p>
-      )}
+      {submitted && <p className={styles.successMsg}>Thanks for your review!</p>}
 
       {!user && (
         <p className={styles.loginPrompt}>
-          <a href="/auth/login">Sign in</a> to write a review.
+          <Link href="/auth/login">Sign in</Link> to write a review.
         </p>
       )}
     </section>
