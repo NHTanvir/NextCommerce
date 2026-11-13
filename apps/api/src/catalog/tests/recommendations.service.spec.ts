@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Not } from 'typeorm';
 import { RecommendationsService } from '../recommendations.service';
 import { Product } from '../entities/product.entity';
 
@@ -138,10 +137,7 @@ describe('RecommendationsService', () => {
 
   describe('getTrending', () => {
     it('returns products labeled as popular', async () => {
-      const products = [
-        makeProduct({ id: 'p1' }),
-        makeProduct({ id: 'p2' }),
-      ];
+      const products = [makeProduct({ id: 'p1' }), makeProduct({ id: 'p2' })];
       mockProductRepo.find.mockResolvedValue(products);
 
       const result = await service.getTrending(2);
@@ -163,9 +159,7 @@ describe('RecommendationsService', () => {
 
       await service.getTrending(4);
 
-      expect(mockProductRepo.find).toHaveBeenCalledWith(
-        expect.objectContaining({ take: 4 }),
-      );
+      expect(mockProductRepo.find).toHaveBeenCalledWith(expect.objectContaining({ take: 4 }));
     });
   });
 });

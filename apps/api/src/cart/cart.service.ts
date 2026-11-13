@@ -70,7 +70,7 @@ export class CartService {
     const anonCart = await this.cartRepo.findOne({ where: { anonymousToken } });
     if (!anonCart) return this.getOrCreate(userId);
 
-    let userCart = await this.cartRepo.findOne({ where: { userId } });
+    const userCart = await this.cartRepo.findOne({ where: { userId } });
     if (!userCart) {
       await this.cartRepo.update(anonCart.id, { userId, anonymousToken: null });
       return this.cartRepo.findOne({ where: { userId } }) as Promise<Cart>;
@@ -84,7 +84,11 @@ export class CartService {
         await this.itemRepo.update(existing.id, { quantity: existing.quantity + item.quantity });
       } else {
         await this.itemRepo.save(
-          this.itemRepo.create({ cartId: userCart.id, variantId: item.variantId, quantity: item.quantity }),
+          this.itemRepo.create({
+            cartId: userCart.id,
+            variantId: item.variantId,
+            quantity: item.quantity,
+          }),
         );
       }
     }

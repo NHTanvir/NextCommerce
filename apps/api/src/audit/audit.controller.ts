@@ -6,7 +6,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuditAction } from './audit-log.entity';
-import type { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
+import type { UserPayload as JwtPayload } from '@nextcommerce/shared';
 
 @ApiTags('audit')
 @Controller('audit')

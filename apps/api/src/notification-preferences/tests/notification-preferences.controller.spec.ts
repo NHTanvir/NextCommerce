@@ -1,13 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationPreferencesController } from '../notification-preferences.controller';
 import { NotificationPreferencesService } from '../notification-preferences.service';
-import type { UserPayload } from '../../auth/types/user-payload.type';
+import type { UserPayload } from '@nextcommerce/shared';
 
-const mockUser: UserPayload = { sub: 'user-ctrl-1', email: 'test@example.com', role: 'user' };
+const mockUser: UserPayload = {
+  sub: 'user-ctrl-1',
+  email: 'test@example.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
 describe('NotificationPreferencesController', () => {
   let controller: NotificationPreferencesController;
-  let service: NotificationPreferencesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -16,7 +20,6 @@ describe('NotificationPreferencesController', () => {
     }).compile();
 
     controller = module.get(NotificationPreferencesController);
-    service = module.get(NotificationPreferencesService);
   });
 
   it('get() returns preferences for current user', () => {

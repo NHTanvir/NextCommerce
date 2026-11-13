@@ -12,9 +12,9 @@ const mockService = {
 
 const mockUser: UserPayload = {
   sub: 'user-uuid-1',
-  id: 'user-uuid-1',
   email: 'test@test.com',
   role: 'customer',
+  name: 'Test User',
 };
 
 describe('AddressesController', () => {
@@ -43,11 +43,12 @@ describe('AddressesController', () => {
   describe('create', () => {
     it('creates address for current user', async () => {
       const dto: CreateAddressDto = {
-        street: '123 Main St',
+        fullName: 'John Doe',
+        line1: '123 Main St',
         city: 'Anytown',
         state: 'CA',
-        postalCode: '90210',
-        country: 'US',
+        postalCode: '12345',
+        countryCode: 'US',
       } as CreateAddressDto;
       const address = { id: 'addr-new', ...dto, userId: 'user-uuid-1' };
       mockService.create.mockResolvedValue(address);

@@ -10,7 +10,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 interface Address {
   id: string;
@@ -53,7 +52,6 @@ const MOCK_ADDRESSES: Address[] = [
 ];
 
 export default function AddressScreen() {
-  const navigation = useNavigation();
   const [addresses, setAddresses] = useState<Address[]>(MOCK_ADDRESSES);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<Omit<Address, 'id' | 'isDefault'>>({
@@ -79,7 +77,16 @@ export default function AddressScreen() {
     };
     setAddresses((prev) => [...prev, newAddr]);
     setShowForm(false);
-    setForm({ label: 'Home', fullName: '', line1: '', line2: '', city: '', state: '', postalCode: '', country: 'US' });
+    setForm({
+      label: 'Home',
+      fullName: '',
+      line1: '',
+      line2: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: 'US',
+    });
   };
 
   const handleDelete = (id: string) => {
@@ -98,7 +105,10 @@ export default function AddressScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <Text style={styles.title}>Saved Addresses</Text>
@@ -150,8 +160,13 @@ export default function AddressScreen() {
               </View>
             </View>
             <Text style={styles.addrLine}>{addr.fullName}</Text>
-            <Text style={styles.addrLine}>{addr.line1}{addr.line2 ? `, ${addr.line2}` : ''}</Text>
-            <Text style={styles.addrLine}>{addr.city}, {addr.state} {addr.postalCode}</Text>
+            <Text style={styles.addrLine}>
+              {addr.line1}
+              {addr.line2 ? `, ${addr.line2}` : ''}
+            </Text>
+            <Text style={styles.addrLine}>
+              {addr.city}, {addr.state} {addr.postalCode}
+            </Text>
             <View style={styles.cardActions}>
               {!addr.isDefault && (
                 <TouchableOpacity onPress={() => handleSetDefault(addr.id)}>
@@ -179,9 +194,19 @@ export default function AddressScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0f172a' },
   content: { padding: 16, paddingBottom: 40 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
   title: { fontSize: 20, fontWeight: '800', color: '#f8fafc', letterSpacing: -0.5 },
-  addBtn: { backgroundColor: '#e94560', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 8 },
+  addBtn: {
+    backgroundColor: '#e94560',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
   addBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
   form: {
     backgroundColor: '#1e293b',
@@ -194,7 +219,13 @@ const styles = StyleSheet.create({
   },
   formTitle: { fontSize: 15, fontWeight: '700', color: '#f8fafc', marginBottom: 4 },
   field: { gap: 5 },
-  fieldLabel: { fontSize: 11, fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5 },
+  fieldLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   input: {
     backgroundColor: '#0f172a',
     borderWidth: 1,
@@ -204,7 +235,13 @@ const styles = StyleSheet.create({
     color: '#f8fafc',
     fontSize: 14,
   },
-  saveBtn: { backgroundColor: '#e94560', borderRadius: 8, padding: 12, alignItems: 'center', marginTop: 4 },
+  saveBtn: {
+    backgroundColor: '#e94560',
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+    marginTop: 4,
+  },
   saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
   card: {
     backgroundColor: '#1e293b',
@@ -216,11 +253,26 @@ const styles = StyleSheet.create({
     borderColor: '#334155',
   },
   cardDefault: { borderColor: '#e94560', borderWidth: 2 },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
   cardLabel: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   labelText: { fontSize: 14, fontWeight: '700', color: '#f8fafc' },
-  defaultBadge: { backgroundColor: 'rgba(233,69,96,0.15)', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 },
-  defaultBadgeText: { fontSize: 10, fontWeight: '700', color: '#e94560', textTransform: 'uppercase' },
+  defaultBadge: {
+    backgroundColor: 'rgba(233,69,96,0.15)',
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  defaultBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#e94560',
+    textTransform: 'uppercase',
+  },
   addrLine: { fontSize: 13, color: '#94a3b8' },
   cardActions: { flexDirection: 'row', gap: 16, marginTop: 8 },
   actionLink: { fontSize: 13, fontWeight: '600', color: '#3b82f6' },

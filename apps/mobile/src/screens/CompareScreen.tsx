@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -29,9 +29,17 @@ const MAX_COMPARE = 3;
 const COMPARE_ROWS = [
   { key: 'brand', label: 'Brand' },
   { key: 'categoryName', label: 'Category' },
-  { key: 'basePriceCents', label: 'Price', format: (v: any) => v ? `$${(v / 100).toFixed(2)}` : '—' },
-  { key: 'avgRating', label: 'Avg Rating', format: (v: any) => v ? `${Number(v).toFixed(1)} ★` : '—' },
-  { key: 'reviewCount', label: 'Reviews', format: (v: any) => v ? String(v) : '0' },
+  {
+    key: 'basePriceCents',
+    label: 'Price',
+    format: (v: any) => (v ? `$${(v / 100).toFixed(2)}` : '—'),
+  },
+  {
+    key: 'avgRating',
+    label: 'Avg Rating',
+    format: (v: any) => (v ? `${Number(v).toFixed(1)} ★` : '—'),
+  },
+  { key: 'reviewCount', label: 'Reviews', format: (v: any) => (v ? String(v) : '0') },
 ];
 
 export default function CompareScreen() {
@@ -125,9 +133,7 @@ export default function CompareScreen() {
                 <Text style={styles.resultName}>{product.title}</Text>
                 <Text style={styles.resultBrand}>{product.brand}</Text>
               </View>
-              <Text style={styles.resultPrice}>
-                ${(product.basePriceCents / 100).toFixed(2)}
-              </Text>
+              <Text style={styles.resultPrice}>${(product.basePriceCents / 100).toFixed(2)}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -150,7 +156,9 @@ export default function CompareScreen() {
               {products.map((p) => (
                 <View key={p.id} style={styles.productCell}>
                   <View style={styles.productHeader}>
-                    <Text style={styles.productTitle} numberOfLines={2}>{p.title}</Text>
+                    <Text style={styles.productTitle} numberOfLines={2}>
+                      {p.title}
+                    </Text>
                     <TouchableOpacity onPress={() => removeProduct(p.id)} style={styles.removeBtn}>
                       <Text style={styles.removeBtnText}>✕</Text>
                     </TouchableOpacity>

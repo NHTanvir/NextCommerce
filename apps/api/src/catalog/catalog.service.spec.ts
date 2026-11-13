@@ -1,5 +1,5 @@
 import { CatalogService } from './catalog.service';
-import type { ProductDto } from '@nextcommerce/shared';
+import type {} from '@nextcommerce/shared';
 
 describe('CatalogService.toDto (static mapping)', () => {
   it('maps product entity fields to DTO shape', () => {

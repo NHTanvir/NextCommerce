@@ -224,7 +224,7 @@ export default function AdminOrdersPage() {
                       <td className={styles.mono}>#{order.id.slice(-8).toUpperCase()}</td>
                       <td className={styles.date}>
                         {new Date(
-                          order.createdAt ?? order.placedAt ?? Date.now(),
+                          order.placedAt ?? order.placedAt ?? Date.now(),
                         ).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',

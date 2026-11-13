@@ -16,15 +16,19 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { IsOptional, IsString, IsNumber, IsArray, IsBoolean, IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-  ApiParam,
-  ApiConsumes,
-} from '@nestjs/swagger';
+  IsOptional,
+  IsString,
+  IsNumber,
+  IsArray,
+  IsBoolean,
+  IsInt,
+  IsUUID,
+  Min,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiConsumes } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { CatalogService } from './catalog.service';
 import { CatalogImportService } from './catalog-import.service';
@@ -42,7 +46,9 @@ class PriceUpdateItem {
 }
 
 class BulkPriceUpdateDto {
-  @IsArray() @ValidateNested({ each: true }) @Type(() => PriceUpdateItem)
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PriceUpdateItem)
   updates: PriceUpdateItem[];
 }
 
@@ -167,10 +173,7 @@ export class CatalogController {
 
   @Get('new-arrivals')
   @ApiOperation({ summary: 'Get recently added products' })
-  getNewArrivals(
-    @Query('days') days?: string,
-    @Query('limit') limit?: string,
-  ) {
+  getNewArrivals(@Query('days') days?: string, @Query('limit') limit?: string) {
     return this.catalogService.getNewArrivals(
       days ? parseInt(days, 10) : 30,
       limit ? parseInt(limit, 10) : 20,
@@ -185,10 +188,7 @@ export class CatalogController {
 
   @Get('search/suggestions')
   @ApiOperation({ summary: 'Get typeahead search suggestions' })
-  getSearchSuggestions(
-    @Query('q') q: string,
-    @Query('limit') limit?: string,
-  ) {
+  getSearchSuggestions(@Query('q') q: string, @Query('limit') limit?: string) {
     return this.catalogService.searchSuggestions(q, limit ? parseInt(limit, 10) : 8);
   }
 
@@ -196,7 +196,9 @@ export class CatalogController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[Admin] Get catalog health stats (missing images, descriptions, variants)' })
+  @ApiOperation({
+    summary: '[Admin] Get catalog health stats (missing images, descriptions, variants)',
+  })
   getCatalogHealth() {
     return this.catalogService.getCatalogHealth();
   }
@@ -285,24 +287,38 @@ export class CatalogController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin] Export all products as CSV' })
   async exportCsv(@Res() res: Response) {
-    const result = await this.catalogService.getProducts({ page: 1, limit: 10000 });
+    const result = await this.catalogService.findAll({ page: 1, limit: 10000 } as ProductQueryDto);
     const products = result.data;
 
-    const headers = ['id', 'title', 'slug', 'brand', 'description', 'basePriceCents', 'salePriceCents', 'categoryId', 'isActive', 'imageUrl', 'createdAt'];
+    const headers = [
+      'id',
+      'title',
+      'slug',
+      'brand',
+      'description',
+      'basePriceCents',
+      'salePriceCents',
+      'categoryId',
+      'isActive',
+      'imageUrl',
+      'createdAt',
+    ];
 
-    const rows = products.map((p: any) => [
-      p.id,
-      `"${(p.title ?? '').replace(/"/g, '""')}"`,
-      p.slug,
-      `"${(p.brand ?? '').replace(/"/g, '""')}"`,
-      `"${(p.description ?? '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
-      p.basePriceCents,
-      p.salePriceCents ?? '',
-      p.categoryId ?? '',
-      p.isActive ? 'true' : 'false',
-      p.images?.[0]?.url ?? '',
-      p.createdAt ?? '',
-    ].join(','));
+    const rows = products.map((p: any) =>
+      [
+        p.id,
+        `"${(p.title ?? '').replace(/"/g, '""')}"`,
+        p.slug,
+        `"${(p.brand ?? '').replace(/"/g, '""')}"`,
+        `"${(p.description ?? '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+        p.basePriceCents,
+        p.salePriceCents ?? '',
+        p.categoryId ?? '',
+        p.isActive ? 'true' : 'false',
+        p.images?.[0]?.url ?? '',
+        p.createdAt ?? '',
+      ].join(','),
+    );
 
     const csv = [headers.join(','), ...rows].join('\n');
 

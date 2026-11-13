@@ -8,7 +8,7 @@ export interface AuthUser {
   role: UserRole;
 }
 
-interface AuthState {
+export interface AuthState {
   token: string | null;
   user: AuthUser | null;
 }

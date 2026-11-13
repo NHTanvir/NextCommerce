@@ -12,7 +12,7 @@ export interface CartItem {
   imageUrl: string;
 }
 
-interface CartState {
+export interface CartState {
   items: CartItem[];
   isOpen: boolean;
   anonymousToken: string | null;
@@ -65,8 +65,13 @@ export const cartSlice = createSlice({
 });
 
 export const {
-  addItem, updateQuantity, removeItem,
-  clearCart, toggleCart, setCartOpen, setAnonymousToken,
+  addItem,
+  updateQuantity,
+  removeItem,
+  clearCart,
+  toggleCart,
+  setCartOpen,
+  setAnonymousToken,
 } = cartSlice.actions;
 export const cartReducer = cartSlice.reducer;
 

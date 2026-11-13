@@ -42,7 +42,7 @@ describe('AnalyticsService', () => {
         where: jest.fn().mockReturnThis(),
         getRawOne: jest.fn().mockResolvedValue({ total: '500000' }),
       };
-      const pendingQb = 12;
+      12;
       orderRepo.createQueryBuilder.mockReturnValue(revenueQb);
       // second call for pending (uses count directly)
       orderRepo.count
@@ -117,9 +117,11 @@ describe('AnalyticsService', () => {
         groupBy: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
-        getRawMany: jest.fn().mockResolvedValue([
-          { productTitle: 'Air Max Pro', totalQuantity: '50', totalRevenueCents: '750000' },
-        ]),
+        getRawMany: jest
+          .fn()
+          .mockResolvedValue([
+            { productTitle: 'Air Max Pro', totalQuantity: '50', totalRevenueCents: '750000' },
+          ]),
       };
       orderRepo.createQueryBuilder.mockReturnValue(qb);
       const result = await service.getTopProducts(5);

@@ -26,17 +26,14 @@ const buildCoupon = (overrides: Partial<Coupon> = {}): Coupon =>
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
-  } as Coupon);
+  }) as Coupon;
 
 describe('CouponsService', () => {
   let service: CouponsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CouponsService,
-        { provide: getRepositoryToken(Coupon), useValue: mockRepo },
-      ],
+      providers: [CouponsService, { provide: getRepositoryToken(Coupon), useValue: mockRepo }],
     }).compile();
 
     service = module.get<CouponsService>(CouponsService);
@@ -87,21 +84,27 @@ describe('CouponsService', () => {
     });
 
     it('calculates percentage discount correctly', async () => {
-      mockRepo.findOne.mockResolvedValue(buildCoupon({ discountType: 'percentage', discountValue: 20 }));
+      mockRepo.findOne.mockResolvedValue(
+        buildCoupon({ discountType: 'percentage', discountValue: 20 }),
+      );
       const result = await service.validate('SAVE20', 10000);
       expect(result.valid).toBe(true);
       expect(result.discountCents).toBe(2000);
     });
 
     it('calculates fixed discount correctly', async () => {
-      mockRepo.findOne.mockResolvedValue(buildCoupon({ discountType: 'fixed', discountValue: 500 }));
+      mockRepo.findOne.mockResolvedValue(
+        buildCoupon({ discountType: 'fixed', discountValue: 500 }),
+      );
       const result = await service.validate('FLAT5', 10000);
       expect(result.valid).toBe(true);
       expect(result.discountCents).toBe(500);
     });
 
     it('caps fixed discount at order total', async () => {
-      mockRepo.findOne.mockResolvedValue(buildCoupon({ discountType: 'fixed', discountValue: 5000 }));
+      mockRepo.findOne.mockResolvedValue(
+        buildCoupon({ discountType: 'fixed', discountValue: 5000 }),
+      );
       const result = await service.validate('FLAT50', 3000);
       expect(result.valid).toBe(true);
       expect(result.discountCents).toBe(3000);
@@ -114,7 +117,7 @@ describe('CouponsService', () => {
       mockRepo.findOne.mockResolvedValue(coupon);
       mockRepo.save.mockResolvedValue({ ...coupon, isActive: false });
 
-      const result = await service.deactivate('c1');
+      await service.deactivate('c1');
 
       expect(mockRepo.save).toHaveBeenCalledWith(expect.objectContaining({ isActive: false }));
     });

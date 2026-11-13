@@ -46,7 +46,7 @@ export class InventoryAlertService {
 
     this.logger.warn({ count: alerts.length }, 'Publishing low stock alerts');
     for (const alert of alerts) {
-      await this.eventsService.publish('inventory.low_stock', alert);
+      await this.eventsService.publish('inventory.low_stock', { ...alert });
     }
     return alerts.length;
   }

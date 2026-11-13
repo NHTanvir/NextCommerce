@@ -27,10 +27,33 @@ export interface OrderItemDto {
   color: string;
 }
 
+export interface OrderAddressDto {
+  id: string;
+  line1: string;
+  line2: string | null;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
+/**
+ * What GET /api/orders actually returns. The address is eager-loaded on the
+ * Order entity and the API sends the whole row, so the contract says so —
+ * the five-field version left every consumer reaching for properties
+ * TypeScript insisted were not there.
+ */
 export interface OrderDto {
   id: string;
+  userId: string;
   status: OrderStatus;
   totalCents: number;
   items: OrderItemDto[];
+  address?: OrderAddressDto | null;
+  addressId?: string;
+  paymentRef?: string | null;
+  trackingNumber?: string | null;
+  carrier?: string | null;
+  /** The entity's CreateDateColumn. There is no createdAt on an order. */
   placedAt: string;
+  updatedAt?: string;
 }

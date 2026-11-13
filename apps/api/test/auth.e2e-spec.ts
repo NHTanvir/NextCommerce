@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 
 describe('AuthController (e2e)', () => {
@@ -46,10 +46,7 @@ describe('AuthController (e2e)', () => {
 
   describe('POST /api/auth/login', () => {
     it('rejects missing credentials', () => {
-      return request(app.getHttpServer())
-        .post('/api/auth/login')
-        .send({})
-        .expect(400);
+      return request(app.getHttpServer()).post('/api/auth/login').send({}).expect(400);
     });
 
     it('returns 401 for wrong password', () => {
@@ -62,9 +59,7 @@ describe('AuthController (e2e)', () => {
 
   describe('GET /api/auth/profile', () => {
     it('returns 401 without token', () => {
-      return request(app.getHttpServer())
-        .get('/api/auth/profile')
-        .expect(401);
+      return request(app.getHttpServer()).get('/api/auth/profile').expect(401);
     });
 
     it('returns 401 with malformed token', () => {

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
@@ -117,7 +116,8 @@ export default function BrandsScreen() {
       {/* Stats */}
       <View style={styles.statsRow}>
         <Text style={styles.statsText}>
-          {brands.length} brands · {brands.reduce((s, b) => s + b.productCount, 0).toLocaleString()} products
+          {brands.length} brands · {brands.reduce((s, b) => s + b.productCount, 0).toLocaleString()}{' '}
+          products
         </Text>
       </View>
 

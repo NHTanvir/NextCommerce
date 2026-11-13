@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Order } from './entities/order.entity';
@@ -14,10 +10,9 @@ import { EventsService } from '../events/events.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationPreferencesService } from '../notification-preferences/notification-preferences.service';
 import { MetricsService } from '../metrics/metrics.service';
-import { CreateOrderDto, UpdateOrderStatusDto, BulkFulfillDto } from './dto/orders.dto';
+import { CreateOrderDto, BulkFulfillDto } from './dto/orders.dto';
 import { ORDER_STATUS_TRANSITIONS, OrderStatus } from '@nextcommerce/shared';
 import { toOrderNumber } from './order-number';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class OrdersService {
@@ -54,9 +49,7 @@ export class OrdersService {
 
     let addressId = dto.addressId;
     if (!addressId && dto.address) {
-      const addr = await this.addressRepo.save(
-        this.addressRepo.create({ ...dto.address, userId }),
-      );
+      const addr = await this.addressRepo.save(this.addressRepo.create({ ...dto.address, userId }));
       addressId = addr.id;
     }
     if (!addressId) throw new BadRequestException('Address required');
@@ -139,7 +132,6 @@ export class OrdersService {
       status: order.status,
       carrier: order.carrier,
       trackingNumber: order.trackingNumber,
-      estimatedDelivery: order.estimatedDelivery,
       placedAt: order.placedAt,
       totalCents: order.totalCents,
       items: (order.items ?? []).map((i: any) => ({
@@ -173,11 +165,15 @@ export class OrdersService {
 
     if (newStatus === 'paid') {
       await this.eventsService.publish('order.paid', {
-        orderId: id, userId: order.userId, paidAt: new Date().toISOString(),
+        orderId: id,
+        userId: order.userId,
+        paidAt: new Date().toISOString(),
       });
     } else if (newStatus === 'shipped') {
       await this.eventsService.publish('order.shipped', {
-        orderId: id, userId: order.userId, shippedAt: new Date().toISOString(),
+        orderId: id,
+        userId: order.userId,
+        shippedAt: new Date().toISOString(),
         trackingNumber: trackingNumber ?? null,
         carrier: carrier ?? null,
       });
@@ -194,7 +190,10 @@ export class OrdersService {
     return this.findOne(id);
   }
 
-  async bulkFulfill(dto: BulkFulfillDto, actorId: string): Promise<{ success: number; errors: string[] }> {
+  async bulkFulfill(
+    dto: BulkFulfillDto,
+    actorId: string,
+  ): Promise<{ success: number; errors: string[] }> {
     let success = 0;
     const errors: string[] = [];
 
@@ -239,10 +238,12 @@ export class OrdersService {
     const totalOrders = orders.length;
     const totalSpentCents = orders.reduce((s, o) => s + (o.totalCents ?? 0), 0);
     const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
-    const pendingCount = orders.filter((o) => ['pending', 'paid', 'processing'].includes(o.status)).length;
+    const pendingCount = orders.filter((o) =>
+      ['pending', 'paid', 'processing'].includes(o.status),
+    ).length;
     const cancelledCount = orders.filter((o) => o.status === 'cancelled').length;
-    const sorted = [...orders].sort((a, b) =>
-      new Date(b.placedAt).getTime() - new Date(a.placedAt).getTime(),
+    const sorted = [...orders].sort(
+      (a, b) => new Date(b.placedAt).getTime() - new Date(a.placedAt).getTime(),
     );
     return {
       totalOrders,
@@ -272,9 +273,16 @@ export class OrdersService {
     };
 
     const header = [
-      'Order ID', 'Status', 'Total (USD)', 'Items',
-      'Tracking Number', 'Carrier',
-      'Address Line 1', 'City', 'Country', 'Postal Code',
+      'Order ID',
+      'Status',
+      'Total (USD)',
+      'Items',
+      'Tracking Number',
+      'Carrier',
+      'Address Line 1',
+      'City',
+      'Country',
+      'Postal Code',
       'Placed At',
     ].join(',');
 
@@ -301,7 +309,9 @@ export class OrdersService {
     return [header, ...rows].join('\n');
   }
 
-  async getStatusBreakdown(): Promise<Array<{ status: string; count: number; totalCents: number }>> {
+  async getStatusBreakdown(): Promise<
+    Array<{ status: string; count: number; totalCents: number }>
+  > {
     const rows = await this.orderRepo
       .createQueryBuilder('o')
       .select('o.status', 'status')

@@ -4,7 +4,12 @@ import { NotificationsService } from '../notifications.service';
 import { NotificationsBus } from '../notifications.bus';
 import type { UserPayload } from '@nextcommerce/shared';
 
-const user: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
+const user: UserPayload = {
+  sub: 'user-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
 const mockNotif = { id: 'n-1', userId: 'user-1', title: 'Order shipped', isRead: false };
 

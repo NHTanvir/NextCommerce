@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { CartStackParamList, RootStackParamList } from '../navigation/types';
+import type { CartStackParamList } from '../navigation/types';
 import { PriceTag } from '../components/PriceTag';
 import { validateCoupon } from '@/api/coupons';
 
@@ -61,10 +61,7 @@ export function CartScreen() {
         <Text style={styles.emptyIcon}>🛒</Text>
         <Text style={styles.emptyTitle}>Your cart is empty</Text>
         <Text style={styles.emptySubtitle}>Add products to your cart to see them here.</Text>
-        <TouchableOpacity
-          style={styles.shopBtn}
-          onPress={() => navigation.navigate('ProductList')}
-        >
+        <TouchableOpacity style={styles.shopBtn} onPress={() => navigation.navigate('ProductList')}>
           <Text style={styles.shopBtnText}>Browse Products</Text>
         </TouchableOpacity>
       </View>
@@ -80,8 +77,12 @@ export function CartScreen() {
         renderItem={({ item }) => (
           <View style={styles.item}>
             <View style={styles.itemInfo}>
-              <Text style={styles.itemTitle} numberOfLines={2}>{item.productTitle}</Text>
-              <Text style={styles.itemMeta}>Size {item.size} · {item.color}</Text>
+              <Text style={styles.itemTitle} numberOfLines={2}>
+                {item.productTitle}
+              </Text>
+              <Text style={styles.itemMeta}>
+                Size {item.size} · {item.color}
+              </Text>
             </View>
             <View style={styles.itemRight}>
               <PriceTag cents={item.priceCents * item.quantity} />

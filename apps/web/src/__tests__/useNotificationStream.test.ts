@@ -22,9 +22,11 @@ class FakeEventSource {
   }
 }
 
-function wrapper(store: ReturnType<typeof configureStore>) {
-  return ({ children }: { children: ReactNode }) =>
-    React.createElement(Provider, { store }, children);
+function wrapper(store: React.ComponentProps<typeof Provider>['store']) {
+  const StoreWrapper = ({ children }: { children: ReactNode }) =>
+    React.createElement(Provider, { store, children } as React.ComponentProps<typeof Provider>);
+  StoreWrapper.displayName = 'StoreWrapper';
+  return StoreWrapper;
 }
 
 describe('useNotificationStream', () => {

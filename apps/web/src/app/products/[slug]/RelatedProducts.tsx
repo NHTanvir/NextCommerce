@@ -10,12 +10,9 @@ interface Props {
 }
 
 export function RelatedProducts({ categoryId, currentSlug }: Props) {
-  const { data, isLoading } = useGetProductsQuery(
-    { categoryId, limit: 5 },
-    { skip: !categoryId }
-  );
+  const { data, isLoading } = useGetProductsQuery({ categoryId, limit: 5 }, { skip: !categoryId });
 
-  const items = data?.items.filter((p) => p.slug !== currentSlug).slice(0, 4) ?? [];
+  const items = data?.data.filter((p) => p.slug !== currentSlug).slice(0, 4) ?? [];
 
   if (!isLoading && items.length === 0) return null;
 
@@ -25,8 +22,7 @@ export function RelatedProducts({ categoryId, currentSlug }: Props) {
       <div className={styles.grid}>
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)
-          : items.map((p) => <ProductCard key={p.id} product={p} />)
-        }
+          : items.map((p) => <ProductCard key={p.id} product={p} />)}
       </div>
     </section>
   );

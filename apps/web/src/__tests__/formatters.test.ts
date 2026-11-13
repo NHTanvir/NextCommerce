@@ -1,4 +1,4 @@
-import { formatPrice, formatOrderId, slugify, isTokenExpired } from '../lib/formatters';
+import { formatPrice, formatOrderId, slugify } from '../lib/formatters';
 import { isTokenExpired as isExpiredFromAuth } from '../lib/auth';
 
 describe('formatPrice', () => {

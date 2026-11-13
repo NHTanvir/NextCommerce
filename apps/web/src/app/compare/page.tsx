@@ -20,8 +20,8 @@ const COMPARE_ATTRS: Array<{
   { key: 'brand', label: 'Brand' },
   { key: 'categoryName', label: 'Category' },
   { key: 'basePriceCents', label: 'Price', format: (v) => formatPrice(v), highlight: true },
-  { key: 'avgRating', label: 'Rating', format: (v) => v ? `${Number(v).toFixed(1)} ★` : '—' },
-  { key: 'reviewCount', label: 'Reviews', format: (v) => v ? `${v} reviews` : '—' },
+  { key: 'avgRating', label: 'Rating', format: (v) => (v ? `${Number(v).toFixed(1)} ★` : '—') },
+  { key: 'reviewCount', label: 'Reviews', format: (v) => (v ? `${v} reviews` : '—') },
 ];
 
 function getBestIndex(products: any[], key: string, lowIsBetter = false): number {
@@ -44,7 +44,9 @@ export default function ComparePage() {
         <div className={styles.emptyIcon}>⚖️</div>
         <h2>Nothing to compare yet</h2>
         <p>Add up to 4 products from the catalogue to compare them side by side.</p>
-        <Link href="/products" className="btn btn--primary">Browse Products</Link>
+        <Link href="/products" className="btn btn--primary">
+          Browse Products
+        </Link>
       </div>
     );
   }
@@ -57,7 +59,9 @@ export default function ComparePage() {
           <p className={styles.subtitle}>{products.length} of 4 products selected</p>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <Link href="/products" className="btn btn--ghost btn--sm">+ Add more</Link>
+          <Link href="/products" className="btn btn--ghost btn--sm">
+            + Add more
+          </Link>
           <button className="btn btn--outline btn--sm" onClick={() => dispatch(clearCompare())}>
             Clear all
           </button>
@@ -69,7 +73,7 @@ export default function ComparePage() {
           <thead>
             <tr>
               <th className={styles.labelTh}>Feature</th>
-              {products.map((product, i) => (
+              {products.map((product, _i) => (
                 <th key={product.id} className={styles.productTh}>
                   <div className={styles.productHeader}>
                     <button
@@ -111,11 +115,16 @@ export default function ComparePage() {
                   const rawVal = (product as any)[attr.key];
                   const display = attr.format ? attr.format(rawVal) : String(rawVal ?? '—');
                   const isBest =
-                    attr.key === 'basePriceCents' ? i === bestPriceIdx :
-                    attr.key === 'avgRating' ? i === bestRatingIdx :
-                    false;
+                    attr.key === 'basePriceCents'
+                      ? i === bestPriceIdx
+                      : attr.key === 'avgRating'
+                        ? i === bestRatingIdx
+                        : false;
                   return (
-                    <td key={product.id} className={`${styles.valueCell} ${isBest ? styles.bestCell : ''}`}>
+                    <td
+                      key={product.id}
+                      className={`${styles.valueCell} ${isBest ? styles.bestCell : ''}`}
+                    >
                       {display}
                       {isBest && <span className={styles.bestBadge}>Best</span>}
                     </td>

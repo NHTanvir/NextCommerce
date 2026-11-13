@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { GiftCardsService, CreateGiftCardDto, RedeemGiftCardDto } from './gift-cards.service';
+import { GiftCardsService, CreateGiftCardDto } from './gift-cards.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -38,10 +38,7 @@ export class GiftCardsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Apply a gift card to an order' })
-  apply(
-    @Body() dto: { code: string; orderAmountCents: number },
-    @CurrentUser() user: UserPayload,
-  ) {
+  apply(@Body() dto: { code: string; orderAmountCents: number }, @CurrentUser() user: UserPayload) {
     return this.giftCardsService.applyToOrder(dto.code, user.sub, dto.orderAmountCents);
   }
 

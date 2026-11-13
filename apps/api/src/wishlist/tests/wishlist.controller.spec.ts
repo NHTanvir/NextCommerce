@@ -12,9 +12,9 @@ const mockService = {
 
 const mockUser: UserPayload = {
   sub: 'user-1',
-  id: 'user-1',
   email: 'user@test.com',
   role: 'customer',
+  name: 'Test User',
 };
 
 describe('WishlistController', () => {

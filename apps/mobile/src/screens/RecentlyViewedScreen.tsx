@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -62,13 +62,7 @@ export async function trackRecentlyViewed(product: Omit<RecentProduct, 'viewedAt
   }
 }
 
-function ProductCard({
-  item,
-  onPress,
-}: {
-  item: RecentProduct;
-  onPress: () => void;
-}) {
+function ProductCard({ item, onPress }: { item: RecentProduct; onPress: () => void }) {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
       <View style={styles.imageBox}>
@@ -79,10 +73,18 @@ function ProductCard({
         )}
       </View>
       <View style={styles.cardBody}>
-        {item.brand && <Text style={styles.brand} numberOfLines={1}>{item.brand}</Text>}
-        <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
+        {item.brand && (
+          <Text style={styles.brand} numberOfLines={1}>
+            {item.brand}
+          </Text>
+        )}
+        <Text style={styles.title} numberOfLines={2}>
+          {item.title}
+        </Text>
         {item.categoryName && (
-          <Text style={styles.category} numberOfLines={1}>{item.categoryName}</Text>
+          <Text style={styles.category} numberOfLines={1}>
+            {item.categoryName}
+          </Text>
         )}
         <View style={styles.cardFooter}>
           <Text style={styles.price}>${(item.basePriceCents / 100).toFixed(2)}</Text>
@@ -116,21 +118,17 @@ export default function RecentlyViewedScreen() {
   );
 
   const handleClear = () => {
-    Alert.alert(
-      'Clear History',
-      'Remove all recently viewed products?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Clear',
-          style: 'destructive',
-          onPress: async () => {
-            await AsyncStorage.removeItem(STORAGE_KEY);
-            setItems([]);
-          },
+    Alert.alert('Clear History', 'Remove all recently viewed products?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Clear',
+        style: 'destructive',
+        onPress: async () => {
+          await AsyncStorage.removeItem(STORAGE_KEY);
+          setItems([]);
         },
-      ],
-    );
+      },
+    ]);
   };
 
   if (loading) {
@@ -169,7 +167,9 @@ export default function RecentlyViewedScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.heading}>Recently Viewed</Text>
-            <Text style={styles.sub}>{items.length} product{items.length !== 1 ? 's' : ''}</Text>
+            <Text style={styles.sub}>
+              {items.length} product{items.length !== 1 ? 's' : ''}
+            </Text>
           </View>
           <TouchableOpacity onPress={handleClear} style={styles.clearBtn}>
             <Text style={styles.clearBtnText}>Clear All</Text>

@@ -10,7 +10,9 @@ const EXCHANGE = 'nextcommerce.events';
 @Injectable()
 export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(NotificationsService.name);
-  private connection: amqplib.Connection | null = null;
+  // amqplib's typings call what connect() returns a ChannelModel; Connection
+  // is the lower-level object underneath it and has no createChannel/close.
+  private connection: amqplib.ChannelModel | null = null;
   private channel: amqplib.Channel | null = null;
 
   constructor(
@@ -22,30 +24,39 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     const url = this.config.get<string>('RABBITMQ_URL', 'amqp://guest:guest@localhost:5672');
     try {
-      this.connection = await amqplib.connect(url);
-      this.channel = await this.connection.createChannel();
-      await this.channel.assertExchange(EXCHANGE, 'fanout', { durable: true });
+      // Set up through locals: TypeScript cannot narrow a nullable class
+      // property across statements, and these must not be published until
+      // the exchange and queue exist.
+      const connection = await amqplib.connect(url);
+      const channel = await connection.createChannel();
+      await channel.assertExchange(EXCHANGE, 'fanout', { durable: true });
 
-      const q = await this.channel.assertQueue('notifications.service', { durable: true });
-      await this.channel.bindQueue(q.queue, EXCHANGE, '');
+      const q = await channel.assertQueue('notifications.service', { durable: true });
+      await channel.bindQueue(q.queue, EXCHANGE, '');
 
-      this.channel.consume(q.queue, (msg) => {
+      this.connection = connection;
+      this.channel = channel;
+
+      channel.consume(q.queue, (msg) => {
         if (!msg) return;
         try {
           const event = JSON.parse(msg.content.toString());
           this.handleEvent(event);
           this.metrics.incConsumed();
-          this.channel!.ack(msg);
+          channel.ack(msg);
         } catch (err) {
           this.logger.error({ err }, 'Failed to process message');
           this.metrics.incFailed();
-          this.channel!.nack(msg, false, false);
+          channel.nack(msg, false, false);
         }
       });
 
       this.logger.log('Connected to RabbitMQ and consuming events');
     } catch (err) {
-      this.logger.warn({ err }, 'RabbitMQ unavailable — notifications service running in degraded mode');
+      this.logger.warn(
+        { err },
+        'RabbitMQ unavailable — notifications service running in degraded mode',
+      );
     }
   }
 
@@ -78,33 +89,44 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 
   private onOrderPlaced(payload: OrderPlacedEvent) {
     this.logger.log({ orderId: payload.orderId, userId: payload.userId }, '[EMAIL] Order placed');
-    this.emailService.sendOrderPlaced(payload).catch((err) =>
-      this.logger.error({ err }, 'Failed to send order.placed email')
-    );
+    this.emailService
+      .sendOrderPlaced(payload)
+      .catch((err) => this.logger.error({ err }, 'Failed to send order.placed email'));
   }
 
   private onOrderPaid(payload: OrderPaidEvent) {
     this.logger.log({ orderId: payload.orderId }, '[EMAIL] Payment confirmed');
-    this.emailService.sendOrderPaid(payload).catch((err) =>
-      this.logger.error({ err }, 'Failed to send order.paid email')
-    );
+    this.emailService
+      .sendOrderPaid(payload)
+      .catch((err) => this.logger.error({ err }, 'Failed to send order.paid email'));
   }
 
   private onOrderShipped(payload: OrderShippedEvent) {
-    this.logger.log({ orderId: payload.orderId, trackingNumber: payload.trackingNumber }, '[EMAIL] Shipped');
-    this.emailService.sendOrderShipped(payload).catch((err) =>
-      this.logger.error({ err }, 'Failed to send order.shipped email')
+    this.logger.log(
+      { orderId: payload.orderId, trackingNumber: payload.trackingNumber },
+      '[EMAIL] Shipped',
     );
+    this.emailService
+      .sendOrderShipped(payload)
+      .catch((err) => this.logger.error({ err }, 'Failed to send order.shipped email'));
   }
 
-  private onLowStock(payload: { variantId: string; sku: string; currentStock: number; alertType: string }) {
-    this.logger.warn({ sku: payload.sku, stock: payload.currentStock }, `[ALERT] ${payload.alertType}`);
+  private onLowStock(payload: {
+    variantId: string;
+    sku: string;
+    currentStock: number;
+    alertType: string;
+  }) {
+    this.logger.warn(
+      { sku: payload.sku, stock: payload.currentStock },
+      `[ALERT] ${payload.alertType}`,
+    );
   }
 
   private onNewsletterSubscribed(payload: { email: string }) {
     this.logger.log({ email: payload.email }, '[EMAIL] Newsletter welcome');
-    this.emailService.sendNewsletterWelcome(payload.email).catch((err) =>
-      this.logger.error({ err }, 'Failed to send newsletter welcome email')
-    );
+    this.emailService
+      .sendNewsletterWelcome(payload.email)
+      .catch((err) => this.logger.error({ err }, 'Failed to send newsletter welcome email'));
   }
 }

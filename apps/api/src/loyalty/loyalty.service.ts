@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LoyaltyAccount } from './entities/loyalty-account.entity';
@@ -38,7 +38,14 @@ export class LoyaltyService {
     return account;
   }
 
-  async getBalance(userId: string): Promise<{ points: number; tier: string; lifetimePoints: number; nextTierPoints: number | null }> {
+  async getBalance(
+    userId: string,
+  ): Promise<{
+    points: number;
+    tier: string;
+    lifetimePoints: number;
+    nextTierPoints: number | null;
+  }> {
     const account = await this.getOrCreateAccount(userId);
     const tiers = Object.entries(TIER_THRESHOLDS).sort(([, a], [, b]) => b - a);
     const currentIdx = tiers.findIndex(([tier]) => tier === account.tier);
@@ -53,24 +60,46 @@ export class LoyaltyService {
     };
   }
 
-  async earnPoints(userId: string, orderAmountCents: number, orderId: string): Promise<LoyaltyTransaction> {
+  async earnPoints(
+    userId: string,
+    orderAmountCents: number,
+    orderId: string,
+  ): Promise<LoyaltyTransaction> {
     const points = Math.floor((orderAmountCents / 100) * POINTS_PER_DOLLAR);
     if (points <= 0) throw new BadRequestException('Order amount too small to earn points');
-    return this.addTransaction(userId, 'earn', points, orderId, `Earned ${points} points for order`);
+    return this.addTransaction(
+      userId,
+      'earn',
+      points,
+      orderId,
+      `Earned ${points} points for order`,
+    );
   }
 
   async redeemPoints(userId: string, pointsToRedeem: number): Promise<{ discountCents: number }> {
     if (pointsToRedeem <= 0) throw new BadRequestException('Points must be positive');
     const account = await this.getOrCreateAccount(userId);
     if (account.points < pointsToRedeem) {
-      throw new BadRequestException(`Insufficient points: have ${account.points}, need ${pointsToRedeem}`);
+      throw new BadRequestException(
+        `Insufficient points: have ${account.points}, need ${pointsToRedeem}`,
+      );
     }
-    await this.addTransaction(userId, 'redeem', -pointsToRedeem, null, `Redeemed ${pointsToRedeem} points`);
+    await this.addTransaction(
+      userId,
+      'redeem',
+      -pointsToRedeem,
+      null,
+      `Redeemed ${pointsToRedeem} points`,
+    );
     const discountCents = Math.floor(pointsToRedeem / POINTS_REDEEM_RATE) * 100;
     return { discountCents };
   }
 
-  async awardBonus(userId: string, points: number, description: string): Promise<LoyaltyTransaction> {
+  async awardBonus(
+    userId: string,
+    points: number,
+    description: string,
+  ): Promise<LoyaltyTransaction> {
     if (points <= 0) throw new BadRequestException('Bonus points must be positive');
     return this.addTransaction(userId, 'bonus', points, null, description);
   }
@@ -95,9 +124,10 @@ export class LoyaltyService {
     const newPoints = account.points + points;
     if (newPoints < 0) throw new BadRequestException('Insufficient points');
 
-    const newLifetime = type === 'earn' || type === 'bonus'
-      ? account.lifetimePoints + points
-      : account.lifetimePoints;
+    const newLifetime =
+      type === 'earn' || type === 'bonus'
+        ? account.lifetimePoints + points
+        : account.lifetimePoints;
 
     const newTier = computeTier(newLifetime);
 

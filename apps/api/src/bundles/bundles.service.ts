@@ -102,7 +102,7 @@ export class BundlesService {
   }
 
   async update(id: string, dto: Partial<CreateBundleDto>): Promise<ProductBundle> {
-    const bundle = await this.findOne(id);
+    await this.findOne(id);
 
     if (dto.productIds && dto.productIds.length < 2) {
       throw new BadRequestException('A bundle must contain at least 2 products.');
@@ -113,7 +113,8 @@ export class BundlesService {
     if (dto.description !== undefined) updates.description = dto.description ?? null;
     if (dto.productIds) updates.productIds = [...new Set(dto.productIds)];
     if (dto.discountPercent !== undefined) updates.discountPercent = dto.discountPercent;
-    if (dto.discountAmountCents !== undefined) updates.discountAmountCents = dto.discountAmountCents ?? null;
+    if (dto.discountAmountCents !== undefined)
+      updates.discountAmountCents = dto.discountAmountCents ?? null;
     if (dto.startsAt !== undefined) updates.startsAt = dto.startsAt ? new Date(dto.startsAt) : null;
     if (dto.endsAt !== undefined) updates.endsAt = dto.endsAt ? new Date(dto.endsAt) : null;
 
@@ -148,11 +149,14 @@ export class BundlesService {
     const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     const active = all.filter((b) => b.isActive && (!b.endsAt || new Date(b.endsAt) > now)).length;
     const inactive = all.length - active;
-    const avgDiscount = all.length > 0
-      ? all.reduce((s, b) => s + (b.discountPercent ?? 0), 0) / all.length
-      : 0;
+    const avgDiscount =
+      all.length > 0 ? all.reduce((s, b) => s + (b.discountPercent ?? 0), 0) / all.length : 0;
     const expiringSoon = all.filter(
-      (b) => b.isActive && b.endsAt && new Date(b.endsAt) > now && new Date(b.endsAt) <= sevenDaysFromNow,
+      (b) =>
+        b.isActive &&
+        b.endsAt &&
+        new Date(b.endsAt) > now &&
+        new Date(b.endsAt) <= sevenDaysFromNow,
     ).length;
     return {
       total: all.length,

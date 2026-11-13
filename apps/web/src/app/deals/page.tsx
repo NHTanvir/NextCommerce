@@ -33,13 +33,15 @@ export default function DealsPage() {
   const products = data?.data ?? [];
 
   const sorted = useMemo(() => {
-    let filtered = selectedCategory
+    const filtered = selectedCategory
       ? products.filter((p) => (p as any).categoryId === selectedCategory)
       : products;
     return [...filtered].sort((a, b) => {
       if (sort === 'discount_desc') return (b.discountPct ?? 0) - (a.discountPct ?? 0);
-      if (sort === 'price_asc') return (a.salePriceCents ?? a.basePriceCents) - (b.salePriceCents ?? b.basePriceCents);
-      if (sort === 'price_desc') return (b.salePriceCents ?? b.basePriceCents) - (a.salePriceCents ?? a.basePriceCents);
+      if (sort === 'price_asc')
+        return (a.salePriceCents ?? a.basePriceCents) - (b.salePriceCents ?? b.basePriceCents);
+      if (sort === 'price_desc')
+        return (b.salePriceCents ?? b.basePriceCents) - (a.salePriceCents ?? a.basePriceCents);
       return 0;
     });
   }, [products, selectedCategory, sort]);
@@ -84,7 +86,10 @@ export default function DealsPage() {
             <button
               key={tier.value}
               className={`${styles.tierBtn} ${minDiscount === tier.value ? styles.tierBtnActive : ''}`}
-              onClick={() => { setMinDiscount(tier.value); setPage(1); }}
+              onClick={() => {
+                setMinDiscount(tier.value);
+                setPage(1);
+              }}
             >
               {tier.label}
             </button>
@@ -120,16 +125,16 @@ export default function DealsPage() {
         {/* Main */}
         <div className={styles.main}>
           <div className={styles.toolbar}>
-            <p className={styles.count}>
-              {loading ? '…' : `${sorted.length} deals`}
-            </p>
+            <p className={styles.count}>{loading ? '…' : `${sorted.length} deals`}</p>
             <select
               className={styles.sortSelect}
               value={sort}
               onChange={(e) => setSort(e.target.value)}
             >
               {SORT_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
               ))}
             </select>
           </div>
@@ -137,9 +142,7 @@ export default function DealsPage() {
           <div className={styles.grid}>
             {loading
               ? Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)
-              : sorted.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+              : sorted.map((product) => <ProductCard key={product.id} product={product} />)}
           </div>
 
           {!loading && sorted.length === 0 && (
@@ -148,7 +151,10 @@ export default function DealsPage() {
               <p>No deals match your filters right now.</p>
               <button
                 className="btn btn--ghost btn--sm"
-                onClick={() => { setMinDiscount(0); setSelectedCategory(''); }}
+                onClick={() => {
+                  setMinDiscount(0);
+                  setSelectedCategory('');
+                }}
               >
                 Clear filters
               </button>
@@ -164,7 +170,9 @@ export default function DealsPage() {
               >
                 ← Previous
               </button>
-              <span className={styles.pageInfo}>Page {page} of {data.totalPages}</span>
+              <span className={styles.pageInfo}>
+                Page {page} of {data.totalPages}
+              </span>
               <button
                 className={styles.pageBtn}
                 disabled={page === data.totalPages}
