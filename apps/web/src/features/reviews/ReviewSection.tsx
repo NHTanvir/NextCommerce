@@ -13,7 +13,8 @@ interface Props {
 function Stars({ rating }: { rating: number }) {
   return (
     <span className={styles.stars}>
-      {'★'.repeat(rating)}{'☆'.repeat(5 - rating)}
+      {'★'.repeat(rating)}
+      {'☆'.repeat(5 - rating)}
     </span>
   );
 }
@@ -34,7 +35,7 @@ export function ReviewSection({ productId }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!rating) return;
-    await createReview({ productId, rating, comment });
+    await createReview({ productId, rating, title: comment.slice(0, 80), body: comment });
     setRating(0);
     setComment('');
     setSubmitted(true);
@@ -53,21 +54,19 @@ export function ReviewSection({ productId }: Props) {
         )}
       </div>
 
-      {reviews.length === 0 && (
-        <p className={styles.empty}>No reviews yet — be the first!</p>
-      )}
+      {reviews.length === 0 && <p className={styles.empty}>No reviews yet — be the first!</p>}
 
       <div className={styles.reviews}>
         {reviews.map((r) => (
           <div key={r.id} className={styles.review}>
             <div className={styles.reviewMeta}>
-              <span className={styles.reviewAuthor}>{r.userName}</span>
+              <span className={styles.reviewAuthor}>{r.user?.name ?? 'Customer'}</span>
               <span className={styles.reviewDate}>
                 {new Date(r.createdAt).toLocaleDateString()}
               </span>
             </div>
             <Stars rating={r.rating} />
-            {r.comment && <p className={styles.reviewComment}>{r.comment}</p>}
+            {r.body && <p className={styles.reviewComment}>{r.body}</p>}
           </div>
         ))}
       </div>
