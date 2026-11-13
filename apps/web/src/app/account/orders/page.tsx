@@ -26,7 +26,7 @@ const FILTER_TABS = [
 ];
 
 function isActive(status: string) {
-  return ['paid', 'processing', 'shipped'].includes(status);
+  return ['paid', 'fulfilled', 'shipped'].includes(status);
 }
 
 export default function OrdersPage() {
@@ -38,8 +38,6 @@ export default function OrdersPage() {
   useEffect(() => {
     if (!user) router.push('/auth/login');
   }, [user, router]);
-
-  if (!user) return null;
 
   const filtered = useMemo(() => {
     if (!filter) return orders;
@@ -54,6 +52,8 @@ export default function OrdersPage() {
         .reduce((s, o) => s + o.totalCents, 0),
     [orders],
   );
+
+  if (!user) return null;
 
   const activeCount = orders.filter((o) => isActive(o.status)).length;
   const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
@@ -148,7 +148,7 @@ export default function OrdersPage() {
               </div>
               <div className={styles.orderInfo}>
                 <span className={styles.orderDate}>
-                  {new Date(order.createdAt).toLocaleDateString('en-US', {
+                  {new Date(order.placedAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric',
