@@ -1,0 +1,13 @@
+.armed {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  will-change: opacity, transform;
+}
+
+.shown {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.65s var(--ease-out) var(--reveal-delay, 0ms),
+    transform 0.65s var(--ease-out) var(--reveal-delay, 0ms);
+}
