@@ -41,6 +41,7 @@ export default function ProductPage() {
   const [qty, setQty] = useState(1);
   const [adding, setAdding] = useState(false);
   const [imageIdx, setImageIdx] = useState(0);
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -232,22 +233,21 @@ export default function ProductPage() {
               Out of Stock
             </button>
             {selectedVariantId && (
-              <BackInStockButton
-                productId={product.id}
-                variantId={selectedVariantId}
-                productTitle={product.title}
-              />
+              <BackInStockButton productId={product.id} variantId={selectedVariantId} />
             )}
           </div>
         )}
 
         <div className={styles.productActions}>
-          <PriceAlertButton
-            productId={product.id}
-            currentPriceCents={price}
-            productTitle={product.title}
-          />
-          <SizeGuide />
+          <PriceAlertButton productId={product.id} currentPriceCents={price} />
+          <button
+            type="button"
+            className="btn btn--ghost btn--sm"
+            onClick={() => setSizeGuideOpen(true)}
+          >
+            Size guide
+          </button>
+          <SizeGuide open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
           <button
             className={`btn btn--ghost btn--sm ${styles.compareAction}`}
             onClick={() => {
