@@ -13,7 +13,7 @@ export interface CompareProduct {
   categoryName?: string;
 }
 
-interface CompareState {
+export interface CompareState {
   products: CompareProduct[];
   isDrawerOpen: boolean;
 }

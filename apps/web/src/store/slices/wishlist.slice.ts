@@ -11,7 +11,7 @@ export interface WishlistItem {
   addedAt: string;
 }
 
-interface WishlistState {
+export interface WishlistState {
   items: WishlistItem[];
 }
 

@@ -34,7 +34,7 @@ function saveToStorage(items: RecentProduct[]): void {
   }
 }
 
-interface RecentlyViewedState {
+export interface RecentlyViewedState {
   items: RecentProduct[];
 }
 
