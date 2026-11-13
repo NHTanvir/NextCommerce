@@ -79,7 +79,7 @@ Field Nation's JD calls for a backend engineer comfortable with **NestJS, TypeSc
 
 ## Live demo
 
-**Storefront:** https://nextcommerce.naymulhasantanvir10.workers.dev
+**Storefront:** https://nextcommerce.naymul.workers.dev
 
 The Next.js front end is deployed to Cloudflare Workers with
 [OpenNext](https://opennext.js.org/cloudflare). What is deployed is the
