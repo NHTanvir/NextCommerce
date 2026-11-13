@@ -8,7 +8,12 @@ import { useAddToCartMutation } from '@/store/api/cart.api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addItem, setCartOpen } from '@/store/slices/cart.slice';
 import { trackView } from '@/store/slices/recentlyViewed.slice';
-import { addToCompare, removeFromCompare, selectIsComparing, selectCompareCount } from '@/store/slices/compare.slice';
+import {
+  addToCompare,
+  removeFromCompare,
+  selectIsComparing,
+  selectCompareCount,
+} from '@/store/slices/compare.slice';
 import { useGetProductWishlistCountQuery } from '@/store/api/wishlist.api';
 import { RelatedProducts } from '@/components/features/RelatedProducts';
 import { ProductReviews } from '@/components/features/ProductReviews';
@@ -28,12 +33,30 @@ export default function ProductPage() {
   const [addToCartApi] = useAddToCartMutation();
   const isComparing = useAppSelector(product ? selectIsComparing(product.id) : () => false);
   const compareCount = useAppSelector(selectCompareCount);
-  const { data: wishlistCount = 0 } = useGetProductWishlistCountQuery(product?.id ?? '', { skip: !product?.id });
+  const { data: wishlistCount = 0 } = useGetProductWishlistCountQuery(product?.id ?? '', {
+    skip: !product?.id,
+  });
 
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [adding, setAdding] = useState(false);
   const [imageIdx, setImageIdx] = useState(0);
+
+  useEffect(() => {
+    if (product) {
+      dispatch(
+        trackView({
+          id: product.id,
+          slug: product.slug,
+          title: product.title,
+          brand: product.brand ?? '',
+          basePriceCents: product.variants?.[0]?.priceCents ?? 0,
+          imageUrl: product.images?.[0]?.url,
+          categoryName: product.categoryName,
+        }),
+      );
+    }
+  }, [product?.id]);
 
   if (isLoading) {
     return (
@@ -57,43 +80,37 @@ export default function ProductPage() {
     );
   }
 
-  useEffect(() => {
-    if (product) {
-      dispatch(trackView({
-        id: product.id,
-        slug: product.slug,
-        title: product.title,
-        brand: product.brand ?? '',
-        basePriceCents: product.variants?.[0]?.priceCents ?? 0,
-        imageUrl: product.images?.[0]?.url,
-        categoryName: product.categoryName,
-      }));
-    }
-  }, [product?.id]);
-
   const selectedVariant = product.variants?.find((v) => v.id === selectedVariantId) ?? null;
   const price = selectedVariant?.priceCents ?? product.variants?.[0]?.priceCents ?? 0;
   const inStock = selectedVariant ? selectedVariant.stockQty > 0 : true;
 
   const uniqueColors = [...new Set(product.variants?.map((v) => v.color) ?? [])];
-  const uniqueSizes = [...new Set(product.variants?.map((v) => v.size) ?? [])].sort((a, b) => a - b);
+  const uniqueSizes = [...new Set(product.variants?.map((v) => v.size) ?? [])].sort(
+    (a, b) => a - b,
+  );
 
   async function handleAddToCart() {
     if (!selectedVariantId) return;
     setAdding(true);
     try {
-      await addToCartApi({ variantId: selectedVariantId, quantity: qty, anonymousToken: anonymousToken ?? undefined });
-      dispatch(addItem({
+      await addToCartApi({
         variantId: selectedVariantId,
-        productId: product!.id,
-        title: product!.title,
-        slug: product!.slug,
-        size: selectedVariant?.size ?? 0,
-        color: selectedVariant?.color ?? '',
-        priceCents: price,
         quantity: qty,
-        imageUrl: product!.images?.[0]?.url ?? '',
-      }));
+        anonymousToken: anonymousToken ?? undefined,
+      });
+      dispatch(
+        addItem({
+          variantId: selectedVariantId,
+          productId: product!.id,
+          title: product!.title,
+          slug: product!.slug,
+          size: selectedVariant?.size ?? 0,
+          color: selectedVariant?.color ?? '',
+          priceCents: price,
+          quantity: qty,
+          imageUrl: product!.images?.[0]?.url ?? '',
+        }),
+      );
       dispatch(setCartOpen(true));
     } finally {
       setAdding(false);
@@ -139,12 +156,12 @@ export default function ProductPage() {
         <h1 className={styles.title}>{product.title}</h1>
         <div className={styles.price}>${(price / 100).toFixed(2)}</div>
         {wishlistCount > 0 && (
-          <p className={styles.wishlistSocial}>♥ {wishlistCount} {wishlistCount === 1 ? 'person has' : 'people have'} wishlisted this</p>
+          <p className={styles.wishlistSocial}>
+            ♥ {wishlistCount} {wishlistCount === 1 ? 'person has' : 'people have'} wishlisted this
+          </p>
         )}
 
-        {product.description && (
-          <p className={styles.description}>{product.description}</p>
-        )}
+        {product.description && <p className={styles.description}>{product.description}</p>}
 
         {uniqueColors.length > 0 && (
           <div className={styles.variantGroup}>
@@ -191,9 +208,13 @@ export default function ProductPage() {
         <div className={styles.qtyRow}>
           <p className={styles.variantLabel}>Quantity</p>
           <div className={styles.qtyControl}>
-            <button className={styles.qtyBtn} onClick={() => setQty((q) => Math.max(1, q - 1))}>−</button>
+            <button className={styles.qtyBtn} onClick={() => setQty((q) => Math.max(1, q - 1))}>
+              −
+            </button>
             <span className={styles.qtyValue}>{qty}</span>
-            <button className={styles.qtyBtn} onClick={() => setQty((q) => q + 1)}>+</button>
+            <button className={styles.qtyBtn} onClick={() => setQty((q) => q + 1)}>
+              +
+            </button>
           </div>
         </div>
 
@@ -233,15 +254,17 @@ export default function ProductPage() {
               if (isComparing) {
                 dispatch(removeFromCompare(product.id));
               } else if (compareCount < 4) {
-                dispatch(addToCompare({
-                  id: product.id,
-                  slug: product.slug,
-                  title: product.title,
-                  brand: product.brand ?? '',
-                  basePriceCents: price,
-                  imageUrl: product.images?.[0]?.url,
-                  categoryName: (product as any).categoryName,
-                }));
+                dispatch(
+                  addToCompare({
+                    id: product.id,
+                    slug: product.slug,
+                    title: product.title,
+                    brand: product.brand ?? '',
+                    basePriceCents: price,
+                    imageUrl: product.images?.[0]?.url,
+                    categoryName: (product as any).categoryName,
+                  }),
+                );
               }
             }}
             disabled={!isComparing && compareCount >= 4}
