@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useGetProductQuery } from '@/store/api/catalog.api';
 import { useAddToCartMutation } from '@/store/api/cart.api';
-import { RatingStars } from '@/components/ui/RatingStars';
 import styles from './ProductQuickView.module.scss';
 
 interface Props {
@@ -64,7 +63,13 @@ export function ProductQuickView({ slug, onClose }: Props) {
   const images = product?.images ?? [];
 
   return (
-    <div className={styles.overlay} ref={overlayRef} onClick={handleOverlayClick} role="dialog" aria-modal>
+    <div
+      className={styles.overlay}
+      ref={overlayRef}
+      onClick={handleOverlayClick}
+      role="dialog"
+      aria-modal
+    >
       <div className={styles.modal}>
         <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
           ✕
@@ -124,13 +129,6 @@ export function ProductQuickView({ slug, onClose }: Props) {
               <p className={styles.brand}>{product.brand}</p>
               <h2 className={styles.title}>{product.title}</h2>
 
-              <div className={styles.ratingRow}>
-                <RatingStars rating={product.avgRating ?? 0} size="sm" />
-                <span className={styles.reviewCount}>
-                  {product.reviewCount ?? 0} reviews
-                </span>
-              </div>
-
               <div className={styles.priceRow}>
                 <span className={styles.price}>${(price / 100).toFixed(2)}</span>
                 {!inStock && selectedVariantId && (
@@ -141,9 +139,7 @@ export function ProductQuickView({ slug, onClose }: Props) {
               {/* Variant selector */}
               {product.variants && product.variants.length > 0 && (
                 <div className={styles.variantSection}>
-                  <p className={styles.variantLabel}>
-                    Select Size / Color
-                  </p>
+                  <p className={styles.variantLabel}>Select Size / Color</p>
                   <div className={styles.variants}>
                     {product.variants.map((v) => (
                       <button
