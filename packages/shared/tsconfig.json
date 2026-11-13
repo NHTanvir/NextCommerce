@@ -5,5 +5,9 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "include": ["src"]
+  "include": ["src"],
+  // The tests are run by vitest, which brings its own globals. Type-checking
+  // them as part of the build made `pnpm --filter shared build` exit non-zero
+  // on every clean install, even though it emitted dist correctly.
+  "exclude": ["src/**/__tests__/**", "src/**/*.test.ts"]
 }
