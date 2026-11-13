@@ -1,5 +1,5 @@
 import { Provider } from 'react-redux';
-import { configureStore, type PreloadedState } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { render, type RenderResult } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import { cartReducer } from '@/store/slices/cart.slice';
@@ -10,25 +10,26 @@ import recentlyViewedReducer from '@/store/slices/recentlyViewed.slice';
 import { apiSlice } from '@/store/api.slice';
 import type { RootState } from '@/store/index';
 
-function makeStore(preloadedState?: PreloadedState<RootState>) {
+const rootReducer = combineReducers({
+  cart: cartReducer,
+  auth: authReducer,
+  wishlist: wishlistReducer,
+  compare: compareReducer,
+  recentlyViewed: recentlyViewedReducer,
+  [apiSlice.reducerPath]: apiSlice.reducer,
+});
+
+function makeStore(preloadedState?: Partial<RootState>) {
   return configureStore({
-    reducer: {
-      cart: cartReducer,
-      auth: authReducer,
-      wishlist: wishlistReducer,
-      compare: compareReducer,
-      recentlyViewed: recentlyViewedReducer,
-      [apiSlice.reducerPath]: apiSlice.reducer,
-    },
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(apiSlice.middleware),
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware),
     preloadedState,
   });
 }
 
 export function renderWithStore(
   ui: ReactElement,
-  preloadedState?: PreloadedState<RootState>,
+  preloadedState?: Partial<RootState>,
 ): RenderResult & { store: ReturnType<typeof makeStore> } {
   const store = makeStore(preloadedState);
   const utils = render(<Provider store={store}>{ui}</Provider>);
