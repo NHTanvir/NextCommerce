@@ -11,9 +11,17 @@
 
 .inner {
   display: grid;
-  grid-template-columns: 2fr repeat(3, 1fr);
+  // One column for the brand and one per link group. FOOTER_LINKS has four
+  // groups, so a repeat(3) here left Company wrapping onto a second row
+  // beside three empty cells.
+  grid-template-columns: 2fr repeat(4, 1fr);
   gap: 3rem;
   padding-block: 3rem;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 1.5fr repeat(4, 1fr);
+    gap: 1.5rem;
+  }
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr 1fr;
@@ -82,7 +90,10 @@
   border-top: 1px solid var(--color-border);
   padding-block: 1rem;
 
-  .container {
+  // `container` is the global width utility, not a module class, so it has
+  // to be escaped from the CSS-module hashing or this rule matches nothing
+  // and the copyright and the legal links stack on the left.
+  :global(.container) {
     display: flex;
     align-items: center;
     justify-content: space-between;

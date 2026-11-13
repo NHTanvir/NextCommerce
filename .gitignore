@@ -79,3 +79,7 @@ android/app/build/
 # --- Misc -------------------------------------------------------------------
 *.tgz
 .cache/
+
+# Cloudflare Workers build output
+.open-next/
+.wrangler/
