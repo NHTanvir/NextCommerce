@@ -26,19 +26,19 @@ export class AddressesController {
   @Get()
   @ApiOperation({ summary: 'List current user addresses' })
   findAll(@CurrentUser() user: UserPayload) {
-    return this.addressesService.findByUser(user.id);
+    return this.addressesService.findByUser(user.sub);
   }
 
   @Post()
   @ApiOperation({ summary: 'Create a new address' })
   create(@CurrentUser() user: UserPayload, @Body() dto: CreateAddressDto) {
-    return this.addressesService.create(user.id, dto);
+    return this.addressesService.create(user.sub, dto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an address' })
   remove(@CurrentUser() user: UserPayload, @Param('id') id: string) {
-    return this.addressesService.remove(id, user.id);
+    return this.addressesService.remove(id, user.sub);
   }
 }
