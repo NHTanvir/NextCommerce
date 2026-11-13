@@ -10,12 +10,15 @@ describe('ORDER_STATUS_TRANSITIONS', () => {
     expect(ORDER_STATUS_TRANSITIONS['pending']).toContain('cancelled');
   });
 
-  it('allows paid → processing', () => {
-    expect(ORDER_STATUS_TRANSITIONS['paid']).toContain('processing');
+  // 'fulfilled' is the state this machine actually has, and what the Order
+  // entity, the API DTOs, the service guard and the admin UI all use. The
+  // suite was written against an earlier draft that called it 'processing'.
+  it('allows paid → fulfilled', () => {
+    expect(ORDER_STATUS_TRANSITIONS['paid']).toContain('fulfilled');
   });
 
-  it('allows processing → shipped', () => {
-    expect(ORDER_STATUS_TRANSITIONS['processing']).toContain('shipped');
+  it('allows fulfilled → shipped', () => {
+    expect(ORDER_STATUS_TRANSITIONS['fulfilled']).toContain('shipped');
   });
 
   it('allows shipped → delivered', () => {
@@ -33,7 +36,15 @@ describe('ORDER_STATUS_TRANSITIONS', () => {
   });
 
   it('covers all valid status keys', () => {
-    const validStatuses: OrderStatus[] = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'];
+    const validStatuses: OrderStatus[] = [
+      'pending',
+      'paid',
+      'fulfilled',
+      'shipped',
+      'delivered',
+      'cancelled',
+      'refunded',
+    ];
     for (const s of validStatuses) {
       expect(ORDER_STATUS_TRANSITIONS).toHaveProperty(s);
     }
