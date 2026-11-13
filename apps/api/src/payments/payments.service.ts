@@ -1,9 +1,10 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from '../orders/entities/order.entity';
 import { EventsService } from '../events/events.service';
 import { AuditService } from '../audit/audit.service';
+import * as crypto from 'crypto';
 
 export interface StripeWebhookEvent {
   id: string;
@@ -49,7 +50,10 @@ export class PaymentsService {
   private async handlePaymentSucceeded(event: StripeWebhookEvent): Promise<void> {
     const orderId = event.data.object.metadata?.orderId;
     if (!orderId) {
-      this.logger.warn({ eventId: event.id }, 'payment_intent.succeeded missing orderId in metadata');
+      this.logger.warn(
+        { eventId: event.id },
+        'payment_intent.succeeded missing orderId in metadata',
+      );
       return;
     }
 
@@ -74,7 +78,10 @@ export class PaymentsService {
       action: 'payment.succeeded' as any,
       resourceType: 'order',
       resourceId: orderId,
-      metadata: { paymentIntentId: event.data.object.id, amountReceived: event.data.object.amount_received },
+      metadata: {
+        paymentIntentId: event.data.object.id,
+        amountReceived: event.data.object.amount_received,
+      },
     });
   }
 
@@ -105,7 +112,6 @@ export class PaymentsService {
   verifyWebhookSignature(payload: string | Buffer, signature: string, secret: string): boolean {
     if (!secret || secret === 'whsec_test') return true;
     try {
-      const crypto = require('crypto');
       const parts = (typeof signature === 'string' ? signature : '').split(',');
       const tPart = parts.find((p) => p.startsWith('t='));
       const v1Part = parts.find((p) => p.startsWith('v1='));
