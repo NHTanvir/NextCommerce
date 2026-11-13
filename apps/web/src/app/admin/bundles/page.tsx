@@ -27,7 +27,10 @@ export default function AdminBundlesPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ids = productIds.split(',').map((id) => id.trim()).filter(Boolean);
+    const ids = productIds
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
     if (ids.length < 2) return;
 
     await createBundle({
@@ -63,7 +66,9 @@ export default function AdminBundlesPage() {
       <div className={styles.topBar}>
         <div>
           <h1 className={styles.heading}>Product Bundles</h1>
-          <p className={styles.sub}>{bundles.length} bundle{bundles.length !== 1 ? 's' : ''}</p>
+          <p className={styles.sub}>
+            {bundles.length} bundle{bundles.length !== 1 ? 's' : ''}
+          </p>
         </div>
         <button className="btn btn--primary btn--sm" onClick={() => setShowForm((v) => !v)}>
           {showForm ? 'Cancel' : '+ New Bundle'}
@@ -77,15 +82,35 @@ export default function AdminBundlesPage() {
             { label: 'Active', value: stats.active, color: '#3fb950' },
             { label: 'Inactive', value: stats.inactive, color: '#8b949e' },
             { label: 'Avg Discount', value: `${stats.avgDiscountPercent}%`, color: '#f59e0b' },
-            { label: 'Expiring Soon', value: stats.expiringSoon, color: '#e94560' },
+            { label: 'Expiring Soon', value: stats.expiringSoon, color: 'var(--color-accent)' },
           ].map((s) => (
-            <div key={s.label} style={{
-              flex: 1, minWidth: 100, background: 'var(--color-surface)',
-              border: `1px solid ${s.color}30`, borderRadius: '0.75rem',
-              padding: '0.875rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem',
-            }}>
+            <div
+              key={s.label}
+              style={{
+                flex: 1,
+                minWidth: 100,
+                background: 'var(--color-surface)',
+                border: `1px solid ${s.color}30`,
+                borderRadius: '0.75rem',
+                padding: '0.875rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+            >
               <span style={{ fontSize: '1.5rem', fontWeight: 800, color: s.color }}>{s.value}</span>
-              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: 'var(--color-text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {s.label}
+              </span>
             </div>
           ))}
         </div>
@@ -199,13 +224,9 @@ export default function AdminBundlesPage() {
                   <td className={styles.dateRange}>
                     {b.startsAt || b.endsAt ? (
                       <>
-                        {b.startsAt && (
-                          <span>{new Date(b.startsAt).toLocaleDateString()}</span>
-                        )}
+                        {b.startsAt && <span>{new Date(b.startsAt).toLocaleDateString()}</span>}
                         {b.startsAt && b.endsAt && ' — '}
-                        {b.endsAt && (
-                          <span>{new Date(b.endsAt).toLocaleDateString()}</span>
-                        )}
+                        {b.endsAt && <span>{new Date(b.endsAt).toLocaleDateString()}</span>}
                       </>
                     ) : (
                       <span className={styles.always}>Always</span>
@@ -221,10 +242,7 @@ export default function AdminBundlesPage() {
                           Deactivate
                         </button>
                       )}
-                      <button
-                        className={styles.deleteBtn}
-                        onClick={() => handleDelete(b.id)}
-                      >
+                      <button className={styles.deleteBtn} onClick={() => handleDelete(b.id)}>
                         Delete
                       </button>
                     </div>

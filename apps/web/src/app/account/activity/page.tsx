@@ -10,7 +10,7 @@ const ACTION_META: Record<string, { icon: string; label: string; color: string }
   'user.logout': { icon: '👋', label: 'Signed out', color: '#8b949e' },
   'order.create': { icon: '📦', label: 'Order placed', color: '#8957e5' },
   'order.status_change': { icon: '🔄', label: 'Order updated', color: '#f59e0b' },
-  'coupon.redeem': { icon: '🎟️', label: 'Coupon redeemed', color: '#e94560' },
+  'coupon.redeem': { icon: '🎟️', label: 'Coupon redeemed', color: 'var(--color-accent)' },
 };
 
 function getActionMeta(action: string) {
@@ -26,14 +26,21 @@ function timeAgo(iso: string): string {
   if (hrs < 24) return `${hrs}h ago`;
   const days = Math.floor(hrs / 24);
   if (days < 7) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return new Date(iso).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
 function groupByDate(logs: AuditLog[]): [string, AuditLog[]][] {
   const groups: Record<string, AuditLog[]> = {};
   for (const log of logs) {
     const key = new Date(log.createdAt).toLocaleDateString('en-US', {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
     if (!groups[key]) groups[key] = [];
     groups[key].push(log);
@@ -48,7 +55,9 @@ export default function AccountActivityPage() {
   return (
     <div className={`container ${styles.page}`}>
       <div className={styles.header}>
-        <Link href="/account" className={styles.backLink}>← My Account</Link>
+        <Link href="/account" className={styles.backLink}>
+          ← My Account
+        </Link>
         <h1 className={styles.title}>Account Activity</h1>
         <p className={styles.sub}>Your recent account actions and events</p>
       </div>
@@ -65,7 +74,9 @@ export default function AccountActivityPage() {
         <div className={styles.empty}>
           <span className={styles.emptyIcon}>🔒</span>
           <p>Sign in to view your account activity.</p>
-          <Link href="/auth/login" className="btn btn-primary">Sign In</Link>
+          <Link href="/auth/login" className="btn btn-primary">
+            Sign In
+          </Link>
         </div>
       )}
 
@@ -73,7 +84,9 @@ export default function AccountActivityPage() {
         <div className={styles.empty}>
           <span className={styles.emptyIcon}>📋</span>
           <p>No activity recorded yet. Start shopping to see your history here.</p>
-          <Link href="/products" className="btn btn-primary">Browse Products</Link>
+          <Link href="/products" className="btn btn-primary">
+            Browse Products
+          </Link>
         </div>
       )}
 
@@ -97,13 +110,15 @@ export default function AccountActivityPage() {
                         <p className={styles.entryLabel}>{meta.label}</p>
                         {log.resourceId && (
                           <p className={styles.entryMeta}>
-                            {log.resourceType && <span className={styles.resourceType}>{log.resourceType}</span>}
-                            <span className={styles.resourceId}>{log.resourceId.slice(-12).toUpperCase()}</span>
+                            {log.resourceType && (
+                              <span className={styles.resourceType}>{log.resourceType}</span>
+                            )}
+                            <span className={styles.resourceId}>
+                              {log.resourceId.slice(-12).toUpperCase()}
+                            </span>
                           </p>
                         )}
-                        {log.ipAddress && (
-                          <p className={styles.entryIp}>from {log.ipAddress}</p>
-                        )}
+                        {log.ipAddress && <p className={styles.entryIp}>from {log.ipAddress}</p>}
                       </div>
                       <span className={styles.entryTime}>{timeAgo(log.createdAt)}</span>
                     </div>

@@ -46,7 +46,7 @@
   font-weight: 600;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
-  background: rgba(233, 69, 96, 0.15);
+  background: rgba(var(--color-accent-rgb), 0.15);
   color: var(--color-accent);
 }
 
@@ -192,7 +192,7 @@
 
   &:hover {
     border-color: var(--color-accent);
-    background: rgba(233, 69, 96, 0.1);
+    background: rgba(var(--color-accent-rgb), 0.1);
   }
 }
 

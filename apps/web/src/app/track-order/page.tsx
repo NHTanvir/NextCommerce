@@ -20,23 +20,23 @@ interface OrderTracking {
 const STATUS_STEPS = ['pending', 'paid', 'processing', 'shipped', 'delivered'];
 
 const STATUS_COLORS: Record<string, string> = {
-  pending:   '#f59e0b',
-  paid:      '#58a6ff',
-  processing:'#8957e5',
-  shipped:   '#06b6d4',
+  pending: '#f59e0b',
+  paid: '#58a6ff',
+  processing: '#8957e5',
+  shipped: '#06b6d4',
   delivered: '#3fb950',
-  cancelled: '#e94560',
-  refunded:  '#6b7280',
+  cancelled: 'var(--color-accent)',
+  refunded: '#6b7280',
 };
 
 const STATUS_ICONS: Record<string, string> = {
-  pending:    '🕐',
-  paid:       '💳',
+  pending: '🕐',
+  paid: '💳',
   processing: '⚙️',
-  shipped:    '🚚',
-  delivered:  '✅',
-  cancelled:  '❌',
-  refunded:   '↩️',
+  shipped: '🚚',
+  delivered: '✅',
+  cancelled: '❌',
+  refunded: '↩️',
 };
 
 export default function TrackOrderPage() {
@@ -127,8 +127,11 @@ export default function TrackOrderPage() {
             <div>
               <p className={styles.orderId}>Order #{order.id.slice(-8).toUpperCase()}</p>
               <p className={styles.orderDate}>
-                Placed on {new Date(order.placedAt).toLocaleDateString('en-US', {
-                  year: 'numeric', month: 'long', day: 'numeric',
+                Placed on{' '}
+                {new Date(order.placedAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
                 })}
               </p>
             </div>
@@ -140,7 +143,8 @@ export default function TrackOrderPage() {
                 borderColor: STATUS_COLORS[order.status],
               }}
             >
-              {STATUS_ICONS[order.status]} {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+              {STATUS_ICONS[order.status]}{' '}
+              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
             </div>
           </div>
 
@@ -161,7 +165,9 @@ export default function TrackOrderPage() {
                       />
                     )}
                   </div>
-                  <p className={`${styles.trackerLabel} ${i <= statusIdx ? styles.trackerLabelActive : ''}`}>
+                  <p
+                    className={`${styles.trackerLabel} ${i <= statusIdx ? styles.trackerLabelActive : ''}`}
+                  >
                     {step.charAt(0).toUpperCase() + step.slice(1)}
                   </p>
                 </div>
@@ -190,7 +196,9 @@ export default function TrackOrderPage() {
                   <span className={styles.trackingKey}>Est. Delivery</span>
                   <span className={styles.trackingValue}>
                     {new Date(order.estimatedDelivery).toLocaleDateString('en-US', {
-                      weekday: 'short', month: 'short', day: 'numeric',
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
                     })}
                   </span>
                 </div>

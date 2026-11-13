@@ -23,7 +23,12 @@ function timeAgo(iso: string): string {
 }
 
 function getInitials(name: string) {
-  return name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 }
 
 const SEGMENT_COLORS: Record<string, string> = {
@@ -31,7 +36,7 @@ const SEGMENT_COLORS: Record<string, string> = {
   loyal: '#3fb950',
   regular: '#58a6ff',
   atRisk: '#f0b72f',
-  lapsed: '#e94560',
+  lapsed: 'var(--color-accent)',
 };
 
 const SEGMENT_LABELS: Record<string, string> = {
@@ -56,9 +61,7 @@ export default function AdminCustomersPage() {
   const { data: aovTrend = [] } = useGetAovTrendQuery(30);
 
   const maxAov = Math.max(...aovTrend.map((p) => p.avgOrderValueCents), 1);
-  const totalSegmented = segments
-    ? Object.values(segments).reduce((sum, v) => sum + v, 0)
-    : 0;
+  const totalSegmented = segments ? Object.values(segments).reduce((sum, v) => sum + v, 0) : 0;
 
   return (
     <div className={styles.page}>
@@ -78,7 +81,10 @@ export default function AdminCustomersPage() {
             return (
               <div key={key} className={styles.segmentCard}>
                 <div className={styles.segmentTop}>
-                  <span className={styles.segmentDot} style={{ backgroundColor: SEGMENT_COLORS[key] }} />
+                  <span
+                    className={styles.segmentDot}
+                    style={{ backgroundColor: SEGMENT_COLORS[key] }}
+                  />
                   <span className={styles.segmentLabel}>{SEGMENT_LABELS[key]}</span>
                 </div>
                 <p className={styles.segmentCount}>{count.toLocaleString()}</p>
@@ -109,7 +115,10 @@ export default function AdminCustomersPage() {
                   title={`${point.date}: ${formatPrice(point.avgOrderValueCents)}`}
                 />
                 <span className={styles.aovBarLabel}>
-                  {new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  {new Date(point.date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
                 </span>
               </div>
             ))}
@@ -153,10 +162,7 @@ export default function AdminCustomersPage() {
                     <td className={styles.spent}>{formatPrice(c.totalSpentCents)}</td>
                     <td className={styles.muted}>{timeAgo(c.lastOrderAt)}</td>
                     <td>
-                      <Link
-                        href={`/admin/users/${c.userId}`}
-                        className="btn btn--ghost btn--sm"
-                      >
+                      <Link href={`/admin/users/${c.userId}`} className="btn btn--ghost btn--sm">
                         View
                       </Link>
                     </td>

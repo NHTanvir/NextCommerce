@@ -20,7 +20,7 @@ export default function AdminCatalogHealthPage() {
         {
           label: 'Missing Images',
           count: health.noImages,
-          color: '#e94560',
+          color: 'var(--color-accent)',
           description: 'Products with no images uploaded',
           fixLink: '/admin/products',
         },
@@ -48,7 +48,7 @@ export default function AdminCatalogHealthPage() {
         {
           label: 'Missing Category',
           count: health.missingCategory,
-          color: '#e94560',
+          color: 'var(--color-accent)',
           description: 'Products not assigned to a category',
           fixLink: '/admin/products',
         },
@@ -56,14 +56,18 @@ export default function AdminCatalogHealthPage() {
     : [];
 
   const totalIssues = issues.reduce((sum, i) => sum + i.count, 0);
-  const score = health ? Math.round(((health.total - totalIssues) / Math.max(health.total, 1)) * 100) : 0;
+  const score = health
+    ? Math.round(((health.total - totalIssues) / Math.max(health.total, 1)) * 100)
+    : 0;
 
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>Catalog Health</h1>
-          <p className={styles.pageSub}>Identify and fix data quality issues in your product catalog.</p>
+          <p className={styles.pageSub}>
+            Identify and fix data quality issues in your product catalog.
+          </p>
         </div>
         <button className="btn btn--outline btn--sm" onClick={() => refetch()}>
           Refresh
@@ -84,13 +88,21 @@ export default function AdminCatalogHealthPage() {
               <span className={styles.statLabel}>Active</span>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statValue} style={{ color: score >= 90 ? '#10b981' : score >= 70 ? '#f59e0b' : '#e94560' }}>
+              <span
+                className={styles.statValue}
+                style={{
+                  color: score >= 90 ? '#10b981' : score >= 70 ? '#f59e0b' : 'var(--color-accent)',
+                }}
+              >
                 {score}%
               </span>
               <span className={styles.statLabel}>Health Score</span>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statValue} style={{ color: totalIssues > 0 ? '#e94560' : '#10b981' }}>
+              <span
+                className={styles.statValue}
+                style={{ color: totalIssues > 0 ? 'var(--color-accent)' : '#10b981' }}
+              >
                 {totalIssues}
               </span>
               <span className={styles.statLabel}>Total Issues</span>
@@ -106,7 +118,10 @@ export default function AdminCatalogHealthPage() {
                     <span className={styles.issueName}>{issue.label}</span>
                     <span className={styles.issueDesc}>{issue.description}</span>
                   </div>
-                  <div className={styles.issueCount} style={{ color: issue.count > 0 ? issue.color : '#10b981' }}>
+                  <div
+                    className={styles.issueCount}
+                    style={{ color: issue.count > 0 ? issue.color : '#10b981' }}
+                  >
                     {issue.count > 0 ? `${issue.count} products` : '✓ All good'}
                   </div>
                   {issue.count > 0 && (

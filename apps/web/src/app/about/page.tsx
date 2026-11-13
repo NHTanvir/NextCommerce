@@ -38,7 +38,7 @@ const VALUES = [
 ];
 
 const TEAM = [
-  { name: 'Aria Chen', role: 'Co-Founder & CEO', initials: 'AC', color: '#e94560' },
+  { name: 'Aria Chen', role: 'Co-Founder & CEO', initials: 'AC', color: 'var(--color-accent)' },
   { name: 'Marcus Webb', role: 'Co-Founder & CTO', initials: 'MW', color: '#58a6ff' },
   { name: 'Sofia Reyes', role: 'Head of Product', initials: 'SR', color: '#3fb950' },
   { name: 'Devon Park', role: 'VP Engineering', initials: 'DP', color: '#8957e5' },
@@ -51,8 +51,14 @@ const MILESTONES = [
   { year: '2021', event: 'Launched beta with 500 products and 10K early adopters' },
   { year: '2022', event: 'Series A funding — expanded to 50+ employees and 100K products' },
   { year: '2023', event: 'Reached 1M customers; launched mobile app for iOS and Android' },
-  { year: '2024', event: 'Introduced AI-powered recommendations and same-day delivery in 12 cities' },
-  { year: '2025', event: 'Surpassed 2M customers; launched seller marketplace and loyalty program' },
+  {
+    year: '2024',
+    event: 'Introduced AI-powered recommendations and same-day delivery in 12 cities',
+  },
+  {
+    year: '2025',
+    event: 'Surpassed 2M customers; launched seller marketplace and loyalty program',
+  },
 ];
 
 export default function AboutPage() {
@@ -62,13 +68,14 @@ export default function AboutPage() {
       <section className={styles.hero}>
         <div className={styles.heroBadge}>Our Story</div>
         <h1 className={styles.heroTitle}>
-          Commerce built for<br />
+          Commerce built for
+          <br />
           <span className={styles.accent}>real people</span>
         </h1>
         <p className={styles.heroSub}>
           NextCommerce started with a simple belief: shopping online should feel as good as the best
-          retail experience — fast, personal, and trustworthy. We&apos;re still building toward that vision
-          every day.
+          retail experience — fast, personal, and trustworthy. We&apos;re still building toward that
+          vision every day.
         </p>
       </section>
 
@@ -87,13 +94,14 @@ export default function AboutPage() {
         <div className={styles.missionText}>
           <h2 className={styles.sectionTitle}>Our Mission</h2>
           <p>
-            We believe great products should be discoverable by anyone, not just those who know where to look.
-            NextCommerce connects shoppers with the best footwear, apparel, and lifestyle brands — through
-            a platform that&apos;s fast, fair, and built on trust.
+            We believe great products should be discoverable by anyone, not just those who know
+            where to look. NextCommerce connects shoppers with the best footwear, apparel, and
+            lifestyle brands — through a platform that&apos;s fast, fair, and built on trust.
           </p>
           <p>
-            We&apos;re not just a marketplace. We hand-curate every brand on our platform, test fulfilment
-            partners against strict SLAs, and stand behind every order with our buyer protection guarantee.
+            We&apos;re not just a marketplace. We hand-curate every brand on our platform, test
+            fulfilment partners against strict SLAs, and stand behind every order with our buyer
+            protection guarantee.
           </p>
         </div>
         <div className={styles.missionQuote}>
@@ -163,8 +171,12 @@ export default function AboutPage() {
           Millions of shoppers trust us every month. Start exploring today.
         </p>
         <div className={styles.ctaButtons}>
-          <Link href="/products" className="btn btn-primary">Shop Now</Link>
-          <Link href="/careers" className={styles.ctaSecondary}>We&apos;re Hiring →</Link>
+          <Link href="/products" className="btn btn-primary">
+            Shop Now
+          </Link>
+          <Link href="/careers" className={styles.ctaSecondary}>
+            We&apos;re Hiring →
+          </Link>
         </div>
       </section>
     </main>

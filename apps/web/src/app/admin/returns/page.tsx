@@ -28,10 +28,18 @@ const REASON_LABELS: Record<string, string> = {
 
 export default function AdminReturnsPage() {
   const [filterStatus, setFilterStatus] = useState<ReturnStatus | ''>('');
-  const { data: returns = [], isLoading, refetch } = useGetAdminReturnsQuery({ status: filterStatus || undefined });
+  const {
+    data: returns = [],
+    isLoading,
+    refetch,
+  } = useGetAdminReturnsQuery({ status: filterStatus || undefined });
   const { data: stats } = useGetAdminReturnStatsQuery();
   const [updateStatus] = useUpdateReturnStatusMutation();
-  const [editing, setEditing] = useState<{ id: string; status: ReturnStatus; adminNotes: string } | null>(null);
+  const [editing, setEditing] = useState<{
+    id: string;
+    status: ReturnStatus;
+    adminNotes: string;
+  } | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
 
@@ -39,7 +47,11 @@ export default function AdminReturnsPage() {
     if (!editing) return;
     setSaving(true);
     try {
-      await updateStatus({ id: editing.id, status: editing.status, adminNotes: editing.adminNotes }).unwrap();
+      await updateStatus({
+        id: editing.id,
+        status: editing.status,
+        adminNotes: editing.adminNotes,
+      }).unwrap();
       setMsg('Return updated successfully.');
       setEditing(null);
       refetch();
@@ -63,10 +75,12 @@ export default function AdminReturnsPage() {
             { label: 'Pending', value: stats.pending, color: '#f59e0b' },
             { label: 'Approved', value: stats.approved, color: '#3fb950' },
             { label: 'Completed', value: stats.completed, color: '#58a6ff' },
-            { label: 'Rejected', value: stats.rejected, color: '#e94560' },
+            { label: 'Rejected', value: stats.rejected, color: 'var(--color-accent)' },
           ].map(({ label, value, color }) => (
             <div key={label} className={styles.statCard} style={{ borderColor: `${color}30` }}>
-              <span className={styles.statValue} style={{ color }}>{value}</span>
+              <span className={styles.statValue} style={{ color }}>
+                {value}
+              </span>
               <span className={styles.statLabel}>{label}</span>
             </div>
           ))}
@@ -82,7 +96,9 @@ export default function AdminReturnsPage() {
           >
             <option value="">All Statuses</option>
             {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+              <option key={s} value={s}>
+                {s.charAt(0).toUpperCase() + s.slice(1)}
+              </option>
             ))}
           </select>
         </div>
@@ -93,7 +109,9 @@ export default function AdminReturnsPage() {
       {editing && (
         <div className={styles.editModal}>
           <div className={styles.editCard}>
-            <h3 className={styles.editTitle}>Update Return #{editing.id.slice(-8).toUpperCase()}</h3>
+            <h3 className={styles.editTitle}>
+              Update Return #{editing.id.slice(-8).toUpperCase()}
+            </h3>
             <div className={styles.editField}>
               <label>Status</label>
               <select
@@ -102,7 +120,9 @@ export default function AdminReturnsPage() {
                 onChange={(e) => setEditing({ ...editing, status: e.target.value as ReturnStatus })}
               >
                 {STATUS_OPTIONS.map((s) => (
-                  <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                  <option key={s} value={s}>
+                    {s.charAt(0).toUpperCase() + s.slice(1)}
+                  </option>
                 ))}
               </select>
             </div>
@@ -117,7 +137,9 @@ export default function AdminReturnsPage() {
               />
             </div>
             <div className={styles.editActions}>
-              <button className="btn btn--ghost btn--sm" onClick={() => setEditing(null)}>Cancel</button>
+              <button className="btn btn--ghost btn--sm" onClick={() => setEditing(null)}>
+                Cancel
+              </button>
               <button className="btn btn--primary btn--sm" onClick={handleSave} disabled={saving}>
                 {saving ? 'Saving…' : 'Save Changes'}
               </button>
@@ -152,7 +174,9 @@ export default function AdminReturnsPage() {
                   <td>{r.userId}</td>
                   <td>{REASON_LABELS[r.reason] ?? r.reason}</td>
                   <td>
-                    <span className={`badge badge--${STATUS_BADGE[r.status as ReturnStatus] ?? 'default'}`}>
+                    <span
+                      className={`badge badge--${STATUS_BADGE[r.status as ReturnStatus] ?? 'default'}`}
+                    >
                       {r.status}
                     </span>
                   </td>
@@ -166,7 +190,13 @@ export default function AdminReturnsPage() {
                   <td>
                     <button
                       className="btn btn--ghost btn--sm"
-                      onClick={() => setEditing({ id: r.id, status: r.status as ReturnStatus, adminNotes: r.adminNotes ?? '' })}
+                      onClick={() =>
+                        setEditing({
+                          id: r.id,
+                          status: r.status as ReturnStatus,
+                          adminNotes: r.adminNotes ?? '',
+                        })
+                      }
                     >
                       Review
                     </button>

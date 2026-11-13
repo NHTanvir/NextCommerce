@@ -70,16 +70,16 @@
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
   background: #2f1a1a;
-  color: #e94560;
-  border: 1px solid #e9456040;
+  color: var(--color-accent);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.25);
   font-size: 0.75rem;
   font-weight: 600;
 }
 
 .errorBanner {
   background: #2f1a1a;
-  color: #e94560;
-  border: 1px solid #e9456040;
+  color: var(--color-accent);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.25);
   border-radius: 8px;
   padding: 0.875rem 1rem;
   margin-bottom: 1.5rem;
@@ -212,7 +212,7 @@
 }
 
 .dangerZone {
-  border: 1px solid #e9456040;
+  border: 1px solid rgba(var(--color-accent-rgb), 0.25);
   border-radius: 12px;
   padding: 1.5rem;
   background: #1a0a0d;
@@ -221,7 +221,7 @@
 .dangerTitle {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #e94560;
+  color: var(--color-accent);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0 0 1rem;

@@ -58,7 +58,7 @@
 
 .swatchActive {
   border-color: var(--color-accent) !important;
-  box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.25);
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.25);
 }
 
 .swatchOOS {
@@ -72,8 +72,8 @@
     background: linear-gradient(
       135deg,
       transparent 45%,
-      rgba(233, 69, 96, 0.6) 45%,
-      rgba(233, 69, 96, 0.6) 55%,
+      rgba(var(--color-accent-rgb), 0.6) 45%,
+      rgba(var(--color-accent-rgb), 0.6) 55%,
       transparent 55%
     );
   }

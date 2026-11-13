@@ -96,7 +96,7 @@
 }
 
 .stockBadge {
-  background: rgba(233, 69, 96, 0.15);
+  background: rgba(var(--color-accent-rgb), 0.15);
   color: var(--color-accent);
   font-weight: 700;
   padding: 0.2rem 0.6rem;

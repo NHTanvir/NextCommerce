@@ -7,9 +7,21 @@ import styles from './tags.module.scss';
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 const TAG_COLORS = [
-  '#e94560', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6',
-  '#06b6d4', '#ef4444', '#22c55e', '#a855f7', '#f97316',
-  '#14b8a6', '#6366f1', '#ec4899', '#84cc16', '#0ea5e9',
+  'var(--color-accent)',
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#8b5cf6',
+  '#06b6d4',
+  '#ef4444',
+  '#22c55e',
+  '#a855f7',
+  '#f97316',
+  '#14b8a6',
+  '#6366f1',
+  '#ec4899',
+  '#84cc16',
+  '#0ea5e9',
 ];
 
 function getTagColor(tag: string): string {
@@ -50,9 +62,7 @@ export default function TagsPage() {
     <div className={styles.page}>
       <div className={styles.hero}>
         <h1 className={styles.title}>Browse by Tag</h1>
-        <p className={styles.subtitle}>
-          Discover products by style, feature, and activity.
-        </p>
+        <p className={styles.subtitle}>Discover products by style, feature, and activity.</p>
         <div className={styles.searchWrap}>
           <span className={styles.searchIcon}>🏷️</span>
           <input
@@ -107,7 +117,9 @@ export default function TagsPage() {
               <h2 className={styles.sectionTitle}>A–Z Index</h2>
               <div className={styles.letterNav}>
                 {letters.map((l) => (
-                  <a key={l} href={`#letter-${l}`} className={styles.letterLink}>{l}</a>
+                  <a key={l} href={`#letter-${l}`} className={styles.letterLink}>
+                    {l}
+                  </a>
                 ))}
               </div>
               <div className={styles.alphaGroups}>

@@ -83,8 +83,8 @@
   letter-spacing: 0.03em;
 
   &.admin {
-    background: rgba(233, 69, 96, 0.15);
-    color: #e94560;
+    background: rgba(var(--color-accent-rgb), 0.15);
+    color: var(--color-accent);
   }
 
   &.customer {
@@ -104,8 +104,8 @@
   transition: all 0.2s;
 
   &:hover {
-    border-color: #e94560;
-    color: #e94560;
+    border-color: var(--color-accent);
+    color: var(--color-accent);
   }
 }
 

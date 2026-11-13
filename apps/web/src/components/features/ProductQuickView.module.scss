@@ -209,9 +209,9 @@
 
 .outOfStock {
   font-size: 0.8rem;
-  color: #e94560;
-  background: #e9456018;
-  border: 1px solid #e9456040;
+  color: var(--color-accent);
+  background: rgba(var(--color-accent-rgb), 0.09);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.25);
   border-radius: 999px;
   padding: 0.2rem 0.6rem;
 }
@@ -313,7 +313,7 @@
 
 .msgError {
   font-size: 0.825rem;
-  color: #e94560;
+  color: var(--color-accent);
   margin: 0;
 }
 

@@ -13,7 +13,7 @@ const STATUS_COLORS: Record<string, string> = {
   paid: '#8957e5',
   processing: '#f59e0b',
   pending: '#d29922',
-  cancelled: '#e94560',
+  cancelled: 'var(--color-accent)',
   refunded: '#8b949e',
 };
 
@@ -25,7 +25,8 @@ export default function AdminReportsPage() {
   const [days, setDays] = useState(30);
 
   const { data: statusData = [], isLoading: loadingStatus } = useGetOrderStatusBreakdownQuery();
-  const { data: customerData = [], isLoading: loadingCustomers } = useGetNewCustomersByDayQuery(days);
+  const { data: customerData = [], isLoading: loadingCustomers } =
+    useGetNewCustomersByDayQuery(days);
 
   const loading = loadingStatus || loadingCustomers;
   const totalOrders = statusData.reduce((s, r) => s + r.count, 0);
@@ -63,7 +64,9 @@ export default function AdminReportsPage() {
           <section className={styles.section}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Order Status Breakdown</h2>
-              <span className={styles.sectionMeta}>{totalOrders.toLocaleString()} total orders</span>
+              <span className={styles.sectionMeta}>
+                {totalOrders.toLocaleString()} total orders
+              </span>
             </div>
             <div className={styles.tableCard}>
               <table className={styles.table}>
@@ -107,10 +110,16 @@ export default function AdminReportsPage() {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td><strong>Total</strong></td>
-                    <td className={styles.numCell}><strong>{totalOrders.toLocaleString()}</strong></td>
+                    <td>
+                      <strong>Total</strong>
+                    </td>
+                    <td className={styles.numCell}>
+                      <strong>{totalOrders.toLocaleString()}</strong>
+                    </td>
                     <td className={styles.numCell}>100%</td>
-                    <td className={styles.numCell}><strong>{formatCents(totalRevenue)}</strong></td>
+                    <td className={styles.numCell}>
+                      <strong>{formatCents(totalRevenue)}</strong>
+                    </td>
                     <td />
                   </tr>
                 </tfoot>
@@ -137,7 +146,10 @@ export default function AdminReportsPage() {
                         title={`${row.date}: ${row.newCustomers} new customers`}
                       />
                       <span className={styles.barLabel}>
-                        {new Date(row.date).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}
+                        {new Date(row.date).toLocaleDateString('en-US', {
+                          month: 'numeric',
+                          day: 'numeric',
+                        })}
                       </span>
                     </div>
                   ))}

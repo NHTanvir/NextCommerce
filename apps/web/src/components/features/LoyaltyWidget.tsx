@@ -1,7 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useGetLoyaltyBalanceQuery, useGetLoyaltyHistoryQuery, useRedeemPointsMutation } from '@/store/api/loyalty.api';
+import {
+  useGetLoyaltyBalanceQuery,
+  useGetLoyaltyHistoryQuery,
+  useRedeemPointsMutation,
+} from '@/store/api/loyalty.api';
 import styles from './LoyaltyWidget.module.scss';
 
 const TIER_ICONS: Record<string, string> = {
@@ -37,7 +41,10 @@ export function LoyaltyWidget() {
   const handleRedeem = async (e: React.FormEvent) => {
     e.preventDefault();
     const pts = Number(redeemAmount);
-    if (pts < 100) { setRedeemMsg('Minimum 100 points to redeem.'); return; }
+    if (pts < 100) {
+      setRedeemMsg('Minimum 100 points to redeem.');
+      return;
+    }
     try {
       const result = await redeemPoints(pts).unwrap();
       setRedeemMsg(`Redeemed! You got a $${(result.discountCents / 100).toFixed(2)} discount.`);
@@ -61,7 +68,9 @@ export function LoyaltyWidget() {
             <p className={styles.tierLabel} style={{ color: tierColor }}>
               {balance.tier.charAt(0).toUpperCase() + balance.tier.slice(1)} Member
             </p>
-            <p className={styles.lifetimePts}>{balance.lifetimePoints.toLocaleString()} lifetime pts</p>
+            <p className={styles.lifetimePts}>
+              {balance.lifetimePoints.toLocaleString()} lifetime pts
+            </p>
           </div>
         </div>
         <div className={styles.pointsBadge}>
@@ -74,7 +83,10 @@ export function LoyaltyWidget() {
       {balance.nextTierPoints !== null && (
         <div className={styles.progress}>
           <div className={styles.progressBar}>
-            <div className={styles.progressFill} style={{ width: `${progressPct}%`, background: tierColor }} />
+            <div
+              className={styles.progressFill}
+              style={{ width: `${progressPct}%`, background: tierColor }}
+            />
           </div>
           <p className={styles.progressText}>
             {balance.nextTierPoints.toLocaleString()} pts to next tier
@@ -94,10 +106,13 @@ export function LoyaltyWidget() {
             max={balance.points}
             placeholder="100"
             value={redeemAmount}
-            onChange={(e) => { setRedeemAmount(e.target.value); setRedeemMsg(''); }}
+            onChange={(e) => {
+              setRedeemAmount(e.target.value);
+              setRedeemMsg('');
+            }}
           />
           <span className={styles.redeemHint}>
-            = ${redeemAmount ? ((Number(redeemAmount) / 100)).toFixed(2) : '0.00'} off
+            = ${redeemAmount ? (Number(redeemAmount) / 100).toFixed(2) : '0.00'} off
           </span>
           <button
             type="submit"
@@ -122,9 +137,10 @@ export function LoyaltyWidget() {
               </div>
               <span
                 className={styles.txPoints}
-                style={{ color: tx.points > 0 ? '#3fb950' : '#e94560' }}
+                style={{ color: tx.points > 0 ? '#3fb950' : 'var(--color-accent)' }}
               >
-                {tx.points > 0 ? '+' : ''}{tx.points}
+                {tx.points > 0 ? '+' : ''}
+                {tx.points}
               </span>
             </div>
           ))}

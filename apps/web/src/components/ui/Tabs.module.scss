@@ -48,7 +48,7 @@
   text-align: center;
 
   .active & {
-    background: rgba(233, 69, 96, 0.15);
+    background: rgba(var(--color-accent-rgb), 0.15);
     color: var(--color-accent);
   }
 }

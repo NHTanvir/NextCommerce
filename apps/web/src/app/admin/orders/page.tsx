@@ -18,8 +18,8 @@ const STATUS_COLORS: Record<string, string> = {
   fulfilled: '#3fb950',
   shipped: '#3fb950',
   delivered: '#3fb950',
-  cancelled: '#e94560',
-  refunded: '#e94560',
+  cancelled: 'var(--color-accent)',
+  refunded: 'var(--color-accent)',
 };
 
 interface TrackingModalProps {
@@ -47,7 +47,9 @@ function TrackingModal({ orderId, currentStatus, onClose, onSave }: TrackingModa
             onChange={(e) => setStatus(e.target.value as OrderStatus)}
           >
             {nextStatuses.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>
@@ -62,7 +64,9 @@ function TrackingModal({ orderId, currentStatus, onClose, onSave }: TrackingModa
               >
                 <option value="">Select carrier</option>
                 {['UPS', 'FedEx', 'USPS', 'DHL', 'OnTrac'].map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </div>
@@ -78,7 +82,9 @@ function TrackingModal({ orderId, currentStatus, onClose, onSave }: TrackingModa
           </>
         )}
         <div className={styles.modalActions}>
-          <button className="btn btn--outline" onClick={onClose}>Cancel</button>
+          <button className="btn btn--outline" onClick={onClose}>
+            Cancel
+          </button>
           <button
             className="btn btn--primary"
             onClick={() => onSave(status, tracking || undefined, carrier || undefined)}
@@ -163,7 +169,13 @@ export default function AdminOrdersPage() {
       {statusBreakdown.length > 0 && (
         <div className={styles.statusBreakdown}>
           {statusBreakdown.map((s) => (
-            <div key={s.status} className={styles.statusChip} style={{ '--status-color': STATUS_COLORS[s.status] ?? '#8b949e' } as React.CSSProperties}>
+            <div
+              key={s.status}
+              className={styles.statusChip}
+              style={
+                { '--status-color': STATUS_COLORS[s.status] ?? '#8b949e' } as React.CSSProperties
+              }
+            >
               <span className={styles.statusDot} />
               <span className={styles.statusName}>{s.status}</span>
               <span className={styles.statusCount}>{s.count}</span>
@@ -211,7 +223,9 @@ export default function AdminOrdersPage() {
                       </td>
                       <td className={styles.mono}>#{order.id.slice(-8).toUpperCase()}</td>
                       <td className={styles.date}>
-                        {new Date(order.createdAt ?? order.placedAt ?? Date.now()).toLocaleDateString('en-US', {
+                        {new Date(
+                          order.createdAt ?? order.placedAt ?? Date.now(),
+                        ).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',
@@ -232,10 +246,7 @@ export default function AdminOrdersPage() {
                       </td>
                       <td>
                         {nextStatuses.length > 0 ? (
-                          <button
-                            className={styles.editBtn}
-                            onClick={() => setEditingId(order.id)}
-                          >
+                          <button className={styles.editBtn} onClick={() => setEditingId(order.id)}>
                             Update
                           </button>
                         ) : (
@@ -258,7 +269,9 @@ export default function AdminOrdersPage() {
               >
                 ← Prev
               </button>
-              <span className={styles.pageInfo}>Page {page} of {totalPages}</span>
+              <span className={styles.pageInfo}>
+                Page {page} of {totalPages}
+              </span>
               <button
                 className={styles.pageBtn}
                 disabled={page >= totalPages}

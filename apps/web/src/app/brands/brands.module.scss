@@ -73,7 +73,7 @@
 
   &:hover {
     color: var(--color-accent);
-    background: rgba(233, 69, 96, 0.08);
+    background: rgba(var(--color-accent-rgb), 0.08);
   }
 }
 
@@ -118,7 +118,7 @@
 
   &:hover {
     border-color: var(--color-accent);
-    background: rgba(233, 69, 96, 0.04);
+    background: rgba(var(--color-accent-rgb), 0.04);
     transform: translateY(-2px);
   }
 }

@@ -237,7 +237,7 @@
   cursor: pointer;
   transition: border-color var(--transition), box-shadow var(--transition);
 
-  &:hover { border-color: rgba(233, 69, 96, 0.3); }
+  &:hover { border-color: rgba(var(--color-accent-rgb), 0.3); }
 }
 
 .storeCardSelected {

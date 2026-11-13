@@ -200,8 +200,8 @@
   transition: border-color 0.15s, color 0.15s;
 
   &:hover {
-    color: #e94560;
-    border-color: #e9456040;
+    color: var(--color-accent);
+    border-color: rgba(var(--color-accent-rgb), 0.25);
   }
 }
 

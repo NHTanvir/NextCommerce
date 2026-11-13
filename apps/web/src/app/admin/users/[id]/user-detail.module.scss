@@ -191,7 +191,7 @@
   color: var(--color-text-muted);
 
   &[data-status='delivered'] { color: #3fb950; }
-  &[data-status='cancelled'] { color: #e94560; }
+  &[data-status='cancelled'] { color: var(--color-accent); }
   &[data-status='shipped'] { color: #58a6ff; }
 }
 
@@ -208,7 +208,7 @@
 }
 
 .dangerZone {
-  border: 1px solid #e9456040;
+  border: 1px solid rgba(var(--color-accent-rgb), 0.25);
   border-radius: 12px;
   padding: 1.5rem;
   background: #1a0a0d;
@@ -217,7 +217,7 @@
 .dangerTitle {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #e94560;
+  color: var(--color-accent);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0 0 1rem;

@@ -134,7 +134,7 @@
 }
 
 .rowHighlighted td {
-  background: rgba(233, 69, 96, 0.1) !important;
+  background: rgba(var(--color-accent-rgb), 0.1) !important;
 }
 
 .usCell {
