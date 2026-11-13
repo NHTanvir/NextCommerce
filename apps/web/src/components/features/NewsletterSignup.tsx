@@ -17,39 +17,56 @@ export function NewsletterSignup() {
       setSubscribed(true);
       setEmail('');
     } catch {
-      // error displayed via RTK state
+      // surfaced through the error branch below
     }
   };
 
-  if (subscribed) {
-    return (
-      <div className={styles.success}>
-        <span className={styles.successIcon}>✓</span>
-        <p className={styles.successText}>You're subscribed! Look out for deals in your inbox.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className={styles.container}>
-      <h3 className={styles.title}>Get exclusive deals</h3>
-      <p className={styles.subtitle}>Subscribe for early access to sales, new drops, and members-only discounts.</p>
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <input
-          type="email"
-          className={styles.input}
-          placeholder="your@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <button type="submit" className={styles.btn} disabled={isLoading}>
-          {isLoading ? 'Subscribing…' : 'Subscribe'}
-        </button>
-      </form>
-      {error && (
-        <p className={styles.error}>Something went wrong. Please try again.</p>
+    <aside className={styles.band}>
+      <div className={styles.glow} aria-hidden="true" />
+
+      <div className={styles.copy}>
+        <p className={styles.kicker}>Newsletter</p>
+        <h3 className={styles.title}>
+          {subscribed ? "You're on the list" : 'Get the drops before they sell out'}
+        </h3>
+        <p className={styles.subtitle}>
+          {subscribed
+            ? 'Early access and member pricing land in your inbox from the next drop onwards.'
+            : 'Early access to sales, new arrivals and member-only pricing. One email a week, never more.'}
+        </p>
+      </div>
+
+      {subscribed ? (
+        <p className={styles.success}>
+          <span className={styles.successIcon} aria-hidden="true">
+            ✓
+          </span>
+          Subscribed
+        </p>
+      ) : (
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.field}>
+            <input
+              type="email"
+              className={styles.input}
+              placeholder="your@email.com"
+              aria-label="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <button type="submit" className={styles.btn} disabled={isLoading}>
+              {isLoading ? 'Subscribing…' : 'Subscribe'}
+            </button>
+          </div>
+          <p className={error ? styles.error : styles.note}>
+            {error
+              ? 'Something went wrong. Please try again.'
+              : 'No spam. Unsubscribe in one click.'}
+          </p>
+        </form>
       )}
-    </div>
+    </aside>
   );
 }
