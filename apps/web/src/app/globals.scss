@@ -1,18 +1,22 @@
 /* Dark theme (default) */
 :root,
 [data-theme="dark"] {
-  --color-bg: #0d1117;
-  --color-bg-secondary: #161b22;
-  --color-bg-card: #1c2128;
-  --color-surface: #161b22;
-  --color-border: #30363d;
-  --color-text: #e6edf3;
-  --color-text-muted: #8b949e;
-  --color-accent: #e94560;
-  --color-accent-hover: #c73652;
-  --color-success: #3fb950;
-  --color-warning: #d29922;
-  --color-info: #58a6ff;
+  --color-bg: #0a0b10;
+  --color-bg-secondary: #0f1118;
+  --color-bg-card: #151824;
+  --color-surface: #0f1118;
+  --color-border: #242838;
+  --color-text: #e9ecf5;
+  --color-text-muted: #8d94ab;
+  /* Every accent tint in the app is mixed from these two, so the brand
+     colour changes in one place. */
+  --color-accent: #7c5cff;
+  --color-accent-hover: #6a45f5;
+  --color-accent-2: #22d3ee;
+  --color-accent-rgb: 124, 92, 255;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-info: #60a5fa;
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --radius-sm: 4px;
@@ -23,23 +27,27 @@
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
   --transition: 150ms ease;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --glow-accent: 0 0 40px rgba(var(--color-accent-rgb), 0.35);
   --container-max: 1280px;
   --container-pad: clamp(1rem, 4vw, 2.5rem);
 }
 
 /* Light theme */
 [data-theme="light"] {
-  --color-bg: #f8fafc;
-  --color-bg-secondary: #f1f5f9;
+  --color-bg: #f7f8fc;
+  --color-bg-secondary: #eef0f8;
   --color-bg-card: #ffffff;
   --color-surface: #ffffff;
-  --color-border: #e2e8f0;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-accent: #e94560;
-  --color-accent-hover: #c73652;
-  --color-success: #16a34a;
-  --color-warning: #d97706;
+  --color-border: #e2e5f0;
+  --color-text: #0b0d14;
+  --color-text-muted: #5a6076;
+  --color-accent: #6336f0;
+  --color-accent-hover: #5125e0;
+  --color-accent-2: #0891b2;
+  --color-accent-rgb: 99, 54, 240;
+  --color-success: #15803d;
+  --color-warning: #b45309;
   --color-info: #2563eb;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -139,7 +147,7 @@ ol {
 
     &:hover {
       background-color: var(--color-accent-hover);
-      box-shadow: 0 0 20px rgba(233, 69, 96, 0.4);
+      box-shadow: 0 0 24px rgba(var(--color-accent-rgb), 0.45);
     }
   }
 
@@ -184,7 +192,7 @@ ol {
   letter-spacing: 0.02em;
 
   &--accent {
-    background: rgba(233, 69, 96, 0.15);
+    background: rgba(var(--color-accent-rgb), 0.15);
     color: var(--color-accent);
   }
 
@@ -224,4 +232,17 @@ ol {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Anything that animates on arrival starts hidden only once the observer
+   has claimed it, so the page is complete with JavaScript switched off. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
