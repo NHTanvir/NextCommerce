@@ -30,7 +30,7 @@ describe('Order state machine integration', () => {
     const allStatuses: OrderStatus[] = [
       'pending',
       'paid',
-      'processing',
+      'fulfilled',
       'shipped',
       'delivered',
       'cancelled',

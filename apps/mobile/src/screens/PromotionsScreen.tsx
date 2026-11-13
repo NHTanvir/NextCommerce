@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   RefreshControl,
-  Clipboard,
   Alert,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -26,14 +25,7 @@ const COLORS = {
   purple: '#8957e5',
 };
 
-const PROMO_PALETTES = [
-  '#e94560',
-  '#3b82f6',
-  '#10b981',
-  '#8957e5',
-  '#f0b72f',
-  '#ec4899',
-];
+const PROMO_PALETTES = ['#e94560', '#3b82f6', '#10b981', '#8957e5', '#f0b72f', '#ec4899'];
 
 import type { Promotion } from '@/api/promotions';
 
@@ -67,12 +59,16 @@ function PromotionCard({ promo, index }: { promo: Promotion; index: number }) {
     <View style={[styles.card, { borderColor: color + '50' }]}>
       <View style={[styles.cardHeader, { backgroundColor: color }]}>
         <View style={styles.discountBadge}>
-          <Text style={styles.discountText}>{formatDiscount(promo.discountType, promo.discountValue)}</Text>
+          <Text style={styles.discountText}>
+            {formatDiscount(promo.discountType, promo.discountValue)}
+          </Text>
         </View>
         <View style={styles.headerRight}>
           <Text style={styles.promoName}>{promo.name}</Text>
           {promo.description && (
-            <Text style={styles.promoDesc} numberOfLines={1}>{promo.description}</Text>
+            <Text style={styles.promoDesc} numberOfLines={1}>
+              {promo.description}
+            </Text>
           )}
         </View>
       </View>
@@ -88,9 +84,7 @@ function PromotionCard({ promo, index }: { promo: Promotion; index: number }) {
           )}
           {promo.usageLimit && (
             <View style={styles.infoPill}>
-              <Text style={styles.infoPillText}>
-                {promo.usageLimit - promo.usageCount} left
-              </Text>
+              <Text style={styles.infoPillText}>{promo.usageLimit - promo.usageCount} left</Text>
             </View>
           )}
           <View style={[styles.timePill, expiringSoon && styles.timePillUrgent]}>
@@ -103,7 +97,12 @@ function PromotionCard({ promo, index }: { promo: Promotion; index: number }) {
         <TouchableOpacity
           style={[styles.claimBtn, { backgroundColor: color }]}
           activeOpacity={0.85}
-          onPress={() => Alert.alert('Promotion Applied', `This promotion will be automatically applied at checkout when eligible.`)}
+          onPress={() =>
+            Alert.alert(
+              'Promotion Applied',
+              `This promotion will be automatically applied at checkout when eligible.`,
+            )
+          }
         >
           <Text style={styles.claimBtnText}>Claim Offer</Text>
         </TouchableOpacity>
@@ -134,7 +133,7 @@ export default function PromotionsScreen() {
     useCallback(() => {
       setLoading(true);
       fetchPromotions();
-    }, [fetchPromotions])
+    }, [fetchPromotions]),
   );
 
   if (loading) {
@@ -147,9 +146,8 @@ export default function PromotionsScreen() {
 
   const percentOffs = promotions.filter((p) => p.discountType === 'percentage');
   const fixedOffs = promotions.filter((p) => p.discountType === 'fixed');
-  const maxDiscount = percentOffs.length > 0
-    ? Math.max(...percentOffs.map((p) => p.discountValue))
-    : 0;
+  const maxDiscount =
+    percentOffs.length > 0 ? Math.max(...percentOffs.map((p) => p.discountValue)) : 0;
 
   return (
     <FlatList
@@ -184,7 +182,9 @@ export default function PromotionsScreen() {
               </View>
               <View style={styles.statDivider} />
               <View style={styles.stat}>
-                <Text style={[styles.statNum, { color: COLORS.green }]}>{maxDiscount > 0 ? `${maxDiscount}%` : '—'}</Text>
+                <Text style={[styles.statNum, { color: COLORS.green }]}>
+                  {maxDiscount > 0 ? `${maxDiscount}%` : '—'}
+                </Text>
                 <Text style={styles.statLabel}>Max % Off</Text>
               </View>
               <View style={styles.statDivider} />
@@ -232,7 +232,13 @@ const styles = StyleSheet.create({
     borderColor: COLORS.purple + '50',
   },
   heroBadgeText: { color: COLORS.purple, fontSize: 11, fontWeight: '700', letterSpacing: 0.8 },
-  heroTitle: { fontSize: 26, fontWeight: '900', color: COLORS.text, letterSpacing: -0.5, marginBottom: 4 },
+  heroTitle: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: COLORS.text,
+    letterSpacing: -0.5,
+    marginBottom: 4,
+  },
   heroSub: { fontSize: 13, color: COLORS.muted },
 
   statsRow: {

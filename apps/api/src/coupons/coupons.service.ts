@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Coupon } from './entities/coupon.entity';
@@ -52,7 +52,12 @@ export class CouponsService {
     }
 
     if (coupon.maxUsageCount !== null && coupon.usageCount >= coupon.maxUsageCount) {
-      return { valid: false, discountCents: 0, couponId: coupon.id, message: 'Coupon usage limit reached' };
+      return {
+        valid: false,
+        discountCents: 0,
+        couponId: coupon.id,
+        message: 'Coupon usage limit reached',
+      };
     }
 
     if (coupon.minOrderCents !== null && orderTotalCents < coupon.minOrderCents) {
@@ -116,7 +121,9 @@ export class CouponsService {
     const active = all.filter((c) => c.isActive && (!c.expiresAt || c.expiresAt > now)).length;
     const expired = all.filter((c) => c.expiresAt && c.expiresAt <= now).length;
     const totalRedemptions = all.reduce((s, c) => s + (c.usageCount ?? 0), 0);
-    const topCoupons = all.slice(0, 5).map((c) => ({ code: c.code, usageCount: c.usageCount ?? 0 }));
+    const topCoupons = all
+      .slice(0, 5)
+      .map((c) => ({ code: c.code, usageCount: c.usageCount ?? 0 }));
     return { total: all.length, active, expired, totalRedemptions, topCoupons };
   }
 }

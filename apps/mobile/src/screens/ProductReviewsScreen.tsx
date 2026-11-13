@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native-stack';
-import type { ShopStackParamList } from '@/navigation/types';
-import { fetchProductReviews, fetchRatingDistribution, type ReviewDto, type RatingDist } from '@/api/reviews';
+import {
+  fetchProductReviews,
+  fetchRatingDistribution,
+  type ReviewDto,
+  type RatingDist,
+} from '@/api/reviews';
 
 type Route = RouteProp<{ params: { productId: string; productTitle?: string } }, 'params'>;
 
@@ -65,10 +62,7 @@ export default function ProductReviewsScreen() {
   useEffect(() => {
     if (!productId) return;
     setLoading(true);
-    Promise.all([
-      fetchProductReviews(productId),
-      fetchRatingDistribution(productId),
-    ])
+    Promise.all([fetchProductReviews(productId), fetchRatingDistribution(productId)])
       .then(([reviewData, distData]) => {
         setReviews(reviewData);
         setDist(distData);
@@ -77,10 +71,7 @@ export default function ProductReviewsScreen() {
       .finally(() => setLoading(false));
   }, [productId]);
 
-  const avg =
-    reviews.length > 0
-      ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
-      : 0;
+  const avg = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   if (loading) {
     return (
@@ -102,7 +93,9 @@ export default function ProductReviewsScreen() {
           <View style={styles.summary}>
             <Text style={styles.avgNumber}>{avg.toFixed(1)}</Text>
             <Stars rating={Math.round(avg)} size={20} />
-            <Text style={styles.reviewCount}>{reviews.length} review{reviews.length !== 1 ? 's' : ''}</Text>
+            <Text style={styles.reviewCount}>
+              {reviews.length} review{reviews.length !== 1 ? 's' : ''}
+            </Text>
           </View>
 
           {/* Distribution bars */}
@@ -139,9 +132,7 @@ export default function ProductReviewsScreen() {
           </View>
           {item.title ? <Text style={styles.cardTitle}>{item.title}</Text> : null}
           <Text style={styles.cardBody}>{item.body}</Text>
-          {item.user && (
-            <Text style={styles.cardAuthor}>— {item.user.name}</Text>
-          )}
+          {item.user && <Text style={styles.cardAuthor}>— {item.user.name}</Text>}
         </View>
       )}
       ItemSeparatorComponent={() => <View style={{ height: 10 }} />}

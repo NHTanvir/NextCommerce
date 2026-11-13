@@ -3,7 +3,12 @@ import { AuditController } from '../audit.controller';
 import { AuditService } from '../audit.service';
 import type { UserPayload } from '@nextcommerce/shared';
 
-const me: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
+const me: UserPayload = {
+  sub: 'user-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
 const mockService: Partial<AuditService> = {
   findByUser: jest.fn().mockResolvedValue([]),

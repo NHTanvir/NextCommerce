@@ -3,9 +3,20 @@ import { BackInStockController } from '../back-in-stock.controller';
 import { BackInStockService } from '../back-in-stock.service';
 import type { UserPayload } from '@nextcommerce/shared';
 
-const user: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
+const user: UserPayload = {
+  sub: 'user-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
-const mockSub = { id: 's-1', userId: 'user-1', variantId: 'v-1', productId: 'p-1', notified: false };
+const mockSub = {
+  id: 's-1',
+  userId: 'user-1',
+  variantId: 'v-1',
+  productId: 'p-1',
+  notified: false,
+};
 
 const mockService: Partial<BackInStockService> = {
   findForUser: jest.fn().mockResolvedValue([mockSub]),

@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { usePurchaseGiftCardMutation, useCheckGiftCardBalanceQuery } from '@/store/api/gift-cards.api';
+import {
+  usePurchaseGiftCardMutation,
+  useCheckGiftCardBalanceQuery,
+} from '@/store/api/gift-cards.api';
 import styles from './gift-cards.module.scss';
 
 const AMOUNTS = [2500, 5000, 10000, 25000, 50000, 100000]; // cents
@@ -86,8 +88,12 @@ export default function GiftCardsPage() {
                   Copy
                 </button>
               </div>
-              <p className={styles.successNote}>Value: {formatPrice(purchased.amount)} · Expires in 1 year</p>
-              <button className="btn btn--outline" onClick={() => setPurchased(null)}>Buy Another</button>
+              <p className={styles.successNote}>
+                Value: {formatPrice(purchased.amount)} · Expires in 1 year
+              </p>
+              <button className="btn btn--outline" onClick={() => setPurchased(null)}>
+                Buy Another
+              </button>
             </div>
           ) : (
             <form className={styles.buyForm} onSubmit={handlePurchase}>
@@ -99,7 +105,10 @@ export default function GiftCardsPage() {
                       key={a}
                       type="button"
                       className={`${styles.amountBtn} ${selectedAmount === a ? styles.amountBtnActive : ''}`}
-                      onClick={() => { setSelectedAmount(a); setCustomAmount(''); }}
+                      onClick={() => {
+                        setSelectedAmount(a);
+                        setCustomAmount('');
+                      }}
                     >
                       {formatPrice(a)}
                     </button>
@@ -114,7 +123,10 @@ export default function GiftCardsPage() {
                     min={5}
                     max={500}
                     value={customAmount}
-                    onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }}
+                    onChange={(e) => {
+                      setCustomAmount(e.target.value);
+                      setSelectedAmount(null);
+                    }}
                   />
                 </div>
               </div>
@@ -148,7 +160,9 @@ export default function GiftCardsPage() {
                 className="btn btn--primary btn--lg"
                 disabled={purchasing || !finalAmount || finalAmount < 500}
               >
-                {purchasing ? 'Processing…' : `Purchase ${finalAmount ? formatPrice(finalAmount) : ''} Gift Card`}
+                {purchasing
+                  ? 'Processing…'
+                  : `Purchase ${finalAmount ? formatPrice(finalAmount) : ''} Gift Card`}
               </button>
             </form>
           )}
@@ -174,18 +188,29 @@ export default function GiftCardsPage() {
           </div>
 
           {balance && checkCodeSubmitted && (
-            <div className={`${styles.balanceResult} ${balance.isValid ? styles.balanceValid : styles.balanceInvalid}`}>
+            <div
+              className={`${styles.balanceResult} ${balance.isValid ? styles.balanceValid : styles.balanceInvalid}`}
+            >
               {balance.isValid ? (
                 <>
-                  <p className={styles.balanceAmount}>${(balance.remaining / 100).toFixed(2)} remaining</p>
+                  <p className={styles.balanceAmount}>
+                    ${(balance.remaining / 100).toFixed(2)} remaining
+                  </p>
                   {balance.expiresAt && (
                     <p className={styles.balanceExpiry}>
-                      Expires {new Date(balance.expiresAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                      Expires{' '}
+                      {new Date(balance.expiresAt).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
                     </p>
                   )}
                 </>
               ) : (
-                <p className={styles.balanceError}>This gift card is invalid, expired, or has no remaining balance.</p>
+                <p className={styles.balanceError}>
+                  This gift card is invalid, expired, or has no remaining balance.
+                </p>
               )}
             </div>
           )}

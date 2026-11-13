@@ -3,7 +3,12 @@ import { ReferralsController } from '../referrals.controller';
 import { ReferralsService } from '../referrals.service';
 import type { UserPayload } from '@nextcommerce/shared';
 
-const user: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
+const user: UserPayload = {
+  sub: 'user-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
 const mockService: Partial<ReferralsService> = {
   getOrCreateCode: jest.fn().mockResolvedValue({ code: 'REFABC123', userId: 'user-1' }),

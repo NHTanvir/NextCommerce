@@ -3,11 +3,17 @@ import { LoyaltyController } from '../loyalty.controller';
 import { LoyaltyService } from '../loyalty.service';
 import type { UserPayload } from '@nextcommerce/shared';
 
-const user: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
-const admin: UserPayload = { sub: 'admin-1', email: 'admin@test.com', role: 'admin' };
+const user: UserPayload = {
+  sub: 'user-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
 const mockService: Partial<LoyaltyService> = {
-  getBalance: jest.fn().mockResolvedValue({ points: 500, tier: 'silver', lifetimePoints: 1200, nextTierPoints: 800 }),
+  getBalance: jest
+    .fn()
+    .mockResolvedValue({ points: 500, tier: 'silver', lifetimePoints: 1200, nextTierPoints: 800 }),
   getTransactionHistory: jest.fn().mockResolvedValue([]),
   redeemPoints: jest.fn().mockResolvedValue({ discountCents: 500, remainingPoints: 400 }),
   awardBonus: jest.fn().mockResolvedValue({ success: true }),

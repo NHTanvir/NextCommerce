@@ -109,6 +109,7 @@ describe('CatalogController', () => {
     it('calls service.create and returns new product', async () => {
       const dto: CreateProductDto = {
         title: 'Test Shoe',
+        description: 'A test shoe.',
         slug: 'test-shoe',
         brand: 'TestBrand',
         basePriceCents: 9900,

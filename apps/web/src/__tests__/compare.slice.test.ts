@@ -1,3 +1,4 @@
+import type { CompareState } from '@/store/slices/compare.slice';
 import compareReducer, {
   addToCompare,
   removeFromCompare,
@@ -18,7 +19,7 @@ const makeProduct = (n: number): CompareProduct => ({
   basePriceCents: n * 1000,
 });
 
-const emptyState = { products: [], isDrawerOpen: false };
+const emptyState: CompareState = { products: [], isDrawerOpen: false };
 
 describe('compare slice', () => {
   describe('addToCompare', () => {

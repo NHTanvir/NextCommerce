@@ -4,6 +4,7 @@ import { PaymentsService, StripeWebhookEvent } from '../payments.service';
 import { Order } from '../../orders/entities/order.entity';
 import { EventsService } from '../../events/events.service';
 import { AuditService } from '../../audit/audit.service';
+import * as crypto from 'crypto';
 
 const mockOrderRepo = {
   findOne: jest.fn(),
@@ -13,7 +14,10 @@ const mockOrderRepo = {
 const mockEventsService = { publish: jest.fn() };
 const mockAuditService = { log: jest.fn() };
 
-function makeEvent(type: string, overrides: Partial<StripeWebhookEvent['data']['object']> = {}): StripeWebhookEvent {
+function makeEvent(
+  type: string,
+  overrides: Partial<StripeWebhookEvent['data']['object']> = {},
+): StripeWebhookEvent {
   return {
     id: 'evt_test',
     type,
@@ -55,7 +59,10 @@ describe('PaymentsService', () => {
 
       await service.handleStripeWebhook(makeEvent('payment_intent.succeeded'));
 
-      expect(mockOrderRepo.update).toHaveBeenCalledWith('order-uuid', expect.objectContaining({ status: 'paid' }));
+      expect(mockOrderRepo.update).toHaveBeenCalledWith(
+        'order-uuid',
+        expect.objectContaining({ status: 'paid' }),
+      );
       expect(mockEventsService.publish).toHaveBeenCalledWith('order.paid', expect.any(Object));
     });
 
@@ -130,7 +137,6 @@ describe('PaymentsService', () => {
     });
 
     it('computes correct signature and returns true', () => {
-      const crypto = require('crypto');
       const secret = 'whsec_real';
       const timestamp = '1700000000';
       const payload = 'test-body';

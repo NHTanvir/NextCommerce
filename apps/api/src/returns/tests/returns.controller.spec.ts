@@ -3,10 +3,26 @@ import { ReturnsController } from '../returns.controller';
 import { ReturnsService } from '../returns.service';
 import type { UserPayload } from '@nextcommerce/shared';
 
-const admin: UserPayload = { sub: 'admin-1', email: 'admin@test.com', role: 'admin' };
-const user: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
+const admin: UserPayload = {
+  sub: 'admin-1',
+  email: 'admin@test.com',
+  role: 'admin',
+  name: 'Test User',
+};
+const user: UserPayload = {
+  sub: 'user-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
-const mockReturn = { id: 'r-1', orderId: 'o-1', userId: 'user-1', status: 'pending', reason: 'damaged' };
+const mockReturn = {
+  id: 'r-1',
+  orderId: 'o-1',
+  userId: 'user-1',
+  status: 'pending',
+  reason: 'damaged',
+};
 
 const mockService: Partial<ReturnsService> = {
   create: jest.fn().mockResolvedValue(mockReturn),

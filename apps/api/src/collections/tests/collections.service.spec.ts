@@ -50,7 +50,9 @@ describe('CollectionsService', () => {
     it('throws ConflictException if slug already exists', async () => {
       mockRepo.findOne.mockResolvedValue(makeCollection());
 
-      await expect(service.create({ name: 'Dupe', slug: 'summer-sale' })).rejects.toThrow(ConflictException);
+      await expect(service.create({ name: 'Dupe', slug: 'summer-sale' })).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('creates collection with default empty productIds', async () => {
@@ -61,9 +63,7 @@ describe('CollectionsService', () => {
 
       await service.create({ name: 'New Collection', slug: 'new-collection' });
 
-      expect(mockRepo.create).toHaveBeenCalledWith(
-        expect.objectContaining({ productIds: [] }),
-      );
+      expect(mockRepo.create).toHaveBeenCalledWith(expect.objectContaining({ productIds: [] }));
     });
 
     it('stores discount percent when provided', async () => {
@@ -136,7 +136,7 @@ describe('CollectionsService', () => {
       mockRepo.findOne.mockResolvedValue(collection);
       mockRepo.save.mockResolvedValue({ ...collection, productIds: ['p1', 'p-new'] });
 
-      const result = await service.addProduct('col-1', 'p-new');
+      await service.addProduct('col-1', 'p-new');
 
       expect(mockRepo.save).toHaveBeenCalledWith(
         expect.objectContaining({ productIds: ['p1', 'p-new'] }),

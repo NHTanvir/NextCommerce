@@ -1,10 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThanOrEqual, MoreThanOrEqual, And } from 'typeorm';
+import { Repository, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { Promotion } from './entities/promotion.entity';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
@@ -72,7 +68,9 @@ export class PromotionsService {
       ...(dto.minimumOrderAmount !== undefined && { minimumOrderAmount: dto.minimumOrderAmount }),
       ...(dto.usageLimit !== undefined && { usageLimit: dto.usageLimit }),
       ...(dto.isActive !== undefined && { isActive: dto.isActive }),
-      ...(dto.applicableCategories !== undefined && { applicableCategories: dto.applicableCategories }),
+      ...(dto.applicableCategories !== undefined && {
+        applicableCategories: dto.applicableCategories,
+      }),
     });
     return this.repo.save(promo);
   }
@@ -88,7 +86,13 @@ export class PromotionsService {
     await this.repo.remove(promo);
   }
 
-  async getStats(): Promise<{ total: number; active: number; expired: number; totalRedemptions: number; topPromotion: string | null }> {
+  async getStats(): Promise<{
+    total: number;
+    active: number;
+    expired: number;
+    totalRedemptions: number;
+    topPromotion: string | null;
+  }> {
     const all = await this.repo.find({ order: { usageCount: 'DESC' } });
     const now = new Date();
     const active = all.filter((p) => p.isActive && p.startsAt <= now && p.endsAt >= now).length;
@@ -102,9 +106,12 @@ export class PromotionsService {
     const promo = await this.findOne(promotionId);
     const now = new Date();
 
-    if (!promo.isActive) return { valid: false, discountAmountCents: 0, message: 'Promotion is not active' };
-    if (promo.startsAt > now) return { valid: false, discountAmountCents: 0, message: 'Promotion has not started yet' };
-    if (promo.endsAt < now) return { valid: false, discountAmountCents: 0, message: 'Promotion has expired' };
+    if (!promo.isActive)
+      return { valid: false, discountAmountCents: 0, message: 'Promotion is not active' };
+    if (promo.startsAt > now)
+      return { valid: false, discountAmountCents: 0, message: 'Promotion has not started yet' };
+    if (promo.endsAt < now)
+      return { valid: false, discountAmountCents: 0, message: 'Promotion has expired' };
     if (promo.usageLimit !== null && promo.usageCount >= promo.usageLimit) {
       return { valid: false, discountAmountCents: 0, message: 'Usage limit reached' };
     }

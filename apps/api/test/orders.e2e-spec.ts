@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 
 describe('Orders (e2e)', () => {
@@ -43,7 +43,13 @@ describe('Orders (e2e)', () => {
     it('returns 401 without auth token', () => {
       return request(app.getHttpServer())
         .post('/api/orders')
-        .send({ items: [], addressLine1: '123 Main St', city: 'NYC', postalCode: '10001', country: 'US' })
+        .send({
+          items: [],
+          addressLine1: '123 Main St',
+          city: 'NYC',
+          postalCode: '10001',
+          country: 'US',
+        })
         .expect(401);
     });
 
@@ -51,7 +57,13 @@ describe('Orders (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/orders')
         .set('Authorization', `Bearer ${customerToken}`)
-        .send({ items: [], addressLine1: '123 Main St', city: 'NYC', postalCode: '10001', country: 'US' })
+        .send({
+          items: [],
+          addressLine1: '123 Main St',
+          city: 'NYC',
+          postalCode: '10001',
+          country: 'US',
+        })
         .expect(400);
     });
   });

@@ -54,7 +54,7 @@ export default function AdminProductSpecsPage() {
     }
   };
 
-  const handleEditSave = async (specId: string) => {
+  const handleEditSave = async (_specId: string) => {
     try {
       await setSpec({
         productId: id,
@@ -79,7 +79,7 @@ export default function AdminProductSpecsPage() {
     }
   };
 
-  const startEdit = (spec: typeof specs[0]) => {
+  const startEdit = (spec: (typeof specs)[0]) => {
     setEditingId(spec.id);
     setEditForm({
       key: spec.key,
@@ -193,10 +193,7 @@ export default function AdminProductSpecsPage() {
                         <span className={styles.specKey}>{spec.key}</span>
                         <span className={styles.specValue}>{spec.value}</span>
                         <div className={styles.rowActions}>
-                          <button
-                            className={styles.editBtn}
-                            onClick={() => startEdit(spec)}
-                          >
+                          <button className={styles.editBtn} onClick={() => startEdit(spec)}>
                             Edit
                           </button>
                           <button
@@ -207,7 +204,7 @@ export default function AdminProductSpecsPage() {
                           </button>
                         </div>
                       </div>
-                    )
+                    ),
                   )}
                 </div>
               </div>

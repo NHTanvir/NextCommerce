@@ -25,7 +25,9 @@ export default function OrderDetailPage() {
     return (
       <div className={`container ${styles.page}`}>
         <h1>Order not found</h1>
-        <Link href="/account/orders" className="btn btn--outline">← Back to Orders</Link>
+        <Link href="/account/orders" className="btn btn--outline">
+          ← Back to Orders
+        </Link>
       </div>
     );
   }
@@ -36,16 +38,24 @@ export default function OrderDetailPage() {
     <div className={`container ${styles.page}`}>
       {justPlaced && (
         <div className={styles.successBanner}>
-          <span>✓</span> Order placed successfully! You&apos;ll receive a confirmation email shortly.
+          <span>✓</span> Order placed successfully! You&apos;ll receive a confirmation email
+          shortly.
         </div>
       )}
 
       <div className={styles.header}>
         <div>
-          <Link href="/account/orders" className={styles.backLink}>← My Orders</Link>
+          <Link href="/account/orders" className={styles.backLink}>
+            ← My Orders
+          </Link>
           <h1 className={styles.title}>Order #{id.slice(-8).toUpperCase()}</h1>
           <p className={styles.date}>
-            Placed {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            Placed{' '}
+            {new Date(order.placedAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </p>
         </div>
         <div className={styles.totalBadge}>${(order.totalCents / 100).toFixed(2)}</div>
@@ -76,11 +86,15 @@ export default function OrderDetailPage() {
                 <div className={styles.itemIcon}>👟</div>
                 <div className={styles.itemInfo}>
                   <p className={styles.itemTitle}>{item.productTitle}</p>
-                  <p className={styles.itemMeta}>Size {item.size} · {item.color}</p>
+                  <p className={styles.itemMeta}>
+                    Size {item.size} · {item.color}
+                  </p>
                 </div>
                 <div className={styles.itemRight}>
                   <span className={styles.itemQty}>×{item.quantity}</span>
-                  <span className={styles.itemPrice}>${((item.unitPriceCents * item.quantity) / 100).toFixed(2)}</span>
+                  <span className={styles.itemPrice}>
+                    ${((item.unitPriceCents * item.quantity) / 100).toFixed(2)}
+                  </span>
                 </div>
               </div>
             ))}
@@ -94,7 +108,9 @@ export default function OrderDetailPage() {
             <div className={styles.addressCard}>
               <p>{order.address.line1}</p>
               {order.address.line2 && <p>{order.address.line2}</p>}
-              <p>{order.address.city}, {order.address.postalCode}</p>
+              <p>
+                {order.address.city}, {order.address.postalCode}
+              </p>
               <p>{order.address.country}</p>
             </div>
           </div>

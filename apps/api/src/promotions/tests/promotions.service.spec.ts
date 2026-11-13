@@ -60,7 +60,7 @@ describe('PromotionsService', () => {
           discountValue: 10,
           startsAt: future.toISOString(),
           endsAt: past.toISOString(),
-        })
+        }),
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -108,7 +108,7 @@ describe('PromotionsService', () => {
       mockRepo.findOne.mockResolvedValue(promo);
       mockRepo.save.mockResolvedValue({ ...promo, isActive: false });
 
-      const result = await service.deactivate('promo-1');
+      await service.deactivate('promo-1');
       expect(mockRepo.save).toHaveBeenCalledWith(expect.objectContaining({ isActive: false }));
     });
   });
@@ -146,7 +146,9 @@ describe('PromotionsService', () => {
     });
 
     it('computes percentage discount correctly', async () => {
-      mockRepo.findOne.mockResolvedValue(makePromo({ discountType: 'percentage', discountValue: 20 }));
+      mockRepo.findOne.mockResolvedValue(
+        makePromo({ discountType: 'percentage', discountValue: 20 }),
+      );
       mockRepo.increment.mockResolvedValue({});
       const result = await service.applyToOrder('promo-1', 10000);
       expect(result.valid).toBe(true);

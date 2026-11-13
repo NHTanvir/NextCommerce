@@ -3,7 +3,7 @@ import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
 import type { User } from '../entities/user.entity';
 
-const mockUser = { id: 'u-1', email: 'user@test.com', name: 'Test User', role: 'user' } as User;
+const mockUser = { id: 'u-1', email: 'user@test.com', name: 'Test User', role: 'customer' } as User;
 
 const mockService: Partial<UsersService> = {
   updateProfile: jest.fn().mockResolvedValue({ ...mockUser, name: 'Updated Name' }),

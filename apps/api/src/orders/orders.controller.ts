@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards, UseInterceptors, Res, StreamableFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Body,
+  Query,
+  UseGuards,
+  UseInterceptors,
+  Res,
+  StreamableFile,
+} from '@nestjs/common';
 import type { Response } from 'express';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
@@ -45,7 +57,7 @@ export class OrdersController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get single order' })
-  findOne(@Param('id') id: string, @CurrentUser() user: UserPayload) {
+  findOne(@Param('id') id: string, @CurrentUser() _user: UserPayload) {
     return this.ordersService.findOne(id);
   }
 
@@ -65,7 +77,13 @@ export class OrdersController {
     @Body() dto: UpdateOrderStatusDto,
     @CurrentUser() user: UserPayload,
   ) {
-    return this.ordersService.updateStatus(id, dto.status, user.sub, dto.trackingNumber, dto.carrier);
+    return this.ordersService.updateStatus(
+      id,
+      dto.status,
+      user.sub,
+      dto.trackingNumber,
+      dto.carrier,
+    );
   }
 
   @Post('admin/bulk-fulfill')

@@ -2,16 +2,15 @@ import { Test } from '@nestjs/testing';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContext } from '@nestjs/common';
 import { RolesGuard } from '../roles.guard';
-import { ROLES_KEY } from '../../decorators/roles.decorator';
 
-const buildContext = (user: { role?: string } | null, roles: string[]): ExecutionContext =>
+const buildContext = (user: { role?: string } | null, _roles: string[]): ExecutionContext =>
   ({
     getHandler: () => ({}),
     getClass: () => ({}),
     switchToHttp: () => ({
       getRequest: () => ({ user }),
     }),
-  } as unknown as ExecutionContext);
+  }) as unknown as ExecutionContext;
 
 describe('RolesGuard', () => {
   let guard: RolesGuard;

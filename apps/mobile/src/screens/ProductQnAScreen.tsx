@@ -12,7 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
-import { fetchProductQnA, askQuestion, type QnAQuestion, type QnAAnswer } from '@/api/qna';
+import { fetchProductQnA, askQuestion, type QnAQuestion } from '@/api/qna';
 
 const COLORS = {
   bg: '#0d1117',
@@ -27,7 +27,6 @@ const COLORS = {
   adminBg: '#1a2332',
 };
 
-type Answer = QnAAnswer;
 type Question = QnAQuestion;
 
 function timeAgo(iso: string): string {
@@ -66,35 +65,34 @@ function QuestionCard({ question }: { question: Question }) {
       <Text style={styles.questionBody}>{question.body}</Text>
 
       {question.answers.length > 0 && (
-        <TouchableOpacity
-          style={styles.toggleAnswers}
-          onPress={() => setShowAnswers((v) => !v)}
-        >
+        <TouchableOpacity style={styles.toggleAnswers} onPress={() => setShowAnswers((v) => !v)}>
           <Text style={styles.toggleAnswersText}>
-            {showAnswers ? '▲ Hide' : '▼ Show'} {question.answers.length} answer{question.answers.length !== 1 ? 's' : ''}
+            {showAnswers ? '▲ Hide' : '▼ Show'} {question.answers.length} answer
+            {question.answers.length !== 1 ? 's' : ''}
           </Text>
         </TouchableOpacity>
       )}
 
-      {showAnswers && question.answers.map((answer) => (
-        <View
-          key={answer.id}
-          style={[styles.answerCard, answer.isAdminAnswer && styles.adminAnswerCard]}
-        >
-          <View style={styles.answerHeader}>
-            <View style={[styles.aBadge, answer.isAdminAnswer && styles.adminABadge]}>
-              <Text style={[styles.aBadgeText, answer.isAdminAnswer && styles.adminABadgeText]}>
-                {answer.isAdminAnswer ? 'Store' : 'A'}
+      {showAnswers &&
+        question.answers.map((answer) => (
+          <View
+            key={answer.id}
+            style={[styles.answerCard, answer.isAdminAnswer && styles.adminAnswerCard]}
+          >
+            <View style={styles.answerHeader}>
+              <View style={[styles.aBadge, answer.isAdminAnswer && styles.adminABadge]}>
+                <Text style={[styles.aBadgeText, answer.isAdminAnswer && styles.adminABadgeText]}>
+                  {answer.isAdminAnswer ? 'Store' : 'A'}
+                </Text>
+              </View>
+              <Text style={styles.answerAuthor}>
+                {answer.isAdminAnswer ? 'Official Response' : 'Customer'}
               </Text>
+              <Text style={styles.answerTime}>{timeAgo(answer.createdAt)}</Text>
             </View>
-            <Text style={styles.answerAuthor}>
-              {answer.isAdminAnswer ? 'Official Response' : 'Customer'}
-            </Text>
-            <Text style={styles.answerTime}>{timeAgo(answer.createdAt)}</Text>
+            <Text style={styles.answerBody}>{answer.body}</Text>
           </View>
-          <Text style={styles.answerBody}>{answer.body}</Text>
-        </View>
-      ))}
+        ))}
     </View>
   );
 }
@@ -167,7 +165,9 @@ export default function ProductQnAScreen() {
             <View style={styles.hero}>
               <Text style={styles.heroTitle}>Questions & Answers</Text>
               {productTitle && (
-                <Text style={styles.heroProduct} numberOfLines={1}>{productTitle}</Text>
+                <Text style={styles.heroProduct} numberOfLines={1}>
+                  {productTitle}
+                </Text>
               )}
               {questions.length > 0 && (
                 <View style={styles.statsRow}>
@@ -182,7 +182,9 @@ export default function ProductQnAScreen() {
                   </View>
                   <View style={styles.statDivider} />
                   <View style={styles.stat}>
-                    <Text style={[styles.statNum, { color: COLORS.yellow }]}>{unansweredCount}</Text>
+                    <Text style={[styles.statNum, { color: COLORS.yellow }]}>
+                      {unansweredCount}
+                    </Text>
                     <Text style={styles.statLabel}>Pending</Text>
                   </View>
                 </View>
@@ -196,26 +198,40 @@ export default function ProductQnAScreen() {
                 style={styles.askInput}
                 value={newQuestion}
                 onChangeText={setNewQuestion}
-                placeholder={token ? "What would you like to know about this product?" : "Sign in to ask a question"}
+                placeholder={
+                  token
+                    ? 'What would you like to know about this product?'
+                    : 'Sign in to ask a question'
+                }
                 placeholderTextColor={COLORS.muted}
                 multiline
                 numberOfLines={3}
                 editable={!!token}
               />
               <TouchableOpacity
-                style={[styles.submitBtn, (!token || submitting || newQuestion.trim().length < 10) && styles.submitBtnDisabled]}
+                style={[
+                  styles.submitBtn,
+                  (!token || submitting || newQuestion.trim().length < 10) &&
+                    styles.submitBtnDisabled,
+                ]}
                 onPress={handleSubmit}
                 disabled={!token || submitting || newQuestion.trim().length < 10}
               >
-                <Text style={styles.submitBtnText}>{submitting ? 'Submitting…' : 'Submit Question'}</Text>
+                <Text style={styles.submitBtnText}>
+                  {submitting ? 'Submitting…' : 'Submit Question'}
+                </Text>
               </TouchableOpacity>
               {!token && (
-                <Text style={styles.signInNote}>Sign in to ask questions and get personalized answers.</Text>
+                <Text style={styles.signInNote}>
+                  Sign in to ask questions and get personalized answers.
+                </Text>
               )}
             </View>
 
             {questions.length > 0 && (
-              <Text style={styles.sectionTitle}>{questions.length} Question{questions.length !== 1 ? 's' : ''}</Text>
+              <Text style={styles.sectionTitle}>
+                {questions.length} Question{questions.length !== 1 ? 's' : ''}
+              </Text>
             )}
           </>
         }
@@ -338,7 +354,13 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   answeredText: { color: COLORS.green, fontSize: 10, fontWeight: '700' },
-  questionBody: { fontSize: 14, color: COLORS.text, paddingHorizontal: 12, paddingBottom: 12, lineHeight: 20 },
+  questionBody: {
+    fontSize: 14,
+    color: COLORS.text,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+    lineHeight: 20,
+  },
 
   toggleAnswers: {
     borderTopWidth: 1,

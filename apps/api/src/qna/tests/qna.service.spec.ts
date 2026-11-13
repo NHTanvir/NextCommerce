@@ -129,7 +129,9 @@ describe('QnaService', () => {
     it('throws ForbiddenException when non-owner non-admin tries to delete', async () => {
       mockQuestionRepo.findOne.mockResolvedValue(makeQuestion({ userId: 'owner' }));
 
-      await expect(service.deleteQuestion('q-1', 'other-user', false)).rejects.toThrow(ForbiddenException);
+      await expect(service.deleteQuestion('q-1', 'other-user', false)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('allows owner to delete their own question', async () => {
@@ -162,7 +164,9 @@ describe('QnaService', () => {
 
     it('sets isHidden to true', async () => {
       const question = makeQuestion({ isHidden: false });
-      mockQuestionRepo.findOne.mockResolvedValueOnce(question).mockResolvedValueOnce({ ...question, isHidden: true });
+      mockQuestionRepo.findOne
+        .mockResolvedValueOnce(question)
+        .mockResolvedValueOnce({ ...question, isHidden: true });
       mockQuestionRepo.update.mockResolvedValue({});
 
       const result = await service.hideQuestion('q-1');
@@ -177,7 +181,7 @@ describe('QnaService', () => {
       const visible = makeQuestion({ isHidden: false });
       mockQuestionRepo.find.mockResolvedValue([visible]);
 
-      const result = await service.getForProduct('p-1');
+      await service.getForProduct('p-1');
 
       expect(mockQuestionRepo.find).toHaveBeenCalledWith(
         expect.objectContaining({ where: { productId: 'p-1', isHidden: false } }),

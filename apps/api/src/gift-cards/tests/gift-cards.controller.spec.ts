@@ -3,7 +3,12 @@ import { GiftCardsController } from '../gift-cards.controller';
 import { GiftCardsService } from '../gift-cards.service';
 import type { UserPayload } from '@nextcommerce/shared';
 
-const user: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
+const user: UserPayload = {
+  sub: 'user-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
 const mockCard = { id: 'gc-1', code: 'GIFT50', balanceCents: 5000, isActive: true };
 

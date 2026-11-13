@@ -1,8 +1,17 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThanOrEqual, MoreThanOrEqual, IsNull, Or } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Collection } from './entities/collection.entity';
-import { IsString, IsOptional, IsInt, Min, Max, IsBoolean, MaxLength, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  Min,
+  Max,
+  IsBoolean,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateCollectionDto {
   @IsString() @MinLength(2) @MaxLength(100) name: string;
@@ -61,7 +70,10 @@ export class CollectionsService {
 
   async findActive(): Promise<Collection[]> {
     const now = new Date();
-    const all = await this.collectionRepo.find({ where: { isActive: true }, order: { createdAt: 'DESC' } });
+    const all = await this.collectionRepo.find({
+      where: { isActive: true },
+      order: { createdAt: 'DESC' },
+    });
     return all.filter((c) => {
       if (c.startsAt && c.startsAt > now) return false;
       if (c.endsAt && c.endsAt < now) return false;
@@ -82,7 +94,7 @@ export class CollectionsService {
   }
 
   async update(id: string, dto: UpdateCollectionDto): Promise<Collection> {
-    const collection = await this.findById(id);
+    await this.findById(id);
     const updates: Partial<Collection> = {};
     if (dto.name !== undefined) updates.name = dto.name;
     if (dto.description !== undefined) updates.description = dto.description;

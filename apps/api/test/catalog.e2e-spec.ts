@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 
 describe('CatalogController (e2e)', () => {
@@ -45,9 +45,7 @@ describe('CatalogController (e2e)', () => {
     });
 
     it('accepts search query param', () => {
-      return request(app.getHttpServer())
-        .get('/api/catalog/products?search=nike')
-        .expect(200);
+      return request(app.getHttpServer()).get('/api/catalog/products?search=nike').expect(200);
     });
   });
 

@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
-import * as crypto from 'crypto';
 
 describe('Payments (e2e)', () => {
   let app: INestApplication;
@@ -22,18 +21,13 @@ describe('Payments (e2e)', () => {
     await app.close();
   });
 
-  const makeStripeSignature = (payload: string, secret: string): string => {
-    const timestamp = Math.floor(Date.now() / 1000).toString();
-    const signed = `${timestamp}.${payload}`;
-    const hmac = crypto.createHmac('sha256', secret).update(signed).digest('hex');
-    return `t=${timestamp},v1=${hmac}`;
-  };
-
   describe('POST /api/payments/webhook/stripe', () => {
-    const WEBHOOK_SECRET = 'whsec_test';
-
     it('returns 400 when signature is missing and secret is not test', () => {
-      const payload = JSON.stringify({ type: 'payment_intent.succeeded', id: 'evt_1', data: { object: { id: 'pi_1' } } });
+      const payload = JSON.stringify({
+        type: 'payment_intent.succeeded',
+        id: 'evt_1',
+        data: { object: { id: 'pi_1' } },
+      });
       return request(app.getHttpServer())
         .post('/api/payments/webhook/stripe')
         .set('Content-Type', 'application/json')

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BadRequestException } from '@nestjs/common';
-import { LoyaltyService, POINTS_PER_DOLLAR, POINTS_REDEEM_RATE } from '../loyalty.service';
+import { LoyaltyService, POINTS_PER_DOLLAR } from '../loyalty.service';
 import { LoyaltyAccount } from '../entities/loyalty-account.entity';
 import { LoyaltyTransaction } from '../entities/loyalty-transaction.entity';
 

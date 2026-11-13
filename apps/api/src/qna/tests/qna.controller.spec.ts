@@ -3,10 +3,26 @@ import { QnaController } from '../qna.controller';
 import { QnaService } from '../qna.service';
 import type { UserPayload } from '@nextcommerce/shared';
 
-const adminUser: UserPayload = { sub: 'admin-1', email: 'admin@test.com', role: 'admin' };
-const regularUser: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
+const adminUser: UserPayload = {
+  sub: 'admin-1',
+  email: 'admin@test.com',
+  role: 'admin',
+  name: 'Test User',
+};
+const regularUser: UserPayload = {
+  sub: 'user-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
-const mockQuestion = { id: 'q-1', productId: 'p-1', question: 'Does it run big?', answer: null, isHidden: false };
+const mockQuestion = {
+  id: 'q-1',
+  productId: 'p-1',
+  question: 'Does it run big?',
+  answer: null,
+  isHidden: false,
+};
 
 const mockService: Partial<QnaService> = {
   getForProduct: jest.fn().mockResolvedValue([mockQuestion]),

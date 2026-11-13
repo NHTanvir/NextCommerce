@@ -3,7 +3,12 @@ import { CartController } from '../cart.controller';
 import { CartService } from '../cart.service';
 import type { UserPayload } from '@nextcommerce/shared';
 
-const user: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
+const user: UserPayload = {
+  sub: 'user-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
 const mockCart = { id: 'cart-1', items: [], totalCents: 0, anonymousToken: 'anon-token' };
 

@@ -4,12 +4,27 @@ import { AuthService } from '../auth.service';
 import type { UserPayload } from '@nextcommerce/shared';
 
 const mockService: Partial<AuthService> = {
-  register: jest.fn().mockResolvedValue({ access_token: 'tok-new', user: { id: 'u-1', email: 'new@test.com', role: 'user' } }),
-  login: jest.fn().mockResolvedValue({ access_token: 'tok-login', user: { id: 'u-2', email: 'user@test.com', role: 'user' } }),
+  register: jest
+    .fn()
+    .mockResolvedValue({
+      access_token: 'tok-new',
+      user: { id: 'u-1', email: 'new@test.com', role: 'customer' },
+    }),
+  login: jest
+    .fn()
+    .mockResolvedValue({
+      access_token: 'tok-login',
+      user: { id: 'u-2', email: 'user@test.com', role: 'customer' },
+    }),
   googleLogin: jest.fn().mockResolvedValue({ access_token: 'tok-google' }),
 };
 
-const mockUser: UserPayload = { sub: 'u-1', email: 'user@test.com', role: 'user' };
+const mockUser: UserPayload = {
+  sub: 'u-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
 describe('AuthController', () => {
   let controller: AuthController;

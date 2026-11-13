@@ -8,13 +8,8 @@ import {
   StyleSheet,
   RefreshControl,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { ShopStackParamList } from '@/navigation/types';
 import { fetchBundles as apiFetchBundles, type Bundle } from '@/api/bundles';
-
-type Nav = NativeStackNavigationProp<ShopStackParamList>;
 
 const COLORS = {
   bg: '#0d1117',
@@ -72,7 +67,9 @@ function BundleCard({ bundle, index }: { bundle: BundleDto; index: number }) {
 
       <View style={styles.cardBody}>
         {bundle.description && (
-          <Text style={styles.description} numberOfLines={2}>{bundle.description}</Text>
+          <Text style={styles.description} numberOfLines={2}>
+            {bundle.description}
+          </Text>
         )}
 
         <View style={styles.cardFooter}>
@@ -100,7 +97,6 @@ function BundleCard({ bundle, index }: { bundle: BundleDto; index: number }) {
 }
 
 export default function BundlesScreen() {
-  const navigation = useNavigation<Nav>();
   const [bundles, setBundles] = useState<BundleDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -122,7 +118,7 @@ export default function BundlesScreen() {
     useCallback(() => {
       setLoading(true);
       fetchBundles();
-    }, [fetchBundles])
+    }, [fetchBundles]),
   );
 
   if (loading) {
@@ -134,9 +130,7 @@ export default function BundlesScreen() {
   }
 
   const totalSavingsCount = bundles.length;
-  const maxDiscount = bundles.length > 0
-    ? Math.max(...bundles.map((b) => b.discountPercent))
-    : 0;
+  const maxDiscount = bundles.length > 0 ? Math.max(...bundles.map((b) => b.discountPercent)) : 0;
 
   return (
     <FlatList
@@ -221,7 +215,13 @@ const styles = StyleSheet.create({
     borderColor: COLORS.yellow + '50',
   },
   heroBadgeText: { color: COLORS.yellow, fontSize: 11, fontWeight: '700', letterSpacing: 0.8 },
-  heroTitle: { fontSize: 26, fontWeight: '900', color: COLORS.text, letterSpacing: -0.5, marginBottom: 4 },
+  heroTitle: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: COLORS.text,
+    letterSpacing: -0.5,
+    marginBottom: 4,
+  },
   heroSub: { fontSize: 13, color: COLORS.muted },
 
   statsRow: {
@@ -264,7 +264,12 @@ const styles = StyleSheet.create({
     minWidth: 60,
   },
   discountText: { fontSize: 26, fontWeight: '900', color: '#fff', lineHeight: 30 },
-  discountOff: { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.8)', letterSpacing: 1 },
+  discountOff: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.8)',
+    letterSpacing: 1,
+  },
   bannerRight: { flex: 1 },
   bundleName: { fontSize: 17, fontWeight: '800', color: '#fff', marginBottom: 2 },
   productCount: { fontSize: 12, color: 'rgba(255,255,255,0.75)', fontWeight: '500' },

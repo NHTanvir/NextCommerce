@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GiftCard } from './entities/gift-card.entity';
@@ -18,9 +18,7 @@ export class RedeemGiftCardDto {
 
 @Injectable()
 export class GiftCardsService {
-  constructor(
-    @InjectRepository(GiftCard) private readonly cardRepo: Repository<GiftCard>,
-  ) {}
+  constructor(@InjectRepository(GiftCard) private readonly cardRepo: Repository<GiftCard>) {}
 
   private generateCode(): string {
     const raw = randomBytes(8).toString('hex').toUpperCase();
@@ -47,7 +45,9 @@ export class GiftCardsService {
     return this.cardRepo.findOne({ where: { code: code.toUpperCase() } });
   }
 
-  async getBalance(code: string): Promise<{ code: string; remaining: number; isValid: boolean; expiresAt: Date | null }> {
+  async getBalance(
+    code: string,
+  ): Promise<{ code: string; remaining: number; isValid: boolean; expiresAt: Date | null }> {
     const card = await this.findByCode(code);
     if (!card) return { code, remaining: 0, isValid: false, expiresAt: null };
 
@@ -57,12 +57,18 @@ export class GiftCardsService {
     return { code, remaining: card.remainingAmountCents, isValid, expiresAt: card.expiresAt };
   }
 
-  async applyToOrder(code: string, userId: string, orderAmountCents: number): Promise<{ discountCents: number; remainingAfter: number }> {
+  async applyToOrder(
+    code: string,
+    userId: string,
+    orderAmountCents: number,
+  ): Promise<{ discountCents: number; remainingAfter: number }> {
     const card = await this.findByCode(code);
     if (!card) throw new NotFoundException('Gift card not found');
     if (!card.isActive) throw new BadRequestException('Gift card is no longer active');
-    if (card.expiresAt && new Date() > card.expiresAt) throw new BadRequestException('Gift card has expired');
-    if (card.remainingAmountCents <= 0) throw new BadRequestException('Gift card has no remaining balance');
+    if (card.expiresAt && new Date() > card.expiresAt)
+      throw new BadRequestException('Gift card has expired');
+    if (card.remainingAmountCents <= 0)
+      throw new BadRequestException('Gift card has no remaining balance');
 
     const discountCents = Math.min(card.remainingAmountCents, orderAmountCents);
     const remainingAfter = card.remainingAmountCents - discountCents;
@@ -113,10 +119,16 @@ export class GiftCardsService {
       .select('COUNT(*)', 'total')
       .addSelect('SUM(CASE WHEN gc.isActive = 1 THEN 1 ELSE 0 END)', 'active')
       .addSelect('SUM(CASE WHEN gc.remainingAmountCents = 0 THEN 1 ELSE 0 END)', 'fullyRedeemed')
-      .addSelect('SUM(CASE WHEN gc.expiresAt < NOW() AND gc.isActive = 1 THEN 1 ELSE 0 END)', 'expired')
+      .addSelect(
+        'SUM(CASE WHEN gc.expiresAt < NOW() AND gc.isActive = 1 THEN 1 ELSE 0 END)',
+        'expired',
+      )
       .addSelect('COALESCE(SUM(gc.initialAmountCents), 0)', 'totalIssuedCents')
       .addSelect('COALESCE(SUM(gc.remainingAmountCents), 0)', 'totalRemainingCents')
-      .addSelect('COALESCE(SUM(gc.initialAmountCents - gc.remainingAmountCents), 0)', 'totalRedeemedCents')
+      .addSelect(
+        'COALESCE(SUM(gc.initialAmountCents - gc.remainingAmountCents), 0)',
+        'totalRedeemedCents',
+      )
       .getRawOne();
 
     return {

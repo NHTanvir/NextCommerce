@@ -3,9 +3,20 @@ import { PriceAlertsController } from '../price-alerts.controller';
 import { PriceAlertsService } from '../price-alerts.service';
 import type { UserPayload } from '@nextcommerce/shared';
 
-const user: UserPayload = { sub: 'user-1', email: 'user@test.com', role: 'user' };
+const user: UserPayload = {
+  sub: 'user-1',
+  email: 'user@test.com',
+  role: 'customer',
+  name: 'Test User',
+};
 
-const mockAlert = { id: 'a-1', userId: 'user-1', productId: 'p-1', targetPriceCents: 4999, isActive: true };
+const mockAlert = {
+  id: 'a-1',
+  userId: 'user-1',
+  productId: 'p-1',
+  targetPriceCents: 4999,
+  isActive: true,
+};
 
 const mockService: Partial<PriceAlertsService> = {
   findForUser: jest.fn().mockResolvedValue([mockAlert]),
