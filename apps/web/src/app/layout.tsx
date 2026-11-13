@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/features/cart/CartDrawer';
 import { CompareBar } from '@/components/ui/CompareBar';
 import { RouteProgress } from '@/components/ui/RouteProgress';
+import { StylePrewarm } from '@/components/ui/StylePrewarm';
 import './globals.scss';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Providers>
           <RouteProgress />
+          <StylePrewarm />
           <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Navbar />
             <main style={{ flex: 1 }}>{children}</main>
