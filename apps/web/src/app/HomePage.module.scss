@@ -3,7 +3,15 @@
 .hero {
   position: relative;
   overflow: hidden;
-  padding-block: clamp(3rem, 8vw, 6.5rem) clamp(3rem, 7vw, 5.5rem);
+  display: grid;
+  align-items: center;
+  // The brand strip used to sit under the hero and carry the rest of the
+  // first screen. With it gone the hero has to do that itself: the sticky
+  // navbar is 4rem and sits in flow above this, so this fills what is left.
+  // Capped, or a very tall window stretches it into mostly empty space.
+  min-height: min(calc(100vh - 4rem), 52rem);
+  min-height: min(calc(100svh - 4rem), 52rem);
+  padding-block: clamp(3rem, 7vw, 5.5rem);
 }
 
 .aurora {
