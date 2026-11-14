@@ -1,4 +1,14 @@
-import { cartReducer, addItem, updateQuantity, removeItem, clearCart, selectCartItemCount, selectCartTotal } from '../store/slices/cart.slice';
+import {
+  cartReducer,
+  addItem,
+  updateQuantity,
+  removeItem,
+  clearCart,
+  hydrateCart,
+  loadStoredCart,
+  selectCartItemCount,
+  selectCartTotal,
+} from '../store/slices/cart.slice';
 import type { CartItem } from '../store/slices/cart.slice';
 
 const SHOE_A: CartItem = {
@@ -86,5 +96,55 @@ describe('cart slice', () => {
     } as any;
     // 11000*1 + 18000*2 = 11000 + 36000 = 47000
     expect(selectCartTotal(state)).toBe(47000);
+  });
+});
+
+describe('cart persistence', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('writes the cart to storage when an item is added', () => {
+    cartReducer(undefined, addItem(SHOE_A));
+    expect(JSON.parse(localStorage.getItem('nc_cart') ?? '[]')).toHaveLength(1);
+  });
+
+  it('loadStoredCart reads back what was saved, so a reload keeps the cart', () => {
+    const afterAdd = cartReducer(undefined, addItem(SHOE_A));
+    expect(afterAdd.items).toHaveLength(1);
+
+    // A reload: brand new store, nothing in memory.
+    const fresh = cartReducer(undefined, { type: '@@INIT' });
+    expect(fresh.items).toHaveLength(0);
+
+    const rehydrated = cartReducer(fresh, hydrateCart(loadStoredCart()));
+    expect(rehydrated.items).toHaveLength(1);
+    expect(rehydrated.items[0].variantId).toBe('v1');
+  });
+
+  it('keeps quantity changes across a reload', () => {
+    cartReducer(
+      cartReducer(undefined, addItem(SHOE_A)),
+      updateQuantity({ variantId: 'v1', quantity: 4 }),
+    );
+    const rehydrated = cartReducer(undefined, hydrateCart(loadStoredCart()));
+    expect(rehydrated.items[0].quantity).toBe(4);
+  });
+
+  it('a removed item does not come back', () => {
+    cartReducer(cartReducer(undefined, addItem(SHOE_A)), removeItem('v1'));
+    expect(cartReducer(undefined, hydrateCart(loadStoredCart())).items).toHaveLength(0);
+  });
+
+  it('clearCart empties storage too', () => {
+    cartReducer(cartReducer(undefined, addItem(SHOE_A)), clearCart());
+    expect(loadStoredCart()).toEqual([]);
+  });
+
+  it('survives junk in storage rather than throwing', () => {
+    localStorage.setItem('nc_cart', 'not json');
+    expect(loadStoredCart()).toEqual([]);
+    localStorage.setItem('nc_cart', '{"not":"an array"}');
+    expect(loadStoredCart()).toEqual([]);
   });
 });
