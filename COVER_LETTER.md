@@ -6,6 +6,11 @@ I'm applying for the Software Engineer role and want to show — not just tell �
 
 **github.com/NHTanvir/NextCommerce** — a full-stack shoe-shop ecommerce platform.
 
+**Live demo:** https://nextcommerce.naymul.workers.dev — the storefront on Cloudflare
+Workers (browsing, filtering, search, product pages, cart). Sign-in, checkout and
+the admin panel need the NestJS API, which a Worker cannot reach over TCP; run the
+full stack locally with `docker compose up`.
+
 ---
 
 ## JD bullet → concrete commit / file
