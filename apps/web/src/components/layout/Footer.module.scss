@@ -1,12 +1,10 @@
 .footer {
   background: var(--color-bg-secondary);
-  border-top: 1px solid var(--color-border);
   margin-top: auto;
 }
 
 .newsletter {
   padding-block: clamp(2rem, 5vw, 3.5rem);
-  border-bottom: 1px solid var(--color-border);
 }
 
 .inner {
