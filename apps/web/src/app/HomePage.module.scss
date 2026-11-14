@@ -4,7 +4,6 @@
   position: relative;
   overflow: hidden;
   padding-block: clamp(3rem, 8vw, 6.5rem) clamp(3rem, 7vw, 5.5rem);
-  border-bottom: 1px solid var(--color-border);
 }
 
 .aurora {
@@ -255,7 +254,6 @@
 // A plain row, not a marquee: the names are links a visitor may want to
 // click, and a moving target is a poor one.
 .brands {
-  border-bottom: 1px solid var(--color-border);
   background: var(--color-bg-secondary);
 }
 
@@ -264,8 +262,8 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem 2.5rem;
-  padding-block: 1.25rem;
+  gap: 0.5rem 1.5rem;
+  padding-block: 1.125rem;
 }
 
 .brand {
@@ -283,7 +281,10 @@
 /* ------------------------------------------------------------- sections */
 
 .section {
-  padding-block: clamp(3.5rem, 8vw, 6.5rem);
+  // Two adjacent sections each contribute this, so the gap a visitor sees
+  // is double it: 6.5rem here read as ~13rem of empty space between
+  // "Shop by category" and "Featured drops".
+  padding-block: clamp(2.25rem, 4.5vw, 3.25rem);
 }
 
 .head {
@@ -594,9 +595,7 @@
 .promise {
   position: relative;
   overflow: hidden;
-  border-top: 1px solid var(--color-border);
-  background: var(--color-bg-secondary);
-  padding-block: clamp(3.5rem, 8vw, 6rem);
+  padding-block: clamp(2.5rem, 5vw, 3.75rem);
 }
 
 .promiseHead {
