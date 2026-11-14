@@ -2,6 +2,10 @@
 
 Portfolio shoe-shop ecommerce monorepo targeting a Field Nation Software Engineer application. Every JD requirement maps to a visible implementation in the repo.
 
+Live demo (storefront only, Cloudflare Workers): https://nextcommerce.naymul.workers.dev
+Catalog reads are served by `infra/demo-api` from `infra/seed/products.json`; auth,
+checkout and admin require the local NestJS API.
+
 ## Stack at a glance
 
 | Layer         | Technology                                                     |
