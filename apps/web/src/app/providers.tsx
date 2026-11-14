@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
 import { setCredentials } from '@/store/slices/auth.slice';
-import { setAnonymousToken } from '@/store/slices/cart.slice';
+import { setAnonymousToken, hydrateCart, loadStoredCart } from '@/store/slices/cart.slice';
 import { nanoid } from '@reduxjs/toolkit';
 
 function AuthHydrator() {
@@ -32,6 +32,13 @@ function AuthHydrator() {
       localStorage.setItem('nc_anon', anonToken);
     }
     store.dispatch(setAnonymousToken(anonToken));
+
+    // The cart lives in Redux, which is memory only, so without this a
+    // reload emptied it.
+    const storedCart = loadStoredCart();
+    if (storedCart.length > 0) {
+      store.dispatch(hydrateCart(storedCart));
+    }
   }, []);
 
   return null;
