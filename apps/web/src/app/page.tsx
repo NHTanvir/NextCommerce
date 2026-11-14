@@ -214,23 +214,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------- Brands ---------- */}
-      {brands.length > 0 && (
-        <section className={styles.brands} aria-label="Brands we stock">
-          <div className={`container ${styles.brandRow}`}>
-            {brands.slice(0, 12).map((b) => (
-              <Link
-                key={b}
-                href={`/products?brand=${encodeURIComponent(b)}`}
-                className={styles.brand}
-              >
-                {b}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ---------- Categories ---------- */}
       {categories.length > 0 && (
         <section className={styles.section}>

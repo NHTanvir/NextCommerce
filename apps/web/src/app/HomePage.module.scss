@@ -251,33 +251,6 @@
 
 /* --------------------------------------------------------------- brands */
 
-// A plain row, not a marquee: the names are links a visitor may want to
-// click, and a moving target is a poor one.
-.brands {
-  background: var(--color-bg-secondary);
-}
-
-.brandRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem 1.5rem;
-  padding-block: 1.125rem;
-}
-
-.brand {
-  font-size: 0.9375rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--color-text-muted);
-  transition: color var(--transition);
-
-  &:hover {
-    color: var(--color-accent);
-  }
-}
-
 /* ------------------------------------------------------------- sections */
 
 .section {
